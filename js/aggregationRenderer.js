@@ -41,6 +41,7 @@ function (declare, lang, Renderer, rendererJsonUtils) {
         "featureThreshold": 0,
         "lodOffset": 0,
         "minBinSizeInPixels": 25,
+        "fullLodGrid": false,
         "labels": null,
         "fieldStatistics": {
           "fieldName": "",
@@ -76,6 +77,7 @@ function (declare, lang, Renderer, rendererJsonUtils) {
         "featureThreshold": properties ? properties.featureThreshold : this.defaultAggregationRenderer.featureThreshold,
         "lodOffset": properties ? properties.lodOffset : this.defaultAggregationRenderer.lodOffset,
         "minBinSizeInPixels": properties ? properties.minBinSizeInPixels : this.defaultAggregationRenderer.minBinSizeInPixels,
+        "fullLodGrid": fullLodGrid ? fullLodGrid : this.defaultAggregationRenderer.fullLodGrid,
         "labels": labels ? labels : this.defaultAggregationRenderer.labels,
         "fieldStatistics": fieldStatistics ? fieldStatistics : this.defaultAggregationRenderer.fieldStatistics,
         "binRenderer": binRenderer ? binRenderer : this.defaultAggregationRenderer.binRenderer,
@@ -113,6 +115,14 @@ function (declare, lang, Renderer, rendererJsonUtils) {
     },
     setMinBinSizeInPixels: function (minBinSizeInPixels) {
       this.agg.minBinSizeInPixels = minBinSizeInPixels;
+      return this
+    },
+
+    getFullLodGrid: function () {
+      return this.agg.fullLodGrid
+    },
+    setFullLodGrid: function (fullLodGrid) {
+      this.agg.fullLodGrid = fullLodGrid;
       return this
     },
 
@@ -163,6 +173,7 @@ function (declare, lang, Renderer, rendererJsonUtils) {
         featureThreshold: this.agg.featureThreshold,
         lodOffset: this.agg.lodOffset,
         minBinSizeInPixels: this.agg.minBinSizeInPixels,
+        fullLodGrid: this.agg.fullLodGrid,
         labels: this.agg.labels,
         fieldStatistics: this.agg.fieldStatistics,
         binRenderer: this.agg.binRenderer,

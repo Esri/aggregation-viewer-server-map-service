@@ -26,7 +26,7 @@
 
 <head lang="en">
   <meta charset="UTF-8">
-  <title>Aggregation MS Renderer Toggle</title>
+  <title>Aggregation Viewer - Server Side Dynamic Map Service Layer</title>
   <link rel="stylesheet" href="https://js.arcgis.com/3.17/dijit/themes/claro/claro.css">
   <link rel="stylesheet" href="https://js.arcgis.com/3.17/esri/css/esri.css">
 
@@ -342,7 +342,7 @@
         _msLayer.on("error", function (err) {
           console.log("Error occured loading the " + err.target.id + " layer. Please specify a valid URL");
           console.log("Invalid layer URL: " + err.target.url);
-          dojo.byId("inputUrl").style.backgroundColor = "#ff0000";
+          //dojo.byId("inputUrl").style.backgroundColor = "#ff0000";
         });
 
         map.addLayer(_msLayer);
@@ -425,6 +425,7 @@
         renderer.setLodOffset(parseFloat(dojo.byId("lodOffset").value));
         renderer.setFeatureThreshold(parseFloat(dojo.byId("featureThreshold").value));
         renderer.setMinBinSizeInPixels(parseFloat(dojo.byId("minBinSizeInPixels").value));
+        renderer.setFullLodGrid((dojo.byId("fullLodGrid")).checked);
 
         renderer.setBinRenderer(binRenderer);
         renderer.setGeoHashStyle(geoHashStyle);
@@ -591,6 +592,12 @@
             <td>LOD Offset:</td>
             <td>
               <input type="number" id="lodOffset" value="0" style="width: 50px;"/>
+            </td>
+          </tr>
+          <tr>
+            <td title='Render all LOD grid bins only without the actual data.'>Full LOD Grid::</td>
+            <td>
+              <input type="checkbox" id="fullLodGrid"/>
             </td>
           </tr>
         </table>
@@ -797,6 +804,10 @@
                 <option value="102003">102003 (Albers)</option>
                 <option value="102100">102100 (Web Mercator)</option>
                 <option value="4326">4326 (WGS84)</option>
+
+                <option value="26911">26911 (NAD83 / UTM zone 11N)</option>
+                <option value="27700">27700 (British Natioal Grid)</option>
+
                 <option value="2243">2243 (Idaho West, State Plane)</option>
                 <option value="2244">2244 (Indiana East, State Plane)</option>
                 <option value="2248">2248 (Maryland, State Plane)</option>
