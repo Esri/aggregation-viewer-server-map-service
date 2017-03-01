@@ -166,7 +166,7 @@
 
       var _refreshRateSpinner;
       var _msLayer;
-      var _msLayerName = "TestMS";
+      var _msLayerName = "MapService1";
 
       window.app = {};
       window.app.bounds = new Extent({
@@ -246,7 +246,7 @@
 
         // Map event listeners
         map.on("load", function () {
-          //applyRendererProps()
+          //updateFromUI();
         });
 
         map.on("zoom-end", function (evt) {
@@ -304,7 +304,7 @@
 
       // UI event listeners
       on(dom.byId("addMapServiceLayerButton"), "click", addMapServiceLayer);
-      on(dom.byId("applyRendererButton"), "click", applyRendererProps);
+      on(dom.byId("applyRendererButton"), "click", updateFromUI);
       on(dom.byId("style"), "change", uiTrigger);
       on(dom.byId("useStats"), "change", uiTrigger);
       on(dom.byId("useRotation"), "change", uiTrigger);
@@ -326,7 +326,7 @@
         };
 
         _msLayer = new ArcGISDynamicMapServiceLayer(url, options);
-        applyRenderer(_msLayer);
+        initWithEmptyRenderer(_msLayer);
 
         _msLayer.on("load", function (evt) {
           //dojo.byId("addMapServiceLayerButton").setAttribute('disabled', true);
@@ -340,7 +340,7 @@
         });
 
         _msLayer.on("error", function (err) {
-          console.log("Error occured loading the " + err.target.id + " layer. Please specify a valid URL");
+          console.log("Error occured loading the " + err.target.id + " error: " + err.error.message);
           console.log("Invalid layer URL: " + err.target.url);
           //dojo.byId("inputUrl").style.backgroundColor = "#ff0000";
         });
@@ -355,16 +355,36 @@
         updateFields(_msLayer);
       }
 
-      function applyRenderer(dynamicMapServiceLayer) {
+      function initWithEmptyRenderer(dynamicMapServiceLayer) {
+        // Do nothing!
+      }
+
+      function initRenderer(dynamicMapServiceLayer) {
+        updateLayerFromUI(dynamicMapServiceLayer, true);
+      }
+
+      function updateFromUI() {
+        _msLayer = map.getLayer(_msLayerName);
+        updateLayerFromUI(_msLayer, true);
+      }
+
+      function updateLayerFromUI(dynamicMapServiceLayer, refresh) {
+        //var renderer = dynamicMapServiceLayer.layerDrawingOptions[0].renderer;
+        var renderer = new AggregationRenderer();
+        updateRendererFromUI(renderer);
+
         var drawingOptions = new LayerDrawingOptions();
-        drawingOptions.renderer = new AggregationRenderer();
+        drawingOptions.renderer = renderer;
         //drawingOptions.transparency = 50;
         var layerDrawingOptions = [];
         layerDrawingOptions[0] = drawingOptions;
         dynamicMapServiceLayer.setLayerDrawingOptions(layerDrawingOptions);
+        dynamicMapServiceLayer._updateDynamicLayers();
+        if (refresh)
+          dynamicMapServiceLayer.refresh(true);
       }
 
-      function applyRendererProps() {
+      function updateRendererFromUI(renderer) {
 
         var geoHashStyle = {
           style: dojo.byId("geoHashStyle").value,
@@ -418,9 +438,6 @@
           "statisticsType": dojo.byId("statType").value
         };
 
-        _msLayer = map.getLayer(_msLayerName);
-        var renderer = _msLayer.layerDrawingOptions[0].renderer;
-
         renderer.setStyle(dojo.byId("style").value);
         renderer.setLodOffset(parseFloat(dojo.byId("lodOffset").value));
         renderer.setFeatureThreshold(parseFloat(dojo.byId("featureThreshold").value));
@@ -443,8 +460,6 @@
           renderer.setFieldStatistics(null);
         }
 
-        _msLayer._updateDynamicLayers();
-        _msLayer.refresh(true);
       }
 
       function hexToRgb(hex, a) {
@@ -541,8 +556,6 @@
         }, "refreshRateContainer");
         _refreshRateSpinner.startup();
       }
-
-
     });
   </script>
 </head>
@@ -595,7 +608,7 @@
             </td>
           </tr>
           <tr>
-            <td title='Render all LOD grid bins only without the actual data.'>Full LOD Grid::</td>
+            <td title='Render all LOD grid bins only without the actual data.'>Full LOD Grid:</td>
             <td>
               <input type="checkbox" id="fullLodGrid"/>
             </td>
@@ -835,3 +848,5 @@
   </table>
 </div>
 </body>
+
+</html>

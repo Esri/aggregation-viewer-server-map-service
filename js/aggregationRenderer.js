@@ -33,7 +33,7 @@ function (declare, lang, Renderer, rendererJsonUtils) {
   var AggregationRenderer = declare(Renderer, {
     declaredClass: "AggregationRenderer",
 
-    constructor: function (properties, labels, fieldStatistics, binRenderer, geoHashStyle, featureRenderer) {
+    constructor: function (properties, labels, fieldStatistics, binRenderer, geoHashStyle, featureRenderer, backgroundColor) {
 
       this.defaultAggregationRenderer = {
         "type": "aggregation",
@@ -42,7 +42,13 @@ function (declare, lang, Renderer, rendererJsonUtils) {
         "lodOffset": 0,
         "minBinSizeInPixels": 25,
         "fullLodGrid": false,
-        "labels": null,
+        "labels": {
+          "color": [0,0,0,255],
+          "font": "Arial",
+          "size": 12,
+          "style": "PLAIN",
+          "format": "###.#KMB"
+        },
         "fieldStatistics": {
           "fieldName": "",
           "statisticsType": ""
@@ -51,24 +57,37 @@ function (declare, lang, Renderer, rendererJsonUtils) {
           "type": "Continuous",
           "minValue": null,
           "maxValue": null,
-          "minColor": null,
-          "maxColor": null,
-          "minSize": null,
-          "maxSize": null,
+          "minColor": [255,0,0,20],
+          "maxColor": [255,0,0,255],
+          "minSize": 100,
+          "maxSize": 100,
           "normalizeByBinArea": false
         },
         "geoHashStyle": {
-          "style": "null",
-          "sr": "null"
+          "style": "geohash",
+          "sr": "4326"
         },
         "featureRenderer": {
           "type": "simple",
-          "symbol": null,
+          "symbol":  {
+            "type": "esriSMS",
+            "style": "esriSMSCircle",
+            "color": [255,0,0,255],
+            "size": 12,
+            "angle": 0,
+            "xoffset": 0,
+            "yoffset": 0,
+            "outline": {
+              "color": [0,0,0,255],
+              "width": 1
+            }
+          },
           "rotationType": "",
           "rotationExpression": "",
           "label": "",
           "description": ""
-        }
+        },
+        "backgroundColor": [0,0,255,0]
       };
 
       this.agg = {
@@ -82,7 +101,8 @@ function (declare, lang, Renderer, rendererJsonUtils) {
         "fieldStatistics": fieldStatistics ? fieldStatistics : this.defaultAggregationRenderer.fieldStatistics,
         "binRenderer": binRenderer ? binRenderer : this.defaultAggregationRenderer.binRenderer,
         "geoHashStyle": geoHashStyle ? geoHashStyle : this.defaultAggregationRenderer.geoHashStyle,
-        "featureRenderer": featureRenderer ? featureRenderer : this.defaultAggregationRenderer.featureRenderer
+        "featureRenderer": featureRenderer ? featureRenderer : this.defaultAggregationRenderer.featureRenderer,
+        "backgroundColor": backgroundColor ? backgroundColor : this.defaultAggregationRenderer.backgroundColor
       };
     },
 
