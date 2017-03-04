@@ -1,0 +1,254 @@
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    font-size: 12px;
+}
+
+body {
+  position: relative;
+  overflow: hidden;
+}
+
+#map {
+    height: 100%;
+    width: calc(100% - 300px);
+    float: left;
+    z-index: -1;
+}
+
+#controls {
+    box-sizing: border-box;
+    float: left;
+    width: 300px;
+    height: 100%;
+    background: #FAFAFA;
+    color: #515151;
+    border-left: 1px solid #B8B8B8;
+    position: relative;
+}
+
+.collapser {
+    position: absolute;
+    width: 2.7rem;
+    height: 2.7rem;
+    left: -2.8rem;
+    font-size: 2.7rem;
+    background: #FAFAFA;
+    cursor: pointer;
+}
+
+#expanderIcon {
+  display: none;
+}
+
+.panel-collapsed #map {
+  width: calc(100% - 1px);
+}
+
+.panel-collapsed #controls {
+  width: 0;
+}
+
+.panel-collapsed #controls section {
+  overflow: hidden;
+}
+
+.panel-collapsed #expanderIcon {
+  display: inline-block;
+}
+
+.panel-collapsed #collapserIcon {
+  display: none;
+}
+
+#timeSlider {
+    display: none;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 20px 20px 30px;
+    background: #ececec;
+    width: calc(100% - 300px) !important;
+    box-sizing: border-box;
+    border-top: 1px solid #b8b8b8;
+}
+
+.config-header {
+    padding: 8px 10px;
+    background: linear-gradient(to right, #FFF, #FAFAFA);
+    border: 1px solid #B8B8B8;
+    border-left: none;
+    border-right: none;
+    display: flex;
+}
+
+section:first-of-type .config-header {
+    border-top: none;
+}
+
+.config-header h2 {
+    flex: 1 0 auto;
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: normal;
+}
+
+.config-content {
+    padding: 15px 10px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.header-actions-group i {
+    cursor: pointer;
+    color: #A6A6A6;
+}
+
+.header-actions-group i:hover {
+    color: #313131;
+}
+
+.header-actions-group .dijitDropDownButton {
+  margin: 0;
+}
+
+.header-actions-group .dijitButtonNode {
+  border: none;
+}
+
+.header-actions-group .dijitArrowButtonInner {
+  display: none;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+    margin: 5px 0;
+}
+
+.input-group-full {
+    width: 100%;
+    flex-direction: row-reverse;
+    text-align: left;
+}
+
+.input-group-full ~ .input-row {
+    width: calc(100% - 80px);
+    margin-left: 80px;
+}
+
+.input-group input {
+    margin: auto;
+}
+
+.input-group label {
+    color: #313131;
+    padding: 5px 0;
+    flex: 1 0 auto;
+}
+
+.input-group-full select,
+.input-group-full .input-group-nested {
+    width: calc(100% - 80px) !important;
+}
+
+.input-group-full .input-group-nested {
+    display: flex;
+    flex-direction: column-reverse;
+    text-align: center;
+}
+
+.input-group-full .input-group-nested label {
+    width: auto;
+}
+
+.input-group-full .input-group-nested input {
+    width: 80% !important;
+}
+
+.input-group-full input {
+    width: calc(100% - 85px) !important;
+}
+
+.input-group-full label {
+    width: 80px;
+    padding: 0;
+}
+
+.input-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.input-row .input-group {
+    width: 33%;
+}
+
+.input-row .input-group label {
+    height: 1rem;
+}
+
+#inputUrl {
+  flex: 1 0 auto;
+  margin-right: 5px;
+}
+
+.flat .dijitDropDownButton .dijitButtonNode {
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.flat .dijitButtonText {
+  padding: 0;
+  line-height: 0;
+}
+
+.flat .dijitDownArrowButton {
+  line-height: 0;
+}
+
+.flat .dijitTooltipContainer {
+  border: 1px solid #B8B8B8;
+  background: #FAFAFA;
+  color: #515151;
+  box-shadow: 0 1px 4px rgba(0,0,0,.25);
+  border-radius: 2px;
+}
+
+.flat .dijitTooltipContainer .input-group-full select {
+    width: calc(100% - 130px) !important;
+}
+
+.flat .dijitTooltipContainer .input-group-full input {
+    width: calc(100% - 135px) !important;
+}
+
+.flat .dijitTooltipContainer .input-group-full label {
+    width: 130px;
+}
+
+.flat .dijitTooltipFocusNode {
+  padding: 10px;
+}
+
+.flat .dijitTooltipFocusNode > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 250px;
+}
+
+.flat select {
+    padding: 0;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}

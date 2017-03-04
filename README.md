@@ -4,7 +4,18 @@ Sample JavaScript Map Service Aggregation Viewer, rendering map images server si
 
 This sample is using export map image request with an aggregation renderer, receiving map images rendered server side, and rendering them client side using a client ArcGIS Dynamic Map Service Layer.
 
-![App](server-flat-hexagon.png?raw=true)
+Server side rendering based on server side Flat Hexagon aggregation Grid style:
+
+![App](server-flat-hexagon-grid-style.png?raw=true)
+
+Server side rendering based on server side Flat Hexagon aggregation Oval style:
+
+![alt text](server-flat-hexagon-oval-style.png?raw=true)
+
+Server side rendering auto-switched to render Raw Features based on actual Features Count and the Feature Threshold value, which is set to 10,000:
+
+![alt text](server-flat-hexagon-raw-features.png?raw=true)
+
 
 ## Issues
 
