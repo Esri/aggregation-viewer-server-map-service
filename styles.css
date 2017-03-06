@@ -19,6 +19,25 @@ body {
     z-index: -1;
 }
 
+.basemapGallery-container {
+    position: absolute;
+    top: 20px;
+    left: 70px;
+    z-index: 50;
+}
+
+.dijitTitlePaneTitle {
+    background: white;
+    padding: 10px;
+    border: 1px solid #b8b8b8;
+    border-radius: 5px;
+}
+
+.flat .dijitContentPane {
+    border: 1px solid #b8b8b8;
+    border-radius: 5px;
+}
+
 #controls {
     box-sizing: border-box;
     float: left;
@@ -28,16 +47,31 @@ body {
     color: #515151;
     border-left: 1px solid #B8B8B8;
     position: relative;
+    overflow-y: auto;
 }
 
 .collapser {
     position: absolute;
     width: 2.7rem;
     height: 2.7rem;
-    left: -2.8rem;
+    right: 300px;
     font-size: 2.7rem;
     background: #FAFAFA;
     cursor: pointer;
+}
+
+.collapser {
+    position: absolute;
+    width: 2.7rem;
+    height: 2.7rem;
+    right: 300px;
+    font-size: 2.7rem;
+    background: #FAFAFA;
+    cursor: pointer;
+}
+
+.panel-collapsed .collapser {
+  right: 0;
 }
 
 #expanderIcon {
@@ -74,6 +108,10 @@ body {
     width: calc(100% - 300px) !important;
     box-sizing: border-box;
     border-top: 1px solid #b8b8b8;
+}
+
+.panel-collapsed #timeSlider {
+    width: 100%;
 }
 
 .config-header {

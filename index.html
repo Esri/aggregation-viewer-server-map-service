@@ -88,6 +88,8 @@
       "esri/lang",
       "esri/layers/FeatureLayer",
 
+      "esri/dijit/BasemapGallery",
+
       "app/aggregationRenderer",
 
       "dijit/TitlePane",
@@ -109,7 +111,7 @@
                  SimpleLineSymbol, SimpleFillSymbol, SimpleRenderer, Polygon, Graphic, Point, SimpleMarkerSymbol,
                  Query, QueryTask, webMercatorUtils,
                  HeatmapRenderer, smartMapping, TooltipDialog, esriRequest, dojoJson, arcgisUtils, esriLang,
-                 FeatureLayer, AggregationRenderer) {
+                 FeatureLayer, BasemapGallery, AggregationRenderer) {
 
       // class data members
       var map;
@@ -153,11 +155,18 @@
         }
         window.app.bounds = b || window.app.bounds;
         window.app.map = new Map("map", {
+          basemap: "gray",
           wrapAround180: true,
           extent: window.app.bounds,
           showAttribution: false,
           sliderStyle: "small"
         });
+
+        var basemapGallery = new BasemapGallery({
+          showArcGISBasemaps: true,
+          map: window.app.map
+        }, "basemapGallery");
+        basemapGallery.startup();
 
         map = window.app.map;
 
@@ -185,18 +194,18 @@
          */
 
         // you can choose different base maps as reference but has to use it as dynamic map
-        var worldReferenceUrl = "http://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer";
-
-        if (tiled) {
-          var worldReference = new ArcGISTiledMapServiceLayer(worldReferenceUrl);
-          window.app.map.addLayers([worldReference]);
-        } else {
-          var worldReference = new ArcGISDynamicMapServiceLayer(worldReferenceUrl, {
-            "showAttribution": false,
-            "opacity": 1.0
-          });
-          window.app.map.addLayers([worldReference]);
-        }
+        // var worldReferenceUrl = "http://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer";
+        //
+        // if (tiled) {
+        //   var worldReference = new ArcGISTiledMapServiceLayer(worldReferenceUrl);
+        //   window.app.map.addLayers([worldReference]);
+        // } else {
+        //   var worldReference = new ArcGISDynamicMapServiceLayer(worldReferenceUrl, {
+        //     "showAttribution": false,
+        //     "opacity": 1.0
+        //   });
+        //   window.app.map.addLayers([worldReference]);
+        // }
 
         // Map event listeners
         map.on("load", function () {
@@ -541,12 +550,19 @@
 </head>
 
 <body class="flat">
-<div id="map"></div>
-<div id="controls">
-  <div class="collapser">
-    <i id="collapserIcon" class="flat-chevron-right"></i>
-    <i id="expanderIcon" class="flat-chevron-left"></i>
+<div id="map">
+  <div class="basemapGallery-container" data-dojo-type="dijit/TitlePane"
+       data-dojo-props="title:'Switch Basemap', closable:false, open:false">
+    <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:280px; overflow:auto;">
+      <div id="basemapGallery"></div>
+    </div>
   </div>
+</div>
+<div class="collapser">
+  <i id="collapserIcon" class="flat-chevron-right"></i>
+  <i id="expanderIcon" class="flat-chevron-left"></i>
+</div>
+<div id="controls">
   <section>
     <div class="config-header">
       <h2>Layers</h2>
@@ -678,21 +694,6 @@
                 <input type="checkbox" id="normalizeByBinArea"/>
                 <label for="normalizeByBinArea">Normalize</label>
               </div>
-              <div class="input-group">
-                <input type="checkbox" id="useStats"/>
-                <label for="useStats">Stats</label>
-                <select name="statField" id="statField" style="width: 90px; margin-top:3px; display:none;" value="">
-                </select>
-
-                <select name="statType" id="statType" style="width: 90px; margin-top:3px; display:none;" value="avg">
-                  <option value="avg">Average</option>
-                  <option value="max">Maximum</option>
-                  <option value="min">Minimum</option>
-                  <option value="stddev">Standard Deviation</option>
-                  <option value="sum">Sum</option>
-                  <option value="var">Variance</option>
-                </select>
-              </div>
             </div>
           </div>
         </div>
@@ -726,6 +727,24 @@
         <input type="number" min="0" max="255" style="width: 35px;" id="maxColorA" value="255"/>
         <label for="maxColorA">Max Opacity</label>
       </div>
+
+      <div class="input-group input-group-full">
+        <input type="checkbox" id="useStats"/>
+        <label for="useStats">Statistics</label>
+      </div>
+      <div class="input-row">
+        <select name="statField" id="statField" style="width: 90px; margin-top:3px; display:none;" value="">
+        </select>
+
+        <select name="statType" id="statType" style="width: 90px; margin-top:3px; display:none;" value="avg">
+          <option value="avg">Average</option>
+          <option value="max">Maximum</option>
+          <option value="min">Minimum</option>
+          <option value="stddev">Standard Deviation</option>
+          <option value="sum">Sum</option>
+          <option value="var">Variance</option>
+        </select>
+      </div>
     </div>
   </section>
 
@@ -733,13 +752,10 @@
     <div class="config-header">
       <h2>Aggregation Labels</h2>
       <div class="header-actions-group">
+        <input type="checkbox" id="renderLabels" checked="true"/>
         <div data-dojo-type="dijit/form/DropDownButton">
           <span><i class="fa fa-gear"></i></span>
           <div data-dojo-type="dijit/TooltipDialog" style="display: none;">
-            <div class="input-group">
-              <input type="checkbox" id="renderLabels" checked="true"/>
-              <label for="renderLabels">Show Labels</label>
-            </div>
             <div class="input-group">
               <input type="text" id="labelFormat" value="###.#KMB" style="width: 90px;"/>
               <label for="labelFormat">Format</label>
