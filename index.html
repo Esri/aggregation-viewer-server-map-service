@@ -155,18 +155,20 @@
         }
         window.app.bounds = b || window.app.bounds;
         window.app.map = new Map("map", {
-          basemap: "gray",
+          //basemap: "gray",
           wrapAround180: true,
           extent: window.app.bounds,
           showAttribution: false,
           sliderStyle: "small"
         });
 
+        /*
         var basemapGallery = new BasemapGallery({
           showArcGISBasemaps: true,
           map: window.app.map
         }, "basemapGallery");
         basemapGallery.startup();
+        */
 
         map = window.app.map;
 
@@ -194,18 +196,18 @@
          */
 
         // you can choose different base maps as reference but has to use it as dynamic map
-        // var worldReferenceUrl = "http://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer";
-        //
-        // if (tiled) {
-        //   var worldReference = new ArcGISTiledMapServiceLayer(worldReferenceUrl);
-        //   window.app.map.addLayers([worldReference]);
-        // } else {
-        //   var worldReference = new ArcGISDynamicMapServiceLayer(worldReferenceUrl, {
-        //     "showAttribution": false,
-        //     "opacity": 1.0
-        //   });
-        //   window.app.map.addLayers([worldReference]);
-        // }
+        var worldReferenceUrl = "http://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer";
+
+        if (tiled) {
+          var worldReference = new ArcGISTiledMapServiceLayer(worldReferenceUrl);
+          window.app.map.addLayers([worldReference]);
+        } else {
+          var worldReference = new ArcGISDynamicMapServiceLayer(worldReferenceUrl, {
+            "showAttribution": false,
+            "opacity": 1.0
+          });
+          window.app.map.addLayers([worldReference]);
+        }
 
         // Map event listeners
         map.on("load", function () {
@@ -550,6 +552,8 @@
 </head>
 
 <body class="flat">
+<div id="map"></div>
+<!--
 <div id="map">
   <div class="basemapGallery-container" style="opacity:0.70" data-dojo-type="dijit/TitlePane"
        data-dojo-props="title:'Basemap', closable:false, open:false">
@@ -558,6 +562,7 @@
     </div>
   </div>
 </div>
+-->
 <div class="collapser">
   <i id="collapserIcon" class="flat-chevron-right"></i>
   <i id="expanderIcon" class="flat-chevron-left"></i>
