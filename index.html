@@ -155,7 +155,6 @@
         }
         window.app.bounds = b || window.app.bounds;
         window.app.map = new Map("map", {
-          //basemap: "gray",
           wrapAround180: true,
           extent: window.app.bounds,
           showAttribution: false,
@@ -195,9 +194,11 @@
          });
          */
 
-        // you can choose different base maps as reference but has to use it as dynamic map
-        var worldReferenceUrl = "http://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer";
-
+        // you can choose different base maps as reference but has to use it as dynamic map service layer
+        //TODO - replace this with a custom UI synamic map service basemap layer widget
+        var worldReferenceUrl_Topo = "http://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer";
+        var worldReferenceUrl_Gray = "https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer";
+        var worldReferenceUrl = worldReferenceUrl_Gray;
         if (tiled) {
           var worldReference = new ArcGISTiledMapServiceLayer(worldReferenceUrl);
           window.app.map.addLayers([worldReference]);
