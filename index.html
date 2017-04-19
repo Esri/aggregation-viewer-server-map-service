@@ -123,7 +123,8 @@
       var _refreshRateSpinner;
       var _msLayer;
       var _msLayerName = "MapService1";
-
+      var _msLayerFields;
+      
       window.app = {};
       window.app.bounds = new Extent({
         // http://help.arcgis.com/en/webapps/flexviewer/extenthelper/flexviewer_extenthelper.html
@@ -212,7 +213,7 @@
 
         // Map event listeners
         map.on("load", function () {
-          //updateFromUI();
+          //updateLayerFromUIChange();
         });
 
         map.on("zoom-end", function (evt) {
@@ -270,22 +271,27 @@
 
       // UI event listeners
       on(dom.byId("addMapServiceLayerButton"), "click", addMapServiceLayer);
-      // on(dom.byId("applyRendererButton"), "click", updateFromUI);
+      // on(dom.byId("applyRendererButton"), "click", updateLayerFromUIChange);
       var inputs = document.getElementsByTagName("input");
       var selects = document.getElementsByTagName("select");
+
       for (var i = 0; i < inputs.length; i++) {
         var input = inputs[i];
-        on(input, "change", updateFromChange);
+        on(input, "change", updateLayerFromUIChange);
       }
+
       for (var i = 0; i < selects.length; i++) {
         var select = selects[i];
-        on(select, "change", updateFromChange);
+        on(select, "change", updateLayerFromUIChange);
       }
+
       on(dom.byId("style"), "change", uiTrigger);
       on(dom.byId("useStats"), "change", uiTrigger);
       on(dom.byId("useRotation"), "change", uiTrigger);
       on(dom.byId("renderLabels"), "change", uiTrigger);
       on(document.getElementsByClassName("collapser")[0], "click", togglePanel);
+
+      on(dom.byId("statField"), "change", statFieldChanged);
 
       function togglePanel() {
         domClass.toggle(document.getElementsByTagName("body")[0], "panel-collapsed");
@@ -306,7 +312,6 @@
         };
 
         _msLayer = new ArcGISDynamicMapServiceLayer(url, options);
-        initWithEmptyRenderer(_msLayer);
 
         _msLayer.on("load", function (evt) {
           //dojo.byId("addMapServiceLayerButton").setAttribute('disabled', true);
@@ -336,32 +341,20 @@
         }
         aggMapServiceUrl = url;
 
-        updateFields(_msLayer);
-      }
-
-      function initWithEmptyRenderer(dynamicMapServiceLayer) {
-        // Do nothing!
-      }
-
-      function initRenderer(dynamicMapServiceLayer) {
-        updateLayerFromUI(dynamicMapServiceLayer, true);
-      }
-
-      function updateFromUI() {
-        _msLayer = map.getLayer(_msLayerName);
-        updateLayerFromUI(_msLayer, true);
+        updateLayerFields();
       }
 
       var changeTimer;
-      function updateFromChange() {
+      function updateLayerFromUIChange() {
         if (changeTimer) {
           window.clearTimeout(changeTimer);
         }
-        changeTimer = window.setTimeout(updateFromUI, 1000);
+        changeTimer = window.setTimeout(updateLayerFromUI, 1000);
       }
 
-      function updateLayerFromUI(dynamicMapServiceLayer, refresh) {
-        //var renderer = dynamicMapServiceLayer.layerDrawingOptions[0].renderer;
+      function updateLayerFromUI() {
+        _msLayer = map.getLayer(_msLayerName); // this is a dynamicMapServiceLayer
+
         var renderer = new AggregationRenderer();
         updateRendererFromUI(renderer);
 
@@ -370,10 +363,9 @@
         //drawingOptions.transparency = 50;
         var layerDrawingOptions = [];
         layerDrawingOptions[0] = drawingOptions;
-        dynamicMapServiceLayer.setLayerDrawingOptions(layerDrawingOptions);
-        dynamicMapServiceLayer._updateDynamicLayers();
-        if (refresh)
-          dynamicMapServiceLayer.refresh(true);
+        _msLayer.setLayerDrawingOptions(layerDrawingOptions);
+        _msLayer._updateDynamicLayers();
+        _msLayer.refresh(true);
       }
 
       function updateRendererFromUI(renderer) {
@@ -494,39 +486,103 @@
         }
       }
 
-      function updateFields(msLayer) {
+      function statFieldChanged(evt) {
+        populateStatTypeSelectOptions();
+        updateLayerFromUIChange();
+      }
+
+      function populateStatTypeSelectOptions() {
+        var statTypeSelect = dojo.byId("statType");
+        var prevStatType = statTypeSelect.value;
+
+        // clear statTypeSelect
+        var i;
+        for (i = statTypeSelect.options.length - 1; i >= 0; i--) {
+          statTypeSelect.remove(i);
+        }
+
+        // find the field by name
+        var fieldName = dojo.byId("statField").value;
+        var field = null;
+        for (i = 0; i < _msLayerFields.length; i++) {
+          var currentField = _msLayerFields[i];
+          if (currentField.name == fieldName)
+            field = currentField;
+        }
+
+        // add the stat type options
+        var pos = 0;
+        if (isFieldNumeric(field)) {
+          // add all types
+          statTypeSelect.options[pos++] = new Option("Average", "avg");
+          statTypeSelect.options[pos++] = new Option("Maximum", "max");
+          statTypeSelect.options[pos++] = new Option("Minimum", "min");
+          statTypeSelect.options[pos++] = new Option("Standard Deviation", "stddev");
+          statTypeSelect.options[pos++] = new Option("Sum", "sum");
+          statTypeSelect.options[pos++] = new Option("Variance", "var");
+          statTypeSelect.options[pos++] = new Option("Count Distinct", "countdistinct");
+          statTypeSelect.options[pos++] = new Option("Count", "count");
+        } else {
+          // only add count distinct type
+          statTypeSelect.options[pos++] = new Option("Count Distinct", "countdistinct");
+          statTypeSelect.options[pos++] = new Option("Count", "count");
+        }        
+
+        updateLayerFromUIChange();
+      }
+
+      function updateLayerFields() {
         var mapServiceInfoDeferred = esri.request({
-          url: dojo.replace("{0}/layers", [msLayer.url]),
+          url: _msLayer.url + "/0",
           content: {
             f: 'json'
           },
           callbackParamName: "callback"
         });
         mapServiceInfoDeferred.then(function (response) {
-              var layerInfo = response.layers && response.layers[0];
-              var fields = layerInfo.fields;
-              populateSelectWithFields(dojo.byId(statField), fields);
-              populateSelectWithFields(dojo.byId(rotationExpression), fields);
+              _msLayerFields = response.fields;
+              populateSelectWithLayerFields(dojo.byId(statField), false);
+              populateSelectWithLayerFields(dojo.byId(rotationExpression), true);
+              populateStatTypeSelectOptions();
             }
         );
       }
 
-      function populateSelectWithFields(select, fields) {
+      function populateSelectWithLayerFields(select, numericOnly) {
         // clear exiting options
         var i;
         for (i = select.options.length - 1; i >= 0; i--) {
           select.remove(i);
         }
 
-        // populate options from fields
+        // populate options based on the _msLayerFields array
         var pos = 0;
-        for (i = 0; i < fields.length; i++) {
-          var field = fields[i];
-          if (field.type == "esriFieldTypeDouble" || field.type == "esriFieldTypeInteger") {
-            select.options[pos] = new Option(field.name, field.name);
-            pos++;
+        for (i = 0; i < _msLayerFields.length; i++) {
+          var field = _msLayerFields[i];
+          if (numericOnly) {
+            if (isFieldNumeric(field))
+              select.options[pos] = new Option(field.name, field.name);
+          } else {
+           if (isSupportedStatField(field))
+              select.options[pos] = new Option(field.name, field.name);
           }
+          pos++;
         }
+      }
+
+      // field type can be one of the following: "esriFieldTypeSmallInteger", "esriFieldTypeInteger", "esriFieldTypeSingle", "esriFieldTypeDouble", "esriFieldTypeString", "esriFieldTypeDate", "esriFieldTypeOID", "esriFieldTypeGeometry", "esriFieldTypeBlob", "esriFieldTypeRaster", "esriFieldTypeGUID", "esriFieldTypeGlobalID", "esriFieldTypeXML"
+      function isFieldNumeric(field) {
+          if (!field || !field.type)
+            return false;
+
+          return (field.type == "esriFieldTypeSmallInteger" || field.type == "esriFieldTypeInteger" || field.type == "esriFieldTypeSingle" || field.type == "esriFieldTypeDouble" || field.type == "esriFieldTypeOID");
+      }
+
+      function isSupportedStatField(field) {
+          if (!field || !field.type)
+            return false;
+
+          return (field.type != "esriFieldTypeGeometry" && field.type != "esriFieldTypeBlob" && field.type != "esriFieldTypeRaster")
       }
 
       function initRefreshRateSpinner() {
