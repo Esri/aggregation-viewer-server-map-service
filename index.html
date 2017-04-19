@@ -561,12 +561,11 @@
           var field = _msLayerFields[i];
           if (numericOnly) {
             if (isFieldNumeric(field))
-              select.options[pos] = new Option(field.name, field.name);
+              select.options[pos++] = new Option(field.name, field.name);
           } else {
-           if (isSupportedStatField(field))
-              select.options[pos] = new Option(field.name, field.name);
+            if (isSupportedStatField(field))
+              select.options[pos++] = new Option(field.name, field.name);
           }
-          pos++;
         }
       }
 
@@ -806,6 +805,7 @@
           <option value="sum">Sum</option>
           <option value="var">Variance</option>
           <option value="countdistinct">Count Distinct</option>
+          <option value="count">Count</option>
         </select>
       </div>
     </div>
