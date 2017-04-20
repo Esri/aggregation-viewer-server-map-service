@@ -28,7 +28,7 @@
 <head lang="en">
   <meta charset="UTF-8">
   <title>Aggregation Viewer - Server Side Dynamic Map Service Layer</title>
-  <link rel="stylesheet" href="https://js.arcgis.com/3.17/esri/css/esri.css">
+  <link rel="stylesheet" href="https://js.arcgis.com/3.19/esri/css/esri.css">
   <link rel="stylesheet" href="./flat/flat.css">
 
   <link rel="stylesheet" href="./styles.css">
@@ -44,7 +44,7 @@
       }]
     };
   </script>
-  <script src="https://js.arcgis.com/3.17/"></script>
+  <script src="https://js.arcgis.com/3.19/"></script>
   <script>
     require([
       "dojo/parser",
@@ -63,9 +63,9 @@
       "esri/geometry/Extent",
       "esri/tasks/GeometryService",
       "esri/layers/GraphicsLayer",
+      
       "esri/layers/ArcGISDynamicMapServiceLayer",
       "esri/layers/ArcGISTiledMapServiceLayer",
-
       "esri/layers/LayerDrawingOptions",
 
       "esri/symbols/SimpleLineSymbol",
@@ -75,6 +75,7 @@
       "esri/graphic",
       "esri/geometry/Point",
       "esri/symbols/SimpleMarkerSymbol",
+
       "esri/tasks/query",
       "esri/tasks/QueryTask",
       "esri/geometry/webMercatorUtils",
@@ -86,10 +87,9 @@
       "dojo/_base/json",
       "esri/arcgis/utils",
       "esri/lang",
+
       "esri/layers/FeatureLayer",
-
       "esri/dijit/BasemapGallery",
-
       "app/aggregationRenderer",
 
       "dijit/TitlePane",
@@ -100,18 +100,20 @@
       "dijit/form/ComboBox",
       "dijit/form/Button",
       "dijit/form/CheckBox",
-      "dijit/form/Select",
       "dijit/TooltipDialog",
       "dijit/form/DropDownButton",
+
       "dojo/domReady!"
     ], function (parser, dom, domStyle, domClass, on, JSON, arr, Color, registry, NumberSpinner,
-                 Map, SpatialReference, Extent, GeometryService, GraphicsLayer, ArcGISDynamicMapServiceLayer,
-                 ArcGISTiledMapServiceLayer,
-                 LayerDrawingOptions,
+                 Map, SpatialReference, Extent, GeometryService, GraphicsLayer,
+                 ArcGISDynamicMapServiceLayer, ArcGISTiledMapServiceLayer, LayerDrawingOptions,
                  SimpleLineSymbol, SimpleFillSymbol, SimpleRenderer, Polygon, Graphic, Point, SimpleMarkerSymbol,
                  Query, QueryTask, webMercatorUtils,
                  HeatmapRenderer, smartMapping, TooltipDialog, esriRequest, dojoJson, arcgisUtils, esriLang,
-                 FeatureLayer, BasemapGallery, AggregationRenderer) {
+                 FeatureLayer, BasemapGallery, AggregationRenderer,
+                 TitlePane, Select, BorderContainer, ContentPane, RadioButton, ComboBox, Button, CheckBox, TooltipDialog, DropDownButton) {
+
+      parser.parse();
 
       // class data members
       var map;
@@ -291,7 +293,11 @@
       on(dom.byId("renderLabels"), "change", uiTrigger);
       on(document.getElementsByClassName("collapser")[0], "click", togglePanel);
 
-      on(dom.byId("statField"), "change", statFieldChanged);
+      //dijit.byId("statField").on("change", statFieldChanged);
+      //dijit.byId("statType").on("change", updateLayerFromUIChange);
+      on(dijit.byId("statField"), "change", statFieldChanged);
+      on(dijit.byId("statType"), "change", updateLayerFromUIChange);
+
 
       function togglePanel() {
         domClass.toggle(document.getElementsByTagName("body")[0], "panel-collapsed");
@@ -418,8 +424,8 @@
         };
 
         var fieldStatistics = {
-          "fieldName": dojo.byId("statField").value,
-          "statisticsType": dojo.byId("statType").value
+          "fieldName": dijit.byId("statField").value,
+          "statisticsType": dijit.byId("statType").value
         };
 
         renderer.setStyle(dojo.byId("style").value);
@@ -486,23 +492,22 @@
         }
       }
 
-      function statFieldChanged(evt) {
-        populateStatTypeSelectOptions();
+      function statFieldChanged(val) {
+       var control = dijit.byId('statField');
+        var selectedOption = control.getOptions(val);
+        populateStatTypeSelectOptions(selectedOption);
         updateLayerFromUIChange();
       }
 
-      function populateStatTypeSelectOptions() {
-        var statTypeSelect = dojo.byId("statType");
+      function populateStatTypeSelectOptions(selectedOption) {
+        var statTypeSelect = dijit.byId("statType");
         var prevStatType = statTypeSelect.value;
 
         // clear statTypeSelect
-        var i;
-        for (i = statTypeSelect.options.length - 1; i >= 0; i--) {
-          statTypeSelect.remove(i);
-        }
+        statTypeSelect.removeOption(statTypeSelect.getOptions());
 
         // find the field by name
-        var fieldName = dojo.byId("statField").value;
+        var fieldName = dijit.byId("statField").value;
         var field = null;
         for (i = 0; i < _msLayerFields.length; i++) {
           var currentField = _msLayerFields[i];
@@ -511,22 +516,24 @@
         }
 
         // add the stat type options
-        var pos = 0;
+        var statTypeOptions = null;
         if (isFieldNumeric(field)) {
           // add all types
-          statTypeSelect.options[pos++] = new Option("Average", "avg");
-          statTypeSelect.options[pos++] = new Option("Maximum", "max");
-          statTypeSelect.options[pos++] = new Option("Minimum", "min");
-          statTypeSelect.options[pos++] = new Option("Standard Deviation", "stddev");
-          statTypeSelect.options[pos++] = new Option("Sum", "sum");
-          statTypeSelect.options[pos++] = new Option("Variance", "var");
-          statTypeSelect.options[pos++] = new Option("Count Distinct", "countdistinct");
-          statTypeSelect.options[pos++] = new Option("Count", "count");
+          var options = [ {'label':'Average', 'value':'avg'},
+                          {'label':'Maximum', 'value':'max'},
+                          {'label':'Minimum', 'value':'min'},
+                          {'label':'Standard Deviation', 'value':'stddev'},
+                          {'label':'Sum', 'value':'sum'},
+                          {'label':'Variance', 'value':'var'},
+                          {'label':'Count Distinct', 'value':'countdistinct'},
+                          {'label':'Count', 'value':'count'} ];
+          statTypeSelect.addOption(options);
         } else {
-          // only add count distinct type
-          statTypeSelect.options[pos++] = new Option("Count Distinct", "countdistinct");
-          statTypeSelect.options[pos++] = new Option("Count", "count");
-        }        
+          // add only the count and count distince types
+          var options = [ {'label':'Count Distinct', 'value':'countdistinct'},
+                          {'label':'Count', 'value':'count'} ];
+          statTypeSelect.addOption(options);
+        }
 
         updateLayerFromUIChange();
       }
@@ -541,11 +548,32 @@
         });
         mapServiceInfoDeferred.then(function (response) {
               _msLayerFields = response.fields;
-              populateSelectWithLayerFields(dojo.byId(statField), false);
+              populateDijitSelectWithLayerFields(dijit.byId("statField"), false);
               populateSelectWithLayerFields(dojo.byId(rotationExpression), true);
-              populateStatTypeSelectOptions();
+              statFieldChanged(dijit.byId('statField').value); // to init-populate the stat types control
+
             }
         );
+      }
+
+      function populateDijitSelectWithLayerFields(select, numericOnly) {
+        // clear exiting options
+        select.removeOption(select.getOptions());
+        
+        // populate options based on the _msLayerFields array
+        var i;
+        for (i = 0; i < _msLayerFields.length; i++) {
+          var field = _msLayerFields[i];
+          var fieldType = field.type.substring(13);
+          var option = {'label': field.name + "&nbsp;&nbsp;" + "<em class='fieldTypeSelect'>" + fieldType + '</em>', 'value': field.name, 'type': field.type };
+          if (numericOnly) {
+            if (isFieldNumeric(field))
+              select.addOption(option);
+          } else {
+            if (isSupportedStatField(field))
+              select.addOption(option);
+          }
+        }
       }
 
       function populateSelectWithLayerFields(select, numericOnly) {
@@ -789,23 +817,14 @@
         <label for="maxColorA">Max Opacity</label>
       </div>
 
-      <div class="input-group input-group-full">
+      <div>
         <input type="checkbox" id="useStats"/>
         <label for="useStats">Statistics</label>
       </div>
-      <div class="input-row">
-        <select name="statField" id="statField" style="width: 90px; margin-top:3px; display:none;" value="">
+      <div style="display:inline-block;width:100%;">
+        <select name="statField" data-dojo-type="dijit/form/Select" data-dojo-attach-point="statField" id="statField" style="width: 250px; margin-top:3px; display:none; float:left;">
         </select>
-
-        <select name="statType" id="statType" style="width: 90px; margin-top:3px; display:none;" value="avg">
-          <option value="avg">Average</option>
-          <option value="max">Maximum</option>
-          <option value="min">Minimum</option>
-          <option value="stddev">Standard Deviation</option>
-          <option value="sum">Sum</option>
-          <option value="var">Variance</option>
-          <option value="countdistinct">Count Distinct</option>
-          <option value="count">Count</option>
+        <select name="statType"  data-dojo-type="dijit/form/Select" data-dojo-attach-point="statType" id="statType" style="width: 250px; margin-top:3px; display:none; float:left;">
         </select>
       </div>
     </div>

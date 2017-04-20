@@ -34,12 +34,12 @@ There are three areas of styling for the Menu:
   border: 1px solid #9e9e9e;
   border-radius: 3px;
   margin: 0;
-  -webkit-box-shadow: 0 7px 3px -4px rgba(0,0,0,0.3), 0 8px 8px rgba(0,0,0,0.2);
-  box-shadow: 0 7px 3px -4px rgba(0,0,0,0.3), 0 8px 8px rgba(0,0,0,0.2);
+  -webkit-box-shadow: 0 7px 3px -4px rgba(0,0,0,0.3), 0 0px 0px rgba(0,0,0,0.2);
+  box-shadow: 0 7px 3px -4px rgba(0,0,0,0.3), 0 0px 0px rgba(0,0,0,0.2);
 }
 .flat .dijitMenuTable,
 .flat .dijitComboBoxMenu {
-  padding: 8px 0;
+  padding: 0px 0;
 }
 .flat .dijitComboBoxMenu {
   margin-left: 0;
@@ -53,7 +53,7 @@ There are three areas of styling for the Menu:
 .flat .dijitMenuItem,
 .flat .dijitMenuItem td {
   line-height: 20px;
-  padding: 8px;
+  padding: 0px;
   white-space: nowrap;
 }
 .flat .dijitMenuItemHover td,
@@ -122,7 +122,7 @@ There are three areas of styling for the Menu:
   background-color: #f5f5f5;
 }
 .flat .dijitMenuBar .dijitMenuItem {
-  padding: 8px 12px;
+  padding: 0px 12px;
   margin: 0;
 }
 .flat .dijitMenuBar .dijitMenuItemHover {
@@ -153,5 +153,5 @@ There are three areas of styling for the Menu:
 }
 .flat .dijitMenuPopup .dijitMenuItem,
 .flat .dijitMenuPopup .dijitMenuItem td {
-  padding: 8px;
+  padding: 0px 4px;
 }

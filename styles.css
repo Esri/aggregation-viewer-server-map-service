@@ -111,7 +111,7 @@ body {
 }
 
 .panel-collapsed #timeSlider {
-    width: 100%;
+    width: 100% !important;
 }
 
 .config-header {
@@ -289,4 +289,8 @@ section:first-of-type .config-header {
     padding: 0;
     -webkit-box-shadow: none;
     box-shadow: none;
+}
+
+.fieldTypeSelect{
+  color:#0000ff;
 }
