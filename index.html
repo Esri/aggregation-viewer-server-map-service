@@ -291,12 +291,11 @@
       on(dom.byId("useStats"), "change", uiTrigger);
       on(dom.byId("useRotation"), "change", uiTrigger);
       on(dom.byId("renderLabels"), "change", uiTrigger);
-      on(document.getElementsByClassName("collapser")[0], "click", togglePanel);
 
-      //dijit.byId("statField").on("change", statFieldChanged);
-      //dijit.byId("statType").on("change", updateLayerFromUIChange);
       on(dijit.byId("statField"), "change", statFieldChanged);
       on(dijit.byId("statType"), "change", updateLayerFromUIChange);
+
+      on(document.getElementsByClassName("collapser")[0], "click", togglePanel);
 
 
       function togglePanel() {
