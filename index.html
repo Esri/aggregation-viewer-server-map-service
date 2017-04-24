@@ -81,6 +81,10 @@
       font-family: sans-serif;
       font-size: 12px;
     }
+    
+    .fieldTypeSelect{
+      color:#0000ff;
+    }
   </style>
 
   <script type="text/javascript">
@@ -509,11 +513,11 @@
           }
         } else if (evt.srcElement.id == "useStats") {
           if (dojo.byId("useStats").checked == true) {
-            dojo.byId("statField").style.visibility = "visible";
-            dojo.byId("statType").style.visibility = "visible";
+            dojo.byId("statField").style.display = "block";
+            dojo.byId("statType").style.display = "block";
           } else {
-            dojo.byId("statField").style.visibility = "hidden";
-            dojo.byId("statType").style.visibility = "hidden";
+            dojo.byId("statField").style.display = "none";
+            dojo.byId("statType").style.display = "none";
           }
         } else if (evt.srcElement.id == "useRotation") {
           if (dojo.byId("useRotation").checked == true) {
@@ -825,10 +829,10 @@
               Stats:<input type="checkbox" id="useStats"/>
             </td>
             <td>
-              <select name="statField" data-dojo-type="dijit/form/Select" data-dojo-attach-point="statField" id="statField" style="width: 90px;">
+              <select name="statField" data-dojo-type="dijit/form/Select" data-dojo-attach-point="statField" id="statField" style="width: 180px; display:none;">
               </select>
 
-              <select name="statType"  data-dojo-type="dijit/form/Select" data-dojo-attach-point="statType" id="statType" style="width: 90px; m">
+              <select name="statType"  data-dojo-type="dijit/form/Select" data-dojo-attach-point="statType" id="statType" style="width: 180px; display:none;">
               </select>
             </td>
           </tr>
