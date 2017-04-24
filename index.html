@@ -81,7 +81,7 @@
       font-family: sans-serif;
       font-size: 12px;
     }
-    
+
     .fieldTypeSelect{
       color:#0000ff;
     }
@@ -100,7 +100,7 @@
   <script src="https://js.arcgis.com/3.17/"></script>
   <script>
     require([
-     "dojo/parser",
+      "dojo/parser",
       "dojo/dom",
       "dojo/dom-style",
       "dojo/dom-class",
@@ -116,7 +116,7 @@
       "esri/geometry/Extent",
       "esri/tasks/GeometryService",
       "esri/layers/GraphicsLayer",
-      
+
       "esri/layers/ArcGISDynamicMapServiceLayer",
       "esri/layers/ArcGISTiledMapServiceLayer",
       "esri/layers/LayerDrawingOptions",
@@ -774,43 +774,43 @@
           <tr>
             <td>Fill Color:</td>
             <td>
-              <input type="color" value="#ff0000" style="width: 90px;" id="minColor"/>
-              <input type="color" value="#ff0000" style="width: 90px;" id="maxColor"/>
+              <input title="Min Fill Color" type="color" value="#ff0000" style="width: 90px;" id="minColor"/>
+              <input title="Max Fill Color" type="color" value="#ff0000" style="width: 90px;" id="maxColor"/>
             </td>
           </tr>
           <tr>
             <td>Fill Opacity:</td>
             <td>
-              <input type="number" min="0" max="255" style="width: 90px;" id="minColorA" value="50"/>
-              <input type="number" min="0" max="255" style="width: 90px;" id="maxColorA" value="255"/>
+              <input title="Min Fill Opacity" type="number" min="0" max="255" style="width: 90px;" id="minColorA" value="50"/>
+              <input title="Max Fill Opacity" type="number" min="0" max="255" style="width: 90px;" id="maxColorA" value="255"/>
             </td>
           </tr>
           <tr>
             <td>Outline Color:</td>
             <td>
-              <input type="color" value="#000000" style="width: 90px;" id="minOutlineColor"/>
-              <input type="color" value="#000000" style="width: 90px;" id="maxOutlineColor"/>
+              <input title="Min Outline Color" type="color" value="#000000" style="width: 90px;" id="minOutlineColor"/>
+              <input title="Max Outline Color" type="color" value="#000000" style="width: 90px;" id="maxOutlineColor"/>
             </td>
           </tr>
           <tr>
             <td>Outline Opacity:</td>
             <td>
-              <input type="number" min="0" max="255" style="width: 90px;" id="minOutlineColorA" value="100"/>
-              <input type="number" min="0" max="255" style="width: 90px;" id="maxOutlineColorA" value="100"/>
+              <input title="Min Outline Opacity" type="number" min="0" max="255" style="width: 90px;" id="minOutlineColorA" value="100"/>
+              <input title="Max Outline Opacity" type="number" min="0" max="255" style="width: 90px;" id="maxOutlineColorA" value="100"/>
             </td>
           </tr>
           <tr>
             <td>Outline Width:</td>
             <td>
-              <input type="number" min="0" max="1000" style="width: 90px;" id="minOutlineWidth" value="0.5"/>
-              <input type="number" min="0" max="1000" style="width: 90px;" id="maxOutlineWidth" value="0.5"/>
+              <input title="Min Outline Width" type="number" min="0" max="1000" style="width: 90px;" id="minOutlineWidth" value="0.5"/>
+              <input title="Max Outline Width" type="number" min="0" max="1000" style="width: 90px;" id="maxOutlineWidth" value="0.5"/>
             </td>
           </tr>
           <tr>
             <td>Range:</td>
             <td>
-              <input type="number" id="minValue" value="" style="width: 90px;"/>
-              <input type="number" id="maxValue" value="" style="width: 90px;"/>
+              <input title="Min Value. Leave empty to auto-calculate dynamically based on actual values in the current extent." type="number" id="minValue" value="" style="width: 90px;"/>
+              <input title="Max Value. Leave empty to auto-calculate dynamically based on actual values in the current extent." type="number" id="maxValue" value="" style="width: 90px;"/>
             </td>
           </tr>
           <tr>
@@ -819,8 +819,8 @@
           <tr>
             <td>Size:</td>
             <td>
-              <input type="number" min="0" max="100" style="width: 90px;" id="OvMinSize" value="100"/>
-              <input type="number" min="0" max="100" style="width: 90px;" id="OvMaxSize" value="100"/>
+              <input title="Min Size in Precent" type="number" min="0" max="100" style="width: 90px;" id="OvMinSize" value="100"/>
+              <input title="Max Size in Precent" type="number" min="0" max="100" style="width: 90px;" id="OvMaxSize" value="100"/>
             </td>
           </tr>
           </tbody>
