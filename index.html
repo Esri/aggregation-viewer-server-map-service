@@ -126,7 +126,9 @@
       var _msLayer;
       var _msLayerName = "MapService1";
       var _msLayerFields;
-      
+      var _changeTimer;
+      var _allowRefreshLayer = true;
+
       window.app = {};
       window.app.bounds = new Extent({
         // http://help.arcgis.com/en/webapps/flexviewer/extenthelper/flexviewer_extenthelper.html
@@ -215,7 +217,7 @@
 
         // Map event listeners
         map.on("load", function () {
-          //updateLayerFromUIChange();
+          //requestToUpdateLayerFromUI();
         });
 
         map.on("zoom-end", function (evt) {
@@ -272,19 +274,20 @@
       esriConfig.defaults.io.alwaysUseProxy = false;
 
       // UI event listeners
+      on(dom.byId("applyRendererButton"), "click", requestToUpdateLayerFromUI);
       on(dom.byId("addMapServiceLayerButton"), "click", addMapServiceLayer);
-      // on(dom.byId("applyRendererButton"), "click", updateLayerFromUIChange);
-      var inputs = document.getElementsByTagName("input");
-      var selects = document.getElementsByTagName("select");
 
+      var inputs = document.getElementsByTagName("input");
       for (var i = 0; i < inputs.length; i++) {
         var input = inputs[i];
-        on(input, "change", updateLayerFromUIChange);
+        if ("addMapServiceLayerButton" != input.id)
+          on(input, "change", requestToUpdateLayerFromUI);
       }
 
+      var selects = document.getElementsByTagName("select");
       for (var i = 0; i < selects.length; i++) {
         var select = selects[i];
-        on(select, "change", updateLayerFromUIChange);
+        on(select, "change", requestToUpdateLayerFromUI);
       }
 
       on(dom.byId("style"), "change", uiTrigger);
@@ -293,7 +296,7 @@
       on(dom.byId("renderLabels"), "change", uiTrigger);
 
       on(dijit.byId("statField"), "change", statFieldChanged);
-      on(dijit.byId("statType"), "change", updateLayerFromUIChange);
+      on(dijit.byId("statType"), "change", requestToUpdateLayerFromUI);
 
       on(document.getElementsByClassName("collapser")[0], "click", togglePanel);
 
@@ -330,15 +333,15 @@
         });
 
         _msLayer.on("error", function (err) {
-          console.log("Error occured loading the " + err.target.id + " error: " + err.error.message);
-          console.log("Invalid layer URL: " + err.target.url);
+          //console.log("Error occured loading the " + err.target.id + " error: " + err.error.message);
+          //console.log("Invalid layer URL: " + err.target.url);
           //dojo.byId("inputUrl").style.backgroundColor = "#ff0000";
         });
 
         map.addLayer(_msLayer);
         //console.log("msLayer added");
         dojo.byId("inputUrl").style.backgroundColor = "#00ff00";
-        // dojo.byId("applyRendererButton").style.visibility = "block";
+        //hkdojo.byId("applyRendererButton").style.visibility = "block";
         var sections = document.getElementsByTagName("section");
         for (var i = 0; i < sections.length; i++) {
           var section = sections[i];
@@ -349,15 +352,21 @@
         updateLayerFields();
       }
 
-      var changeTimer;
-      function updateLayerFromUIChange() {
-        if (changeTimer) {
-          window.clearTimeout(changeTimer);
-        }
-        changeTimer = window.setTimeout(updateLayerFromUI, 1000);
+      function requestToUpdateLayerFromUI() {
+        // postpone invoking updateLayerFromUI() for at least one second
+        // to accumulate multiple requests to update the layer
+        if (!_allowRefreshLayer)
+          return;
+        if (_changeTimer)
+          window.clearTimeout(_changeTimer);
+
+        _changeTimer = window.setTimeout(updateLayerFromUI, 1000);
       }
 
       function updateLayerFromUI() {
+        if (!_allowRefreshLayer)
+          return;
+
         _msLayer = map.getLayer(_msLayerName); // this is a dynamicMapServiceLayer
 
         var renderer = new AggregationRenderer();
@@ -495,7 +504,7 @@
        var control = dijit.byId('statField');
         var selectedOption = control.getOptions(val);
         populateStatTypeSelectOptions(selectedOption);
-        updateLayerFromUIChange();
+        requestToUpdateLayerFromUI();
       }
 
       function populateStatTypeSelectOptions(selectedOption) {
@@ -534,7 +543,7 @@
           statTypeSelect.addOption(options);
         }
 
-        updateLayerFromUIChange();
+        requestToUpdateLayerFromUI();
       }
 
       function updateLayerFields() {
@@ -549,8 +558,9 @@
               _msLayerFields = response.fields;
               populateDijitSelectWithLayerFields(dijit.byId("statField"), false);
               populateSelectWithLayerFields(dojo.byId(rotationExpression), true);
+              _allowRefreshLayer = false;
               statFieldChanged(dijit.byId('statField').value); // to init-populate the stat types control
-
+              _allowRefreshLayer = true;
             }
         );
       }
@@ -691,7 +701,7 @@
     <div class="config-content">
       <input type="text" id="inputUrl" value="http://storm.esri.com:6080/arcgis/rest/services/faa-4326-hex-flat/MapServer" />
       <input type="button" class="button" id="addMapServiceLayerButton" value="Set Layer"/>
-      <!-- <input type="button" class="button" id="applyRendererButton" value="Apply Renderer" style="visibility:none;"/> -->
+      <input type="button" class="button" id="applyRendererButton" value="Apply Renderer" style="visibility:none;"/>
     </div>
   </section>
 
