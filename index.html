@@ -431,9 +431,9 @@
           "rotationExpression": useRotation ? dojo.byId("rotationExpression").value : ""
         };
 
-        var fieldStatistics = {
+        var fieldStatistic = {
           "fieldName": dijit.byId("statField").value,
-          "statisticsType": dijit.byId("statType").value
+          "statisticType": dijit.byId("statType").value
         };
 
         renderer.setStyle(dojo.byId("style").value);
@@ -453,9 +453,9 @@
         }
 
         if (dojo.byId("useStats").checked == true) {
-          renderer.setFieldStatistics(fieldStatistics);
+          renderer.setFieldStatistic(fieldStatistic);
         } else {
-          renderer.setFieldStatistics(null);
+          renderer.setFieldStatistic(null);
         }
 
       }
