@@ -42,9 +42,9 @@
     }
 
     #map {
-      height: -moz-calc(100% - 250px);
-      height: -webkit-calc(100% - 250px);
-      height: calc(100% - 250px);
+      height: -moz-calc(100% - 300px);
+      height: -webkit-calc(100% - 300px);
+      height: calc(100% - 300px);
       width: 100%;
       z-index: -1;
     }
@@ -53,7 +53,7 @@
       position: absolute;
       bottom: 0px;
       width: 100%;
-      height: 240px;
+      height: 290px;
       background: rgba(255, 255, 255, 0);
       padding: 2px 0px;
       white-space: nowrap;
@@ -96,9 +96,10 @@
   <script src="https://js.arcgis.com/3.17/"></script>
   <script>
     require([
-      "dojo/parser",
+     "dojo/parser",
       "dojo/dom",
       "dojo/dom-style",
+      "dojo/dom-class",
       "dojo/on",
       "dojo/json",
       "dojo/_base/array",
@@ -111,9 +112,9 @@
       "esri/geometry/Extent",
       "esri/tasks/GeometryService",
       "esri/layers/GraphicsLayer",
+      
       "esri/layers/ArcGISDynamicMapServiceLayer",
       "esri/layers/ArcGISTiledMapServiceLayer",
-
       "esri/layers/LayerDrawingOptions",
 
       "esri/symbols/SimpleLineSymbol",
@@ -123,6 +124,7 @@
       "esri/graphic",
       "esri/geometry/Point",
       "esri/symbols/SimpleMarkerSymbol",
+
       "esri/tasks/query",
       "esri/tasks/QueryTask",
       "esri/geometry/webMercatorUtils",
@@ -134,8 +136,9 @@
       "dojo/_base/json",
       "esri/arcgis/utils",
       "esri/lang",
-      "esri/layers/FeatureLayer",
 
+      "esri/layers/FeatureLayer",
+      "esri/dijit/BasemapGallery",
       "app/aggregationRenderer",
 
       "dijit/TitlePane",
@@ -146,16 +149,20 @@
       "dijit/form/ComboBox",
       "dijit/form/Button",
       "dijit/form/CheckBox",
-      "dijit/form/Select",
+      "dijit/TooltipDialog",
+      "dijit/form/DropDownButton",
+
       "dojo/domReady!"
-    ], function (parser, dom, domStyle, on, JSON, arr, Color, registry, NumberSpinner,
-                 Map, SpatialReference, Extent, GeometryService, GraphicsLayer, ArcGISDynamicMapServiceLayer,
-                 ArcGISTiledMapServiceLayer,
-                 LayerDrawingOptions,
+    ], function (parser, dom, domStyle, domClass, on, JSON, arr, Color, registry, NumberSpinner,
+                 Map, SpatialReference, Extent, GeometryService, GraphicsLayer,
+                 ArcGISDynamicMapServiceLayer, ArcGISTiledMapServiceLayer, LayerDrawingOptions,
                  SimpleLineSymbol, SimpleFillSymbol, SimpleRenderer, Polygon, Graphic, Point, SimpleMarkerSymbol,
                  Query, QueryTask, webMercatorUtils,
                  HeatmapRenderer, smartMapping, TooltipDialog, esriRequest, dojoJson, arcgisUtils, esriLang,
-                 FeatureLayer, AggregationRenderer) {
+                 FeatureLayer, BasemapGallery, AggregationRenderer,
+                 TitlePane, Select, BorderContainer, ContentPane, RadioButton, ComboBox, Button, CheckBox, TooltipDialog, DropDownButton) {
+
+      parser.parse();
 
       // class data members
       var map;
@@ -395,6 +402,10 @@
           type: "Continuous",
           minColor: hexToRgb(dojo.byId("minColor").value, parseFloat(dojo.byId("minColorA").value)),
           maxColor: hexToRgb(dojo.byId("maxColor").value, parseFloat(dojo.byId("maxColorA").value)),
+          minOutlineColor: hexToRgb(dojo.byId("minOutlineColor").value, parseFloat(dojo.byId("minOutlineColorA").value)),
+          maxOutlineColor: hexToRgb(dojo.byId("maxOutlineColor").value, parseFloat(dojo.byId("maxOutlineColorA").value)),
+          minOutlineWidth: parseFloat(dojo.byId("minOutlineWidth").value),
+          maxOutlineWidth: parseFloat(dojo.byId("maxOutlineWidth").value),
           minValue: parseFloat(dojo.byId("minValue").value),
           maxValue: parseFloat(dojo.byId("maxValue").value),
           minSize: parseFloat(dojo.byId("OvMinSize").value),
@@ -433,9 +444,9 @@
           "rotationExpression": useRotation ? dojo.byId("rotationExpression").value : ""
         };
 
-        var fieldStatistics = {
+        var fieldStatistic = {
           "fieldName": dojo.byId("statField").value,
-          "statisticsType": dojo.byId("statType").value
+          "statisticType": dojo.byId("statType").value
         };
 
         renderer.setStyle(dojo.byId("style").value);
@@ -455,9 +466,9 @@
         }
 
         if (dojo.byId("useStats").checked == true) {
-          renderer.setFieldStatistics(fieldStatistics);
+          renderer.setFieldStatistic(fieldStatistic);
         } else {
-          renderer.setFieldStatistics(null);
+          renderer.setFieldStatistic(null);
         }
 
       }
@@ -578,7 +589,7 @@
     <tr style="text-align: center; background-color: #d8f4ff; color: #6f6e6e; height: 24px;">
       <th>Aggregation Settings</th>
       <th>Aggregation Style</th>
-      <th>Aggregation Bins</th>
+      <th>Aggregation Bins (MIN - MAX)</th>
       <th>Aggregation Labels
         <input type="checkbox" id="renderLabels" checked="true"/>
       </th>
@@ -652,17 +663,38 @@
       <td>
         <table id="aggBinsTable" class="settingsSectionTable">
           <tr>
-            <td>Min Color:</td>
+            <td>Fill Color:</td>
             <td>
               <input type="color" value="#ff0000" style="width: 90px;" id="minColor"/>
-              <input type="number" min="0" max="255" style="width: 90px;" id="minColorA" value="50"/>
+              <input type="color" value="#ff0000" style="width: 90px;" id="maxColor"/>
             </td>
           </tr>
           <tr>
-            <td>Max Color:</td>
+            <td>Fill Opacity:</td>
             <td>
-              <input type="color" value="#ff0000" style="width: 90px;" id="maxColor"/>
+              <input type="number" min="0" max="255" style="width: 90px;" id="minColorA" value="50"/>
               <input type="number" min="0" max="255" style="width: 90px;" id="maxColorA" value="255"/>
+            </td>
+          </tr>
+          <tr>
+            <td>Outline Color:</td>
+            <td>
+              <input type="color" value="#000000" style="width: 90px;" id="minOutlineColor"/>
+              <input type="color" value="#000000" style="width: 90px;" id="maxOutlineColor"/>
+            </td>
+          </tr>
+          <tr>
+            <td>Outline Opacity:</td>
+            <td>
+              <input type="number" min="0" max="255" style="width: 90px;" id="minOutlineColorA" value="100"/>
+              <input type="number" min="0" max="255" style="width: 90px;" id="maxOutlineColorA" value="100"/>
+            </td>
+          </tr>
+          <tr>
+            <td>Outline Width:</td>
+            <td>
+              <input type="number" min="0" max="1000" style="width: 90px;" id="minOutlineWidth" value="0.5"/>
+              <input type="number" min="0" max="1000" style="width: 90px;" id="maxOutlineWidth" value="0.5"/>
             </td>
           </tr>
           <tr>
@@ -684,12 +716,6 @@
           </tr>
           </tbody>
           <tr>
-            <td title='Normalize By Bin Area'>Normalize:</td>
-            <td>
-              <input type="checkbox" id="normalizeByBinArea"/>
-            </td>
-          </tr>
-          <tr>
             <td>
               Stats:<input type="checkbox" id="useStats"/>
             </td>
@@ -706,6 +732,13 @@
                 <option value="var">Variance</option>
               </select>
             </td>
+          </tr>
+          <tr>
+            <td title='Normalize By Bin Area'>Normalize:</td>
+            <td>
+              <input type="checkbox" id="normalizeByBinArea"/>
+            </td>
+          </tr>
         </table>
       </td>
 

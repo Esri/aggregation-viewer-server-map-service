@@ -33,7 +33,7 @@ function (declare, lang, Renderer, rendererJsonUtils) {
   var AggregationRenderer = declare(Renderer, {
     declaredClass: "AggregationRenderer",
 
-    constructor: function (properties, labels, fieldStatistics, binRenderer, geoHashStyle, featureRenderer, backgroundColor) {
+    constructor: function (properties, labels, fieldStatistic, binRenderer, geoHashStyle, featureRenderer, backgroundColor) {
 
       this.defaultAggregationRenderer = {
         "type": "aggregation",
@@ -49,16 +49,20 @@ function (declare, lang, Renderer, rendererJsonUtils) {
           "style": "PLAIN",
           "format": "###.#KMB"
         },
-        "fieldStatistics": {
+        "fieldStatistic": {
           "fieldName": "",
-          "statisticsType": ""
+          "statisticType": ""
         },
         "binRenderer": {
           "type": "Continuous",
-          "minValue": null,
-          "maxValue": null,
           "minColor": [255,0,0,20],
           "maxColor": [255,0,0,255],
+          "minOutlineColor": [0,0,0,100],
+          "maxOutlineColor": [0,0,0,100],
+          "minOutlineWidth": 0.5,
+          "maxOutlineWidth": 0.5,
+          "minValue": null,
+          "maxValue": null,
           "minSize": 100,
           "maxSize": 100,
           "normalizeByBinArea": false
@@ -98,7 +102,7 @@ function (declare, lang, Renderer, rendererJsonUtils) {
         "minBinSizeInPixels": properties ? properties.minBinSizeInPixels : this.defaultAggregationRenderer.minBinSizeInPixels,
         "fullLodGrid": fullLodGrid ? fullLodGrid : this.defaultAggregationRenderer.fullLodGrid,
         "labels": labels ? labels : this.defaultAggregationRenderer.labels,
-        "fieldStatistics": fieldStatistics ? fieldStatistics : this.defaultAggregationRenderer.fieldStatistics,
+        "fieldStatistic": fieldStatistic ? fieldStatistic : this.defaultAggregationRenderer.fieldStatistic,
         "binRenderer": binRenderer ? binRenderer : this.defaultAggregationRenderer.binRenderer,
         "geoHashStyle": geoHashStyle ? geoHashStyle : this.defaultAggregationRenderer.geoHashStyle,
         "featureRenderer": featureRenderer ? featureRenderer : this.defaultAggregationRenderer.featureRenderer,
@@ -154,11 +158,11 @@ function (declare, lang, Renderer, rendererJsonUtils) {
       return this
     },
 
-    getFieldStatistics: function () {
-      return this.agg.fieldStatistics
+    getFieldStatistic: function () {
+      return this.agg.fieldStatistic
     },
-    setFieldStatistics: function (fieldStatistics) {
-      this.agg.fieldStatistics = fieldStatistics;
+    setFieldStatistic: function (fieldStatistic) {
+      this.agg.fieldStatistic = fieldStatistic;
       return this
     },
 
@@ -195,7 +199,7 @@ function (declare, lang, Renderer, rendererJsonUtils) {
         minBinSizeInPixels: this.agg.minBinSizeInPixels,
         fullLodGrid: this.agg.fullLodGrid,
         labels: this.agg.labels,
-        fieldStatistics: this.agg.fieldStatistics,
+        fieldStatistic: this.agg.fieldStatistic,
         binRenderer: this.agg.binRenderer,
         geoHashStyle: this.agg.geoHashStyle,
         featureRenderer: this.agg.featureRenderer
