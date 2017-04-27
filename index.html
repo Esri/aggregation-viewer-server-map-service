@@ -29,63 +29,7 @@
   <title>Aggregation Viewer - Server Side Dynamic Map Service Layer</title>
   <link rel="stylesheet" href="https://js.arcgis.com/3.17/dijit/themes/claro/claro.css">
   <link rel="stylesheet" href="https://js.arcgis.com/3.17/esri/css/esri.css">
-
-  <style type="text/css">
-    html,
-    body {
-      height: 100%;
-      width: 100%;
-      margin: 0;
-      padding: 0;
-      font-family: sans-serif;
-      font-size: 12px;
-    }
-
-    #map {
-      height: -moz-calc(100% - 300px);
-      height: -webkit-calc(100% - 300px);
-      height: calc(100% - 300px);
-      width: 100%;
-      z-index: -1;
-    }
-
-    #controls {
-      position: absolute;
-      bottom: 0px;
-      width: 100%;
-      height: 290px;
-      background: rgba(255, 255, 255, 0);
-      padding: 2px 0px;
-      white-space: nowrap;
-      color: #6f6e6e;
-    }
-
-    .settingsTable {
-      border-color: rgba(255, 255, 255, 0.6);
-      visibility: hidden;
-    }
-
-    .settingsTable td {
-      vertical-align: top;
-      padding: 1px 2px;
-    }
-
-    .settingsSectionTable {
-      padding-left: 4px;
-      padding-right: 4px;
-    }
-
-    table,
-    input,
-    select {
-      font-family: sans-serif;
-      font-size: 12px;
-    }
-
-    .fieldTypeSelect{
-      color:#0000ff;
-    }
-  </style>
+  <link rel="stylesheet" href="./styles.css">
 
   <script type="text/javascript">
     var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
@@ -341,9 +285,17 @@
       on(dijit.byId("statField"), "change", statFieldChanged);
       on(dijit.byId("statType"), "change", requestToUpdateLayerFromUI);
 
+
+      on(document.getElementsByClassName("collapser")[0], "click", togglePanel);
+
+      function togglePanel() {
+        domClass.toggle(document.getElementsByTagName("body")[0], "panel-collapsed");
+      }
+
       // Layer related functions
 
       function addMapServiceLayer() {
+        domClass.add(document.getElementsByTagName("body")[0], "configuration-displayed");
         if (map.getLayer(_msLayerName)) {
           map.removeLayer(map.getLayer(_msLayerName));
         }
@@ -378,6 +330,7 @@
         //console.log("msLayer added");
         dojo.byId("inputUrl").style.backgroundColor = "#00ff00";
         dojo.byId("applyRendererButton").style.visibility = "visible";
+        dojo.byId("refreshRateSection").style.visibility = "visible";
         dojo.byId("settingsTable").style.visibility = "visible";
         aggMapServiceUrl = url;
 
@@ -604,7 +557,7 @@
       function populateDijitSelectWithLayerFields(select, numericOnly) {
         // clear exiting options
         select.removeOption(select.getOptions());
-        
+
         // populate options based on the _msLayerFields array
         var i;
         for (i = 0; i < _msLayerFields.length; i++) {
@@ -681,308 +634,320 @@
 </head>
 
 <body>
+
 <div id="map"></div>
+
+<div class="collapser">
+  <i id="collapserIcon" class="flat-chevron-down"></i>
+  <i id="expanderIcon" class="flat-chevron-up"></i>
+</div>
+
 <div id="controls">
-  <div style="margin-left: 5px;">
+  <div style="margin-left: 5px;margin-top: 7px;">
     <b>Map Service URL:</b>
     <input type="text" id="inputUrl"
            value="http://storm.esri.com:6080/arcgis/rest/services/faa-4326-hex-flat/MapServer"
-           style="width: 700px; margin-bottom: 5px"/>
+           style="width: 600px; margin-bottom: 5px"/>
     <input type="button" class="button" id="addMapServiceLayerButton" value="Set Layer"/>
     <input type="button" class="button" id="applyRendererButton" value="Apply Renderer" style="visibility:hidden;"/>
-    Refresh Rate:
-    <div id="refreshRateContainer"> </div>
+    <span id="refreshRateSection" style="visibility:hidden"><span style="margin-left:35px">Refresh Rate:</span>
+    <div id="refreshRateContainer"> </div></span>
   </div>
 
-  <table id="settingsTable" class="settingsTable" border="1" cellspacing="0" cellpadding="0">
-    <tr style="text-align: center; background-color: #d8f4ff; color: #6f6e6e; height: 24px;">
-      <th>Aggregation Settings</th>
-      <th>Aggregation Style</th>
-      <th>Aggregation Bins (MIN - MAX)</th>
-      <th>Aggregation Labels
-        <input type="checkbox" id="renderLabels" checked="true"/>
-      </th>
-      <th>Feature Rendering</th>
-      <th>Map Settings</th>
-    </tr>
+  <div class="tableContainer">
 
-    <tr>
-      <td>
-        <table id="aggSettingsTable" class="settingsSectionTable">
-          <tr>
-            <td>Feature Threshold:</td>
-            <td>
-              <input type="number" id="featureThreshold" value="100" style="width: 50px;"/>
-            </td>
-          </tr>
-          <tr>
-            <td>Min Bin Size (in pixels):</td>
-            <td>
-              <input type="number" id="minBinSizeInPixels" value="25" style="width: 50px;"/>
-            </td>
-          </tr>
-          <tr>
-            <td>LOD Offset:</td>
-            <td>
-              <input type="number" id="lodOffset" value="0" style="width: 50px;"/>
-            </td>
-          </tr>
-          <tr>
-            <td title='Render all LOD grid bins only without the actual data.'>Full LOD Grid:</td>
-            <td>
-              <input type="checkbox" id="fullLodGrid"/>
-            </td>
-          </tr>
-        </table>
-      </td>
+    <table id="settingsTable" class="settingsTable" border="1" cellspacing="0" cellpadding="0">
+      <tr style="text-align: center; background-color: #d8f4ff; color: #6f6e6e; height: 24px;">
+        <th>Aggregation Settings</th>
+        <th>Aggregation Style</th>
+        <th>Aggregation Bins (MIN - MAX)</th>
+        <th>Aggregation Labels
+          <input type="checkbox" id="renderLabels" checked="true"/>
+        </th>
+        <th>Feature Rendering</th>
+        <th>Map Settings</th>
+      </tr>
 
-      <td>
-        <table id="aggStyleTable" class="settingsSectionTable">
-          <tr>
-            <td>Style:</td>
-            <td colspan="2">
-              <select name="style" id="style" style="width: 120px;">
-                <option value="Grid">Grid</option>
-                <option value="Oval">Oval</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td>LOD Type:</td>
-            <td colspan="2">
-              <select name="geoHashStyle" id="geoHashStyle" style="width: 120px;">
-                <option value="geohash">GeoHash</option>
-                <option value="square">Square</option>
-                <option value="flatHexagon">Flat Hexagon</option>
-                <option value="pointyHexagon">Pointy Hexagon</option>
-                <option value="flatTriangle">Flat Triangle</option>
-                <option value="pointyTriangle">Pointy Triangle</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td>LOD SR:</td>
-            <td colspan="2">
-              <input type="text" id="geoHashStyleSR" value="102100" style="width: 120px;"/>
-            </td>
-          </tr>
-        </table>
-      </td>
+      <tr>
+        <td>
+          <table id="aggSettingsTable" class="settingsSectionTable">
+            <tr>
+              <td>Feature Threshold:</td>
+              <td>
+                <input type="number" id="featureThreshold" value="100" style="width: 50px;"/>
+              </td>
+            </tr>
+            <tr>
+              <td>Min Bin Size (in pixels):</td>
+              <td>
+                <input type="number" id="minBinSizeInPixels" value="25" style="width: 50px;"/>
+              </td>
+            </tr>
+            <tr>
+              <td>LOD Offset:</td>
+              <td>
+                <input type="number" id="lodOffset" value="0" style="width: 50px;"/>
+              </td>
+            </tr>
+            <tr>
+              <td title='Render all LOD grid bins only without the actual data.'>Full LOD Grid:</td>
+              <td>
+                <input type="checkbox" id="fullLodGrid"/>
+              </td>
+            </tr>
+          </table>
+        </td>
 
-      <td>
-        <table id="aggBinsTable" class="settingsSectionTable">
-          <tr>
-            <td>Fill Color:</td>
-            <td>
-              <input title="Min Fill Color" type="color" value="#ff0000" style="width: 90px;" id="minColor"/>
-              <input title="Max Fill Color" type="color" value="#ff0000" style="width: 90px;" id="maxColor"/>
-            </td>
-          </tr>
-          <tr>
-            <td>Fill Opacity:</td>
-            <td>
-              <input title="Min Fill Opacity" type="number" min="0" max="255" style="width: 90px;" id="minColorA" value="50"/>
-              <input title="Max Fill Opacity" type="number" min="0" max="255" style="width: 90px;" id="maxColorA" value="255"/>
-            </td>
-          </tr>
-          <tr>
-            <td>Outline Color:</td>
-            <td>
-              <input title="Min Outline Color" type="color" value="#000000" style="width: 90px;" id="minOutlineColor"/>
-              <input title="Max Outline Color" type="color" value="#000000" style="width: 90px;" id="maxOutlineColor"/>
-            </td>
-          </tr>
-          <tr>
-            <td>Outline Opacity:</td>
-            <td>
-              <input title="Min Outline Opacity" type="number" min="0" max="255" style="width: 90px;" id="minOutlineColorA" value="100"/>
-              <input title="Max Outline Opacity" type="number" min="0" max="255" style="width: 90px;" id="maxOutlineColorA" value="100"/>
-            </td>
-          </tr>
-          <tr>
-            <td>Outline Width:</td>
-            <td>
-              <input title="Min Outline Width" type="number" min="0" max="1000" style="width: 90px;" id="minOutlineWidth" value="0.5"/>
-              <input title="Max Outline Width" type="number" min="0" max="1000" style="width: 90px;" id="maxOutlineWidth" value="0.5"/>
-            </td>
-          </tr>
-          <tr>
-            <td>Range:</td>
-            <td>
-              <input title="Min Value. Leave empty to auto-calculate dynamically based on actual values in the current extent." type="number" id="minValue" value="" style="width: 90px;"/>
-              <input title="Max Value. Leave empty to auto-calculate dynamically based on actual values in the current extent." type="number" id="maxValue" value="" style="width: 90px;"/>
-            </td>
-          </tr>
-          <tr>
-          </tr>
-          <tbody id="ovalAttrSection" style="display: none;">
-          <tr>
-            <td>Size:</td>
-            <td>
-              <input title="Min Size in Precent" type="number" min="0" max="100" style="width: 90px;" id="OvMinSize" value="100"/>
-              <input title="Max Size in Precent" type="number" min="0" max="100" style="width: 90px;" id="OvMaxSize" value="100"/>
-            </td>
-          </tr>
-          </tbody>
-          <tr>
-            <td>
-              Stats:<input type="checkbox" id="useStats"/>
-            </td>
-            <td>
-              <select name="statField" data-dojo-type="dijit/form/Select" data-dojo-attach-point="statField" id="statField" style="width: 180px; display:none;">
-              </select>
+        <td>
+          <table id="aggStyleTable" class="settingsSectionTable">
+            <tr>
+              <td>Style:</td>
+              <td colspan="2">
+                <select name="style" id="style" style="width: 120px;">
+                  <option value="Grid">Grid</option>
+                  <option value="Oval">Oval</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>LOD Type:</td>
+              <td colspan="2">
+                <select name="geoHashStyle" id="geoHashStyle" style="width: 120px;">
+                  <option value="geohash">GeoHash</option>
+                  <option value="square">Square</option>
+                  <option value="flatHexagon">Flat Hexagon</option>
+                  <option value="pointyHexagon">Pointy Hexagon</option>
+                  <option value="flatTriangle">Flat Triangle</option>
+                  <option value="pointyTriangle">Pointy Triangle</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>LOD SR:</td>
+              <td colspan="2">
+                <input type="text" id="geoHashStyleSR" value="102100" style="width: 120px;"/>
+              </td>
+            </tr>
+          </table>
+        </td>
 
-              <select name="statType"  data-dojo-type="dijit/form/Select" data-dojo-attach-point="statType" id="statType" style="width: 180px; display:none;">
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td title='Normalize By Bin Area'>Normalize:</td>
-            <td>
-              <input type="checkbox" id="normalizeByBinArea"/>
-            </td>
-          </tr>
-        </table>
-      </td>
+        <td>
+          <table id="aggBinsTable" class="settingsSectionTable">
+            <tr>
+              <td>Fill Color:</td>
+              <td>
+                <input title="Min Fill Color" type="color" value="#ff0000" style="width: 90px;" id="minColor"/>
+                <input title="Max Fill Color" type="color" value="#ff0000" style="width: 90px;" id="maxColor"/>
+              </td>
+            </tr>
+            <tr>
+              <td>Fill Opacity:</td>
+              <td>
+                <input title="Min Fill Opacity" type="number" min="0" max="255" style="width: 90px;" id="minColorA" value="50"/>
+                <input title="Max Fill Opacity" type="number" min="0" max="255" style="width: 90px;" id="maxColorA" value="255"/>
+              </td>
+            </tr>
+            <tr>
+              <td>Outline Color:</td>
+              <td>
+                <input title="Min Outline Color" type="color" value="#000000" style="width: 90px;" id="minOutlineColor"/>
+                <input title="Max Outline Color" type="color" value="#000000" style="width: 90px;" id="maxOutlineColor"/>
+              </td>
+            </tr>
+            <tr>
+              <td>Outline Opacity:</td>
+              <td>
+                <input title="Min Outline Opacity" type="number" min="0" max="255" style="width: 90px;" id="minOutlineColorA" value="100"/>
+                <input title="Max Outline Opacity" type="number" min="0" max="255" style="width: 90px;" id="maxOutlineColorA" value="100"/>
+              </td>
+            </tr>
+            <tr>
+              <td>Outline Width:</td>
+              <td>
+                <input title="Min Outline Width" type="number" min="0" max="1000" style="width: 90px;" id="minOutlineWidth" value="0.5"/>
+                <input title="Max Outline Width" type="number" min="0" max="1000" style="width: 90px;" id="maxOutlineWidth" value="0.5"/>
+              </td>
+            </tr>
+            <tr>
+              <td>Range:</td>
+              <td>
+                <input title="Min Value. Leave empty to auto-calculate dynamically based on actual values in the current extent." type="number" id="minValue" value="" style="width: 90px;"/>
+                <input title="Max Value. Leave empty to auto-calculate dynamically based on actual values in the current extent." type="number" id="maxValue" value="" style="width: 90px;"/>
+              </td>
+            </tr>
+            <tr>
+            </tr>
+            <tbody id="ovalAttrSection" style="display: none;">
+            <tr>
+              <td>Size:</td>
+              <td>
+                <input title="Min Size in Precent" type="number" min="0" max="100" style="width: 90px;" id="OvMinSize" value="100"/>
+                <input title="Max Size in Precent" type="number" min="0" max="100" style="width: 90px;" id="OvMaxSize" value="100"/>
+              </td>
+            </tr>
+            </tbody>
+            <tr>
+              <td>
+                Stats:<input type="checkbox" id="useStats"/>
+              </td>
+              <td>
+                <select name="statField" data-dojo-type="dijit/form/Select" data-dojo-attach-point="statField" id="statField" style="width: 180px; display:none;">
+                </select>
 
-      <td>
-        <table id="aggLabelsTable" class="settingsSectionTable">
-          <tbody id="aggLabelsSection">
-          <tr>
-            <td>Font:</td>
-            <td>
-              <input type="text" id="labelFont" value="Arial" style="width: 90px;"/>
-            </td>
-          </tr>
-          <tr>
-            <td>Size:</td>
-            <td>
-              <input type="number" id="labelSize" value="12" style="width: 90px;"/>
-            </td>
-          </tr>
-          <tr>
-            <td>Style:</td>
-            <td>
-              <select name="labelStyle" id="labelStyle" style="width: 90px;">
-                <option value="PLAIN">Plain</option>
-                <option value="BOLD">Bold</option>
-                <option value="ITALIC">Italic</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td>Format:</td>
-            <td colspan="2">
-              <input type="text" id="labelFormat" value="###.#KMB" style="width: 90px;"/>
-            </td>
-          </tr>
-          <tr>
-            <td>Color:</td>
-            <td>
-              <input type="color" value="#000000" id="labelColor"/>
-              <input type="number" min="0" max="255" style="width: 42px;" id="labelColorA" value="255"/>
-            </td>
-          </tr>
-          </tbody>
-        </table>
-      </td>
+                <select name="statType"  data-dojo-type="dijit/form/Select" data-dojo-attach-point="statType" id="statType" style="width: 180px; display:none;">
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td title='Normalize By Bin Area'>Normalize:</td>
+              <td>
+                <input type="checkbox" id="normalizeByBinArea"/>
+              </td>
+            </tr>
+          </table>
+        </td>
 
-      <td>
-        <table id="featureRenderingTable" class="settingsSectionTable">
-          <tr>
-            <td>Style:</td>
-            <td>
-              <select name="Fstyle" id="Fstyle" style="width: 183px;">
-                <option value="esriSMScircle">Circle</option>
-                <option value="esriSMSCross">Cross</option>
-                <option value="esriSMSDiamond">Diamond</option>
-                <option value="esriSMSSquare">Square</option>
-                <option value="esriSMSX">X</option>
-                <option value="esriSMSPointer">Pointer</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td>Size:</td>
-            <td>
-              <input type="number" min="0" id="Fsize" value="12" style="width: 183px;"/>
-            </td>
-          </tr>
-          <tr>
-            <td>Color:</td>
-            <td>
-              <input type="color" value="#9ecae1" id="Fcolor" style="width: 90px;"/>
-              <input type="number" min="0" max="255" id="FcolorA" value="150" style="width: 90px;"/>
-            </td>
-          </tr>
-          <tr>
-            <td>Outline Color:</td>
-            <td>
-              <input type="color" value="#000000" id="Foutline" style="width: 90px;"/>
-              <input type="number" min="0" max="255" id="FoutlineA" value="255" style="width: 90px;"/>
-            </td>
-          </tr>
-          <tr>
-            <td>Outline Width:</td>
-            <td>
-              <input type="number" min="0" max="255" id="FoutlineW" value="1" style="width: 183px;"/>
-            </td>
-          </tr>
-          <tr>
-            <td>Rotation:<input type="checkbox" id="useRotation"/></td>
-            <td>
-              <select id="rotationType" name="rotationType" style="width: 90px; margin-top:3px; visibility:hidden;">
-                <option value="arithmetic">Arithmetic</option>
-                <option value="geographic">Geographic</option>
-              </select>
+        <td>
+          <table id="aggLabelsTable" class="settingsSectionTable">
+            <tbody id="aggLabelsSection">
+            <tr>
+              <td>Font:</td>
+              <td>
+                <input type="text" id="labelFont" value="Arial" style="width: 90px;"/>
+              </td>
+            </tr>
+            <tr>
+              <td>Size:</td>
+              <td>
+                <input type="number" id="labelSize" value="12" style="width: 90px;"/>
+              </td>
+            </tr>
+            <tr>
+              <td>Style:</td>
+              <td>
+                <select name="labelStyle" id="labelStyle" style="width: 90px;">
+                  <option value="PLAIN">Plain</option>
+                  <option value="BOLD">Bold</option>
+                  <option value="ITALIC">Italic</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Format:</td>
+              <td colspan="2">
+                <input type="text" id="labelFormat" value="###.#KMB" style="width: 90px;"/>
+              </td>
+            </tr>
+            <tr>
+              <td>Color:</td>
+              <td>
+                <input type="color" value="#000000" id="labelColor"/>
+                <input type="number" min="0" max="255" style="width: 42px;" id="labelColorA" value="255"/>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </td>
 
-              <select name="rotationExpression" id="rotationExpression"
-                      style="width: 90px; margin-top:3px; visibility:hidden;" value="">
-              </select>
-            </td>
-          </tr>
-        </table>
-      </td>
+        <td>
+          <table id="featureRenderingTable" class="settingsSectionTable">
+            <tr>
+              <td>Style:</td>
+              <td>
+                <select name="Fstyle" id="Fstyle" style="width: 183px;">
+                  <option value="esriSMScircle">Circle</option>
+                  <option value="esriSMSCross">Cross</option>
+                  <option value="esriSMSDiamond">Diamond</option>
+                  <option value="esriSMSSquare">Square</option>
+                  <option value="esriSMSX">X</option>
+                  <option value="esriSMSPointer">Pointer</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Size:</td>
+              <td>
+                <input type="number" min="0" id="Fsize" value="12" style="width: 183px;"/>
+              </td>
+            </tr>
+            <tr>
+              <td>Color:</td>
+              <td>
+                <input type="color" value="#9ecae1" id="Fcolor" style="width: 90px;"/>
+                <input type="number" min="0" max="255" id="FcolorA" value="150" style="width: 90px;"/>
+              </td>
+            </tr>
+            <tr>
+              <td>Outline Color:</td>
+              <td>
+                <input type="color" value="#000000" id="Foutline" style="width: 90px;"/>
+                <input type="number" min="0" max="255" id="FoutlineA" value="255" style="width: 90px;"/>
+              </td>
+            </tr>
+            <tr>
+              <td>Outline Width:</td>
+              <td>
+                <input type="number" min="0" max="255" id="FoutlineW" value="1" style="width: 183px;"/>
+              </td>
+            </tr>
+            <tr>
+              <td>Rotation:<input type="checkbox" id="useRotation"/></td>
+              <td>
+                <select id="rotationType" name="rotationType" style="width: 90px; margin-top:3px; visibility:hidden;">
+                  <option value="arithmetic">Arithmetic</option>
+                  <option value="geographic">Geographic</option>
+                </select>
 
-      <td>
-        <table id="mapSettingsTable" class="settingsSectionTable">
-          <tr>
-            <td>Map Spatial Reference:</td>
-            <td>
-              <select id="wkid" name="wkid" style="width: 200px;">
-                <option value="102003">102003 (Albers)</option>
-                <option value="102100">102100 (Web Mercator)</option>
-                <option value="4326">4326 (WGS84)</option>
+                <select name="rotationExpression" id="rotationExpression"
+                        style="width: 90px; margin-top:3px; visibility:hidden;" value="">
+                </select>
+              </td>
+            </tr>
+          </table>
+        </td>
 
-                <option value="26911">26911 (NAD83 / UTM zone 11N)</option>
-                <option value="27700">27700 (British Natioal Grid)</option>
+        <td>
+          <table id="mapSettingsTable" class="settingsSectionTable">
+            <tr>
+              <td>Map Spatial Reference:</td>
+              <td>
+                <select id="wkid" name="wkid" style="width: 200px;">
+                  <option value="102003">102003 (Albers)</option>
+                  <option value="102100">102100 (Web Mercator)</option>
+                  <option value="4326">4326 (WGS84)</option>
 
-                <option value="2243">2243 (Idaho West, State Plane)</option>
-                <option value="2244">2244 (Indiana East, State Plane)</option>
-                <option value="2248">2248 (Maryland, State Plane)</option>
-                <option value="3995">3995 (Arctic Polar Stereographic)</option>
+                  <option value="26911">26911 (NAD83 / UTM zone 11N)</option>
+                  <option value="27700">27700 (British Natioal Grid)</option>
 
-                <option value="2271">2271 (NAD_1983_StatePlane_Pennsylvania_North_FIPS_3701_Feet)</option>
-                <option value="2272">2272 (NAD_1983_StatePlane_Pennsylvania_South_FIPS_3702_Feet)</option>
+                  <option value="2243">2243 (Idaho West, State Plane)</option>
+                  <option value="2244">2244 (Indiana East, State Plane)</option>
+                  <option value="2248">2248 (Maryland, State Plane)</option>
+                  <option value="3995">3995 (Arctic Polar Stereographic)</option>
 
-                <option value="3363">3363 (NAD_1983_HARN_StatePlane_Pennsylvania_North_FIPS_3701_Feet)</option>
-                <option value="3365">3365 (NAD_1983_HARN_StatePlane_Pennsylvania_South_FIPS_3702_Feet)</option>
+                  <option value="2271">2271 (NAD_1983_StatePlane_Pennsylvania_North_FIPS_3701_Feet)</option>
+                  <option value="2272">2272 (NAD_1983_StatePlane_Pennsylvania_South_FIPS_3702_Feet)</option>
 
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td>Current Map SR:</td>
-            <td>
-              <input type="text" id="currentMapSR" value="102100" style="width: 120px;"/>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
+                  <option value="3363">3363 (NAD_1983_HARN_StatePlane_Pennsylvania_North_FIPS_3701_Feet)</option>
+                  <option value="3365">3365 (NAD_1983_HARN_StatePlane_Pennsylvania_South_FIPS_3702_Feet)</option>
 
-  </table>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Current Map SR:</td>
+              <td>
+                <input type="text" id="currentMapSR" value="102100" style="width: 120px;"/>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+
+    </table>
+
+  </div>
 </div>
+
 </body>
 
 </html>

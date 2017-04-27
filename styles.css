@@ -1,0 +1,164 @@
+@import url("./flat/icons/flat-icons.css");
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  font-size: 12px;
+}
+
+table,
+input,
+select {
+  font-family: sans-serif;
+  font-size: 12px;
+}
+
+.fieldTypeSelect{
+  color:#0000ff;
+}
+
+.dijitNumberTextBox .dijitUpArrowButton .dijitArrowButtonInner:before{
+  font-family: 'flat-icon';
+  content: "\f003";
+  position: relative;
+  bottom: 2px;
+}
+
+.dijitNumberTextBox .dijitDownArrowButton .dijitArrowButtonInner:before{
+  font-family: 'flat-icon';
+  content: "\f002";
+  position: relative;
+  bottom: 3px;
+}
+
+.dijitDownArrowButton .dijitDownArrowButton:before{
+  font-family: 'flat-icon';
+  content: "\f002";
+  position: relative;
+  bottom: 0px;
+  font-size: 15px;
+}
+
+.dijitDownArrowButton .dijitDownArrowButton .dijitArrowButtonInner{
+  display: none;
+}
+
+.collapser {
+    position: absolute;
+    width: 2.7rem;
+    height: 2.7rem;
+    left: 0px;
+    bottom: 30px;
+    font-size: 2.7rem;
+    background: #FAFAFA;
+    cursor: pointer;
+}
+
+#expanderIcon {
+  display: none;
+}
+
+.panel-collapsed #controls {
+  height: 0;
+  display: none;
+}
+
+.panel-collapsed #controls section {
+  overflow: hidden;
+}
+
+.panel-collapsed #expanderIcon {
+  display: inline-block;
+}
+
+.panel-collapsed #collapserIcon {
+  display: none;
+}
+
+body #controls{
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+  padding: 2px 0px;
+  white-space: nowrap;
+  color: #6f6e6e;
+  height:auto;
+  padding: 0px 7px;
+  width: calc(100% - 14px);
+  background: rgba(255, 255, 255, 1);
+}
+
+body #controls .tableContainer{
+  display: none;
+}
+
+body.configuration-displayed #controls .tableContainer{
+  height: 250px;
+  overflow-y: auto;
+  display: block;
+}
+
+body #map{
+  height: -moz-calc(100% - 30px);
+  height: -webkit-calc(100% - 30px);
+  height: calc(100% - 30px);
+  width: 100%;
+  z-index: -1;
+}
+
+body .collapser {
+    position: absolute;
+    width: 2.7rem;
+    height: 2.7rem;
+    left: 0px;
+    bottom: 30px;
+    font-size: 2.7rem;
+    background: #FAFAFA;
+    cursor: pointer;
+}
+
+body #settingsTable{
+  display: none;
+  margin: 2px 0px 5px;
+  border-color: rgba(255, 255, 255, 0.6);
+  visibility: hidden;
+}
+
+body .settingsTable td {
+  vertical-align: top;
+  padding: 1px 2px;
+}
+
+
+body .settingsSectionTable {
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+body.configuration-displayed #map{
+  height: -moz-calc(100% - 280px);
+  height: -webkit-calc(100% - 280px);
+  height: calc(100% - 280px);
+}
+
+body.configuration-displayed #settingsTable{
+  display: table;
+}
+
+body.configuration-displayed .collapser {
+  bottom: 280px;
+}
+
+body.panel-collapsed #map{
+  height: -moz-calc(100% - 1px);
+  height: -webkit-calc(100% - 1px);
+  height: calc(100% - 1px);
+}
+
+body.panel-collapsed .collapser {
+  bottom: 0px;
+}
