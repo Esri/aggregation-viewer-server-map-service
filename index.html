@@ -63,7 +63,7 @@
       "esri/geometry/Extent",
       "esri/tasks/GeometryService",
       "esri/layers/GraphicsLayer",
-      
+
       "esri/layers/ArcGISDynamicMapServiceLayer",
       "esri/layers/ArcGISTiledMapServiceLayer",
       "esri/layers/LayerDrawingOptions",
@@ -103,6 +103,7 @@
       "dijit/TooltipDialog",
       "dijit/form/DropDownButton",
 
+      "dojo/query!css2",
       "dojo/domReady!"
     ], function (parser, dom, domStyle, domClass, on, JSON, arr, Color, registry, NumberSpinner,
                  Map, SpatialReference, Extent, GeometryService, GraphicsLayer,
@@ -141,6 +142,14 @@
 
       dom.byId("wkid").value = window.app.bounds.spatialReference.wkid;
       on(dom.byId("wkid"), "change", projectExtent);
+
+      on(dom.byId("controls"), on.selector(".config-header", "click"), function(e) {
+        if (e.target.type !== "checkbox") {
+          var sectionWrapper = e.selectorTarget.parentNode;
+
+          domClass.toggle(sectionWrapper, "section-hidden");
+        }
+      });
 
       buildMap(window.app.bounds, true);
       initRefreshRateSpinner();
@@ -568,7 +577,7 @@
       function populateDijitSelectWithLayerFields(select, numericOnly) {
         // clear exiting options
         select.removeOption(select.getOptions());
-        
+
         // populate options based on the _msLayerFields array
         var i;
         for (i = 0; i < _msLayerFields.length; i++) {
@@ -665,43 +674,39 @@
     <div class="config-header">
       <h2>Layers</h2>
       <div class="header-actions-group">
-        <div data-dojo-type="dijit/form/DropDownButton">
-          <span><i class="fa fa-gear"></i></span>
-          <div data-dojo-type="dijit/TooltipDialog" style="display: none;">
-            <div class="input-group input-group-full">
-              <select id="wkid" name="wkid" style="width: 120px;">
-                <option value="102003">102003 (Albers)</option>
-                <option value="102100">102100 (Web Mercator)</option>
-                <option value="4326">4326 (WGS84)</option>
-                <option value="26911">26911 (NAD83 / UTM zone 11N)</option>
-                <option value="27700">27700 (British Natioal Grid)</option>
-                <option value="2243">2243 (Idaho West, State Plane)</option>
-                <option value="2244">2244 (Indiana East, State Plane)</option>
-                <option value="2248">2248 (Maryland, State Plane)</option>
-                <option value="3995">3995 (Arctic Polar Stereographic)</option>
-                <option value="2271">2271 (NAD_1983_StatePlane_Pennsylvania_North_FIPS_3701_Feet)</option>
-                <option value="2272">2272 (NAD_1983_StatePlane_Pennsylvania_South_FIPS_3702_Feet)</option>
-                <option value="3363">3363 (NAD_1983_HARN_StatePlane_Pennsylvania_North_FIPS_3701_Feet)</option>
-                <option value="3365">3365 (NAD_1983_HARN_StatePlane_Pennsylvania_South_FIPS_3702_Feet)</option>
-              </select>
-              <label for="wkid">Spatial Reference</label>
-            </div>
-            <div class="input-group">
-              <input type="text" id="currentMapSR" value="102100" style="width: 120px;"/>
-              <label for="currentMapSR">Current Map SR</label>
-            </div>
-            <div class="input-group">
-              <div id="autoOffSet"> </div>
-              <label for="autoOffSet">Refresh Rate</label>
-            </div>
-          </div>
-        </div>
+        <i class="fa"></i>
       </div>
     </div>
     <div class="config-content">
       <input type="text" id="inputUrl" value="http://storm.esri.com:6080/arcgis/rest/services/faa-4326-hex-flat/MapServer" />
       <input type="button" class="button" id="addMapServiceLayerButton" value="Set Layer"/>
       <input type="button" class="button" id="applyRendererButton" value="Apply Renderer" style="visibility:none;"/>
+      <div class="input-group input-group-full">
+        <select id="wkid" name="wkid" style="width: 120px;">
+          <option value="102003">102003 (Albers)</option>
+          <option value="102100">102100 (Web Mercator)</option>
+          <option value="4326">4326 (WGS84)</option>
+          <option value="26911">26911 (NAD83 / UTM zone 11N)</option>
+          <option value="27700">27700 (British Natioal Grid)</option>
+          <option value="2243">2243 (Idaho West, State Plane)</option>
+          <option value="2244">2244 (Indiana East, State Plane)</option>
+          <option value="2248">2248 (Maryland, State Plane)</option>
+          <option value="3995">3995 (Arctic Polar Stereographic)</option>
+          <option value="2271">2271 (NAD_1983_StatePlane_Pennsylvania_North_FIPS_3701_Feet)</option>
+          <option value="2272">2272 (NAD_1983_StatePlane_Pennsylvania_South_FIPS_3702_Feet)</option>
+          <option value="3363">3363 (NAD_1983_HARN_StatePlane_Pennsylvania_North_FIPS_3701_Feet)</option>
+          <option value="3365">3365 (NAD_1983_HARN_StatePlane_Pennsylvania_South_FIPS_3702_Feet)</option>
+        </select>
+        <label for="wkid">Spatial Reference</label>
+      </div>
+      <div class="input-group">
+        <input type="text" id="currentMapSR" value="102100" style="width: 120px;"/>
+        <label for="currentMapSR">Current Map SR</label>
+      </div>
+      <div class="input-group">
+        <div id="refreshRateContainer"> </div>
+        <label for="refreshRateContainer">Refresh Rate</label>
+      </div>
     </div>
   </section>
 
@@ -709,15 +714,7 @@
     <div class="config-header">
       <h2>Aggregation Settings</h2>
       <div class="header-actions-group">
-        <div data-dojo-type="dijit/form/DropDownButton">
-          <span><i class="fa fa-gear"></i></span>
-          <div data-dojo-type="dijit/TooltipDialog" style="display: none;">
-            <div class="input-group">
-              <input type="checkbox" id="fullLodGrid"/>
-              <label for="fullLodGrid">Full LOD Grid</label>
-            </div>
-          </div>
-        </div>
+        <i class="fa"></i>
       </div>
     </div>
     <div class="config-content">
@@ -735,6 +732,12 @@
           <label for="minBinSizeInPixels">Min Bin Size (in pixels)</label>
         </div>
       </div>
+      <div class="input-row">
+        <div class="input-group">
+          <input type="checkbox" id="fullLodGrid"/>
+          <label for="fullLodGrid">Full LOD Grid</label>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -742,22 +745,7 @@
     <div class="config-header">
       <h2>Aggregation Style</h2>
       <div class="header-actions-group">
-        <div data-dojo-type="dijit/form/DropDownButton">
-          <span><i class="fa fa-gear"></i></span>
-          <div data-dojo-type="dijit/TooltipDialog" style="display: none;">
-            <div class="input-group">
-              <select name="style" id="style" style="width: 90px;">
-                <option value="Grid">Grid</option>
-                <option value="Oval">Oval</option>
-              </select>
-              <label for="style">Style</label>
-            </div>
-            <div class="input-group">
-              <input type="text" id="geoHashStyleSR" value="102100" style="width: 90px;"/>
-              <label for="geoHashStyleSR">LOD SR</label>
-            </div>
-          </div>
-        </div>
+        <i class="fa"></i>
       </div>
     </div>
     <div class="config-content">
@@ -772,6 +760,17 @@
         </select>
         <label for="geoHashStyle">LOD Type</label>
       </div>
+      <div class="input-group">
+        <select name="style" id="style" style="width: 90px;">
+          <option value="Grid">Grid</option>
+          <option value="Oval">Oval</option>
+        </select>
+        <label for="style">Style</label>
+      </div>
+      <div class="input-group">
+        <input type="text" id="geoHashStyleSR" value="102100" style="width: 90px;"/>
+        <label for="geoHashStyleSR">LOD SR</label>
+      </div>
     </div>
   </section>
 
@@ -779,61 +778,62 @@
     <div class="config-header">
       <h2>Aggregation Bins</h2>
       <div class="header-actions-group">
-        <div data-dojo-type="dijit/form/DropDownButton">
-          <span><i class="fa fa-gear"></i></span>
-          <div data-dojo-type="dijit/TooltipDialog" style="display: none;">
-            <div class="input-row">
-              <div class="input-group">
-                <input type="number" id="minValue" value="" placeholder="min" style="width: 82px;"/>
-                <input type="number" id="maxValue" value="" placeholder="max" style="width: 82px;"/>
-                <label for="minValue">Range</label>
-              </div>
-              <div class="input-group">
-                <input type="checkbox" id="normalizeByBinArea"/>
-                <label for="normalizeByBinArea">Normalize</label>
-              </div>
-            </div>
-          </div>
-        </div>
+        <i class="fa"></i>
       </div>
     </div>
     <div class="config-content">
-      <div class="input-group input-group-full" id="ovalAttrSection" style="display: none;">
-        <div class="input-group-nested">
-          <label for="OvMaxSize">Max</label>
-          <input type="number" min="0" max="100" style="width: 82px;" placeholder="max" id="OvMaxSize" value="100"/>
-        </div>
-        <div class="input-group-nested">
-          <label for="OvMinSize">Min</label>
-          <input type="number" min="0" max="100" style="width: 82px;" placeholder="min" id="OvMinSize" value="100"/>
-        </div>
-        <label for="OvMinSize">Size</label>
+      <div class="input-row input-row-header-labeled">
+          <label>Min</label>
+          <label>Max</label>
       </div>
-      <div class="input-group">
-        <input type="color" value="#ff0000" style="width: 30px;" id="minColor"/>
-        <label for="minColor">Min Color</label>
+      <div class="input-row input-row-header" >
+        <label>Fill Color:</label>
+        <input type="color" value="#ff0000" id="minColor"/>
+        <input type="color" value="#ff0000" id="maxColor"/>
       </div>
-      <div class="input-group">
-        <input type="number" min="0" max="255" style="width: 35px;" id="minColorA" value="0"/>
-        <label for="minColorA">Min Opacity</label>
+      <div class="input-row input-row-header" >
+        <label>Fill Opacity:</label>
+        <input type="number" min="0" max="255" id="minColorA" value="0"/>
+        <input type="number" min="0" max="255" id="maxColorA" value="255"/>
       </div>
-      <div class="input-group">
-        <input type="color" value="#ff0000" style="width: 30px;" id="maxColor"/>
-        <label for="maxColor">Max Color</label>
+      <div class="input-row input-row-header" >
+        <label>Outline Color:</label>
+        <input type="color" value="#000" id="minOutlineColor"/>
+        <input type="color" value="#000" id="maxOutlineColor"/>
       </div>
-      <div class="input-group">
-        <input type="number" min="0" max="255" style="width: 35px;" id="maxColorA" value="255"/>
-        <label for="maxColorA">Max Opacity</label>
+      <div class="input-row input-row-header" >
+        <label>Outline Opacity:</label>
+        <input type="number" min="0" max="255" id="minOutlineColorA" value="100"/>
+        <input type="number" min="0" max="255" id="maxOutlineColorA" value="100"/>
+      </div>
+      <div class="input-row input-row-header" id="ovalAttrSection" style="display: none;" >
+        <label>Outline Width:</label>
+        <input type="number" min="0" max="100" placeholder="min" id="OvMinSize" value="100"/>
+        <input type="number" min="0" max="100" placeholder="max" id="OvMaxSize" value="100"/>
+      </div>
+      <div class="input-row input-row-header">
+        <label>Range:</label>
+        <input type="number" id="minValue" value="" min="0" max="1000000000" placeholder="min" />
+        <input type="number" id="maxValue" value="" min="0" max="1000000000" placeholder="max" />
       </div>
 
-      <div>
-        <input type="checkbox" id="useStats"/>
-        <label for="useStats">Statistics</label>
+      <div class="input-row input-row-header" style="justify-content: flex-start;">
+        <label for="normalizeByBinArea">Normalize</label>
+        <input type="checkbox" id="normalizeByBinArea"/>
       </div>
-      <div style="display:inline-block;width:100%;">
-        <select name="statField" data-dojo-type="dijit/form/Select" data-dojo-attach-point="statField" id="statField" style="width: 250px; margin-top:3px; display:none; float:left;">
+
+      <div class="input-row input-row-header" style="justify-content: flex-start;">
+        <label for="useStats">Statistics</label>
+        <input type="checkbox" id="useStats"/>
+      </div>
+      <div class="input-row input-row-header">
+        <label></label>
+        <select name="statField" data-dojo-type="dijit/form/Select" data-dojo-attach-point="statField" id="statField" style="display:none;">
         </select>
-        <select name="statType"  data-dojo-type="dijit/form/Select" data-dojo-attach-point="statType" id="statType" style="width: 250px; margin-top:3px; display:none; float:left;">
+      </div>
+      <div class="input-row input-row-header">
+        <label></label>
+        <select name="statType"  data-dojo-type="dijit/form/Select" data-dojo-attach-point="statType" id="statType" style="display:none;">
         </select>
       </div>
     </div>
@@ -844,15 +844,7 @@
       <h2>Aggregation Labels</h2>
       <div class="header-actions-group">
         <input type="checkbox" id="renderLabels" checked="true"/>
-        <div data-dojo-type="dijit/form/DropDownButton">
-          <span><i class="fa fa-gear"></i></span>
-          <div data-dojo-type="dijit/TooltipDialog" style="display: none;">
-            <div class="input-group">
-              <input type="text" id="labelFormat" value="###.#KMB" style="width: 90px;"/>
-              <label for="labelFormat">Format</label>
-            </div>
-          </div>
-        </div>
+        <i class="fa"></i>
       </div>
     </div>
     <div class="config-content">
@@ -882,6 +874,11 @@
           <label for="labelColorA">Opacity</label>
         </div>
       </div>
+
+      <div class="input-group">
+        <input type="text" id="labelFormat" value="###.#KMB" style="width: 90px;"/>
+        <label for="labelFormat">Format</label>
+      </div>
     </div>
   </section>
 
@@ -889,24 +886,7 @@
     <div class="config-header">
       <h2>Feature Rendering</h2>
       <div class="header-actions-group">
-        <div data-dojo-type="dijit/form/DropDownButton">
-          <span><i class="fa fa-gear"></i></span>
-          <div data-dojo-type="dijit/TooltipDialog" style="display: none;">
-            <div class="input-group">
-              <input type="checkbox" id="useRotation"/>
-              <label for="Fstyle">Rotation</label>
-
-              <select id="rotationType" name="rotationType" style="width: 90px; margin-top:3px; display:none;">
-                <option value="arithmetic">Arithmetic</option>
-                <option value="geographic">Geographic</option>
-              </select>
-
-              <select name="rotationExpression" id="rotationExpression"
-                      style="width: 90px; margin-top:3px; display:none;" value="">
-              </select>
-            </div>
-          </div>
-        </div>
+        <i class="fa"></i>
       </div>
     </div>
     <div class="config-content">
@@ -948,6 +928,20 @@
           <input type="number" min="0" max="255" id="FoutlineW" value="1" style="width: 35px;"/>
           <label for="FoutlineW">Width</label>
         </div>
+      </div>
+
+      <div class="input-group">
+        <input type="checkbox" id="useRotation"/>
+        <label for="Fstyle">Rotation</label>
+
+        <select id="rotationType" name="rotationType" style="width: 90px; margin-top:3px; display:none;">
+          <option value="arithmetic">Arithmetic</option>
+          <option value="geographic">Geographic</option>
+        </select>
+
+        <select name="rotationExpression" id="rotationExpression"
+                style="width: 90px; margin-top:3px; display:none;" value="">
+        </select>
       </div>
     </div>
   </section>

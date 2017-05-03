@@ -121,6 +121,11 @@ body {
     border-left: none;
     border-right: none;
     display: flex;
+    cursor: pointer;
+}
+
+.config-header:hover {
+    background: linear-gradient(to right, #FAFAFA, #F6F6F6);
 }
 
 section:first-of-type .config-header {
@@ -139,11 +144,27 @@ section:first-of-type .config-header {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
+    overflow: hidden;
+    max-height: 500px;
+    transition: all 400ms cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+.section-hidden .config-content {
+    padding: 0 10px;
+    max-height: 0;
 }
 
 .header-actions-group i {
     cursor: pointer;
     color: #A6A6A6;
+}
+
+.header-actions-group .fa::before {
+  content: "\f077";
+}
+
+.section-hidden .header-actions-group .fa::before {
+  content: "\f078";
 }
 
 .header-actions-group i:hover {
@@ -223,6 +244,7 @@ section:first-of-type .config-header {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  align-items: center;
   width: 100%;
 }
 
@@ -232,6 +254,29 @@ section:first-of-type .config-header {
 
 .input-row .input-group label {
     height: 1rem;
+}
+
+.input-row-header-labeled {
+    margin-left: 90px;
+    justify-content: space-around;
+}
+
+.input-row-header {
+  margin: 2px 0;
+}
+
+.input-row-header label {
+    width: 95px;
+}
+
+.input-row-header input,
+.input-row-header select,
+.input-row-header .dijitSelect {
+    flex: 1 0 auto;
+}
+
+.input-row-header input[type="checkbox"] {
+    flex: 0 0 auto;
 }
 
 #inputUrl {
