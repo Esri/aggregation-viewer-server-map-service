@@ -140,7 +140,7 @@ section:first-of-type .config-header {
 }
 
 .config-content {
-    padding: 15px 10px;
+    padding: 10px 10px;
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
@@ -246,6 +246,7 @@ section:first-of-type .config-header {
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  margin: 5px 0;
 }
 
 .input-row .input-group {
@@ -273,6 +274,7 @@ section:first-of-type .config-header {
 .input-row-header select,
 .input-row-header .dijitSelect {
     flex: 1 0 auto;
+    margin: 1px 2px;
 }
 
 .input-row-header input[type="checkbox"] {

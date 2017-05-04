@@ -350,7 +350,7 @@
         map.addLayer(_msLayer);
         //console.log("msLayer added");
         dojo.byId("inputUrl").style.backgroundColor = "#00ff00";
-        dojo.byId("applyRendererButton").style.visibility = "block";
+        // dojo.byId("applyRendererButton").style.visibility = "block";
         var sections = document.getElementsByTagName("section");
         for (var i = 0; i < sections.length; i++) {
           var section = sections[i];
@@ -631,23 +631,13 @@
       }
 
       function initRefreshRateSpinner() {
-        _refreshRateSpinner = new NumberSpinner({
-          value: 0,
-          smallDelta: 1,
-          largeDelta: 2,
-          constraints: {min:0, max:120000, places:0},
-          id: "refreshRateSpinner",
-          intermediateChanges: true,
-          style: "width: 65px;font-size: 12px; text-align: center;",
-          title:'Refresh Rate',
-          onChange: function(value){
-            if (value == 0)
-              _msLayer.setRefreshInterval(24 * 60);
-            else
-              _msLayer.setRefreshInterval(value / 60);
-          }
-        }, "refreshRateContainer");
-        _refreshRateSpinner.startup();
+        on(dojo.byId("refreshRateSpinner"), "change", function(e) {
+          value = parseInt(e.target.value);
+          if (value == 0)
+            _msLayer.setRefreshInterval(24 * 60);
+          else
+            _msLayer.setRefreshInterval(value / 60);
+        })
       }
     });
   </script>
@@ -680,7 +670,7 @@
     <div class="config-content">
       <input type="text" id="inputUrl" value="http://storm.esri.com:6080/arcgis/rest/services/faa-4326-hex-flat/MapServer" />
       <input type="button" class="button" id="addMapServiceLayerButton" value="Set Layer"/>
-      <input type="button" class="button" id="applyRendererButton" value="Apply Renderer" style="visibility:none;"/>
+      <input type="button" class="button" id="applyRendererButton" value="Apply Renderer" style="display:none;"/>
       <div class="input-group input-group-full">
         <select id="wkid" name="wkid" style="width: 120px;">
           <option value="102003">102003 (Albers)</option>
@@ -699,13 +689,13 @@
         </select>
         <label for="wkid">Spatial Reference</label>
       </div>
-      <div class="input-group">
+      <div class="input-group" style="display: none;">
         <input type="text" id="currentMapSR" value="102100" style="width: 120px;"/>
         <label for="currentMapSR">Current Map SR</label>
       </div>
-      <div class="input-group">
-        <div id="refreshRateContainer"> </div>
-        <label for="refreshRateContainer">Refresh Rate</label>
+      <div class="input-group input-group-full">
+        <input id="refreshRateSpinner" type="number" min="0" max="120000" value="0" />
+        <label for="refreshRateSpinner">Refresh Rate</label>
       </div>
     </div>
   </section>
@@ -733,7 +723,7 @@
         </div>
       </div>
       <div class="input-row">
-        <div class="input-group">
+        <div class="input-group input-group-full">
           <input type="checkbox" id="fullLodGrid"/>
           <label for="fullLodGrid">Full LOD Grid</label>
         </div>
@@ -760,14 +750,14 @@
         </select>
         <label for="geoHashStyle">LOD Type</label>
       </div>
-      <div class="input-group">
+      <div class="input-group input-group-full">
         <select name="style" id="style" style="width: 90px;">
           <option value="Grid">Grid</option>
           <option value="Oval">Oval</option>
         </select>
         <label for="style">Style</label>
       </div>
-      <div class="input-group">
+      <div class="input-group input-group-full">
         <input type="text" id="geoHashStyleSR" value="102100" style="width: 90px;"/>
         <label for="geoHashStyleSR">LOD SR</label>
       </div>
@@ -813,8 +803,8 @@
       </div>
       <div class="input-row input-row-header">
         <label>Range:</label>
-        <input type="number" id="minValue" value="" min="0" max="1000000000" placeholder="min" />
-        <input type="number" id="maxValue" value="" min="0" max="1000000000" placeholder="max" />
+        <input type="number" id="minValue" value="" min="0" max="999999999" placeholder="min" />
+        <input type="number" id="maxValue" value="" min="0" max="999999999" placeholder="max" />
       </div>
 
       <div class="input-row input-row-header" style="justify-content: flex-start;">
@@ -839,7 +829,7 @@
     </div>
   </section>
 
-  <section style="display: none;">
+  <section class="section-hidden" style="display: none;">
     <div class="config-header">
       <h2>Aggregation Labels</h2>
       <div class="header-actions-group">
@@ -882,7 +872,7 @@
     </div>
   </section>
 
-  <section style="display: none;">
+  <section class="section-hidden" style="display: none;">
     <div class="config-header">
       <h2>Feature Rendering</h2>
       <div class="header-actions-group">
