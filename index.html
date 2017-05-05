@@ -225,9 +225,7 @@
         }
 
         // Map event listeners
-        map.on("load", function () {
-          //requestToUpdateLayerFromUI();
-        });
+        // map.on("load", requestToUpdateLayerFromUI);
 
         map.on("zoom-end", function (evt) {
           //console.log("map zoom to: " + evt);
@@ -741,9 +739,9 @@
     <div class="config-content">
       <div class="input-group input-group-full">
         <select name="geoHashStyle" id="geoHashStyle" style="width: 120px;">
-          <option value="geohash">GeoHash</option>
+          <option value="geohash" selected="true">GeoHash</option>
           <option value="square">Square</option>
-          <option value="flatHexagon" selected="true">Flat Hexagon</option>
+          <option value="flatHexagon">Flat Hexagon</option>
           <option value="pointyHexagon">Pointy Hexagon</option>
           <option value="flatTriangle">Flat Triangle</option>
           <option value="pointyTriangle">Pointy Triangle</option>
@@ -865,7 +863,7 @@
         </div>
       </div>
 
-      <div class="input-group">
+      <div class="input-group input-group-full">
         <input type="text" id="labelFormat" value="###.#KMB" style="width: 90px;"/>
         <label for="labelFormat">Format</label>
       </div>

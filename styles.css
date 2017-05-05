@@ -281,6 +281,11 @@ section:first-of-type .config-header {
     flex: 0 0 auto;
 }
 
+input[type="checkbox"],
+input[type="checkbox"] + label {
+    cursor: pointer;
+}
+
 #inputUrl {
   flex: 1 0 auto;
   margin-right: 5px;
