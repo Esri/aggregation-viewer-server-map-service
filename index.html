@@ -667,8 +667,14 @@
     </div>
     <div class="config-content">
       <input type="text" id="inputUrl" value="http://storm.esri.com:6080/arcgis/rest/services/faa-4326-hex-flat/MapServer" />
-      <input type="button" class="button" id="addMapServiceLayerButton" value="Set Layer"/>
-      <input type="button" class="button" id="applyRendererButton" value="Apply Renderer" style="display:none;"/>
+      <div style="display:inline-block; margin:5px 0px 1px 0px;">
+        <div style="position:absolute;right:15px;">
+          <input type="button" class="button" id="addMapServiceLayerButton" value="Set Layer"/>
+        </div>
+        <div>
+          <input type="button" class="button" id="applyRendererButton" value="Apply Renderer"/>
+        </div>
+      </div>
       <div class="input-group input-group-full">
         <select id="wkid" name="wkid" style="width: 120px;">
           <option value="102003">102003 (Albers)</option>
@@ -720,11 +726,9 @@
           <label for="minBinSizeInPixels">Min Bin Size (in pixels)</label>
         </div>
       </div>
-      <div class="input-row">
-        <div class="input-group input-group-full">
-          <input type="checkbox" id="fullLodGrid"/>
-          <label for="fullLodGrid">Full LOD Grid</label>
-        </div>
+      <div class="input-row input-row-header" style="margin: 8px 0px 0px 0px; justify-content: flex-start;">
+        <label for="fullLodGrid">Full LOD Grid</label>
+        <input type="checkbox" id="fullLodGrid"/>
       </div>
     </div>
   </section>
@@ -775,34 +779,34 @@
           <label>Max</label>
       </div>
       <div class="input-row input-row-header" >
-        <label>Fill Color:</label>
+        <label>Fill Color</label>
         <input type="color" value="#ff0000" id="minColor"/>
         <input type="color" value="#ff0000" id="maxColor"/>
       </div>
       <div class="input-row input-row-header" >
-        <label>Fill Opacity:</label>
+        <label>Fill Opacity</label>
         <input type="number" min="0" max="255" id="minColorA" value="0"/>
         <input type="number" min="0" max="255" id="maxColorA" value="255"/>
       </div>
       <div class="input-row input-row-header" >
-        <label>Outline Color:</label>
+        <label>Outline Color</label>
         <input type="color" value="#000" id="minOutlineColor"/>
         <input type="color" value="#000" id="maxOutlineColor"/>
       </div>
       <div class="input-row input-row-header" >
-        <label>Outline Opacity:</label>
+        <label>Outline Opacity</label>
         <input type="number" min="0" max="255" id="minOutlineColorA" value="100"/>
         <input type="number" min="0" max="255" id="maxOutlineColorA" value="100"/>
       </div>
       <div class="input-row input-row-header" id="ovalAttrSection" style="display: none;" >
-        <label>Outline Width:</label>
+        <label>Outline Width</label>
         <input type="number" min="0" max="100" placeholder="min" id="OvMinSize" value="100"/>
         <input type="number" min="0" max="100" placeholder="max" id="OvMaxSize" value="100"/>
       </div>
       <div class="input-row input-row-header">
-        <label>Range:</label>
-        <input type="number" id="minValue" value="" min="0" max="999999999" placeholder="min" />
-        <input type="number" id="maxValue" value="" min="0" max="999999999" placeholder="max" />
+        <label>Range</label>
+        <input type="number" id="minValue" value="" placeholder="min" style="width: 80px;"/>
+        <input type="number" id="maxValue" value="" placeholder="max" style="width: 80px;"/>
       </div>
 
       <div class="input-row input-row-header" style="justify-content: flex-start;">
