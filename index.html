@@ -399,6 +399,10 @@
           type: "Continuous",
           minColor: hexToRgb(dojo.byId("minColor").value, parseFloat(dojo.byId("minColorA").value)),
           maxColor: hexToRgb(dojo.byId("maxColor").value, parseFloat(dojo.byId("maxColorA").value)),
+          minOutlineColor: hexToRgb(dojo.byId("minOutlineColor").value, parseFloat(dojo.byId("minOutlineColorA").value)),
+          maxOutlineColor: hexToRgb(dojo.byId("maxOutlineColor").value, parseFloat(dojo.byId("maxOutlineColorA").value)),
+          minOutlineWidth: parseFloat(dojo.byId("minOutlineWidth").value),
+          maxOutlineWidth: parseFloat(dojo.byId("maxOutlineWidth").value),
           minValue: parseFloat(dojo.byId("minValue").value),
           maxValue: parseFloat(dojo.byId("maxValue").value),
           minSize: parseFloat(dojo.byId("minSize").value),
@@ -665,16 +669,12 @@
       </div>
     </div>
     <div class="config-content">
-      <div style="display:inline-block;width:100%;">
+      <div style="display: inline-block; width:100%;">
         <input type="text" id="inputUrl" value="http://storm.esri.com:6080/arcgis/rest/services/faa-4326-hex-flat/MapServer" style="width:calc(100% - 5px);"/>
       </div>
-      <div style="display:inline-block; margin:5px 0px 1px 0px;">
-        <div style="position:absolute; right:10px;">
-          <input type="button" class="button" id="addMapServiceLayerButton" value="Set Layer"/>
-        </div>
-        <div>
-          <input type="button" class="button" id="applyRendererButton" value="Apply Renderer"/>
-        </div>
+      <div class="input-row">
+        <input type="button" class="button" id="applyRendererButton" value="Apply Renderer"/>
+        <input type="button" class="button" id="addMapServiceLayerButton" value="Set Layer"/>
       </div>
       <div class="input-group input-group-full">
         <select id="wkid" name="wkid" style="width: 120px;">
@@ -791,23 +791,28 @@
       </div>
       <div class="input-row input-row-header" >
         <label>Outline Color</label>
-        <input type="color" value="#000" id="minOutlineColor"/>
-        <input type="color" value="#000" id="maxOutlineColor"/>
+        <input type="color" value="#000000" id="minOutlineColor"/>
+        <input type="color" value="#000000" id="maxOutlineColor"/>
       </div>
       <div class="input-row input-row-header" >
         <label>Outline Opacity</label>
         <input type="number" min="0" max="255" id="minOutlineColorA" value="100"/>
         <input type="number" min="0" max="255" id="maxOutlineColorA" value="100"/>
       </div>
-      <div class="input-row input-row-header" id="ovalAttrSection" style="display: none;" >
+      <div class="input-row input-row-header" >
         <label>Outline Width</label>
+        <input type="number" min="0" id="minOutlineWidth" value="0.5" style="width: 20%;"/>
+        <input type="number" min="0" id="maxOutlineWidth" value="0.5" style="width: 20%;"/>
+      </div>
+      <div class="input-row input-row-header" id="ovalAttrSection" style="display: none;" >
+        <label>Size</label>
         <input type="number" min="0" max="100" placeholder="min" id="minSize" value="100"/>
         <input type="number" min="0" max="100" placeholder="max" id="maxSize" value="100"/>
       </div>
       <div class="input-row input-row-header">
         <label>Range</label>
-        <input type="number" id="minValue" value="" placeholder="min" style="width: 80px;"/>
-        <input type="number" id="maxValue" value="" placeholder="max" style="width: 80px;"/>
+        <input type="number" id="minValue" value="" placeholder="min" style="width: 20%;"/>
+        <input type="number" id="maxValue" value="" placeholder="max" style="width: 20%;"/>
       </div>
 
       <div class="input-row input-row-header" style="justify-content: flex-start;">
@@ -840,7 +845,8 @@
         <i class="fa"></i>
       </div>
     </div>
-    <div class="config-content">
+
+    <div class="config-content" id="aggLabelsSection" style="display: block;">
       <div class="input-group input-group-full">
         <input type="text" id="labelFont" value="Arial" style="width: 82px;"/>
         <label for="labelFont">Font</label>
@@ -867,7 +873,6 @@
           <label for="labelColorA">Opacity</label>
         </div>
       </div>
-
       <div class="input-group input-group-full">
         <input type="text" id="labelFormat" value="###.#KMB" style="width: 90px;"/>
         <label for="labelFormat">Format</label>
