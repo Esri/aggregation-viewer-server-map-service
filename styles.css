@@ -85,11 +85,11 @@ body #controls{
   width: 100%;
   padding: 2px 0px;
   white-space: nowrap;
-  color: #6f6e6e;
+  color: #515151;
   height:auto;
   padding: 0px 7px;
   width: calc(100% - 14px);
-  background: rgba(255, 255, 255, 1);
+  background: #FAFAFA;
 }
 
 body #controls .tableContainer{
@@ -97,9 +97,10 @@ body #controls .tableContainer{
 }
 
 body.configuration-displayed #controls .tableContainer{
-  height: 250px;
-  overflow-y: auto;
+  height: 260px;
   display: block;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 body #map{
@@ -126,23 +127,38 @@ body #settingsTable{
   margin: 2px 0px 5px;
   border-color: rgba(255, 255, 255, 0.6);
   visibility: hidden;
+  width: 1350px;
+}
+
+body #settingsTable .headerRow{
+  text-align: center;
+  background: linear-gradient(to right, #FFF, #FAFAFA);
+  color: #515151;
+  height: 24px;
+  font-size: 14px;
+}
+
+body #settingsTable .headerRow th{
+  font-weight: normal;
 }
 
 body .settingsTable td {
   vertical-align: top;
   padding: 1px 2px;
+  text-align: left;
 }
 
 
 body .settingsSectionTable {
   padding-left: 4px;
   padding-right: 4px;
+  color: #313131;
 }
 
 body.configuration-displayed #map{
-  height: -moz-calc(100% - 280px);
-  height: -webkit-calc(100% - 280px);
-  height: calc(100% - 280px);
+  height: -moz-calc(100% - 290px);
+  height: -webkit-calc(100% - 290px);
+  height: calc(100% - 290px);
 }
 
 body.configuration-displayed #settingsTable{
@@ -150,8 +166,26 @@ body.configuration-displayed #settingsTable{
 }
 
 body.configuration-displayed .collapser {
-  bottom: 280px;
+  bottom: 290px;
 }
+
+
+body.stats-ui-displayed #controls .tableContainer{
+  height: 280px;
+}
+
+body.stats-ui-displayed #map{
+  height: -moz-calc(100% - 310px);
+  height: -webkit-calc(100% - 310px);
+  height: calc(100% - 310px);
+}
+
+body.stats-ui-displayed .collapser{
+  bottom: 310px;
+}
+
+
+
 
 body.panel-collapsed #map{
   height: -moz-calc(100% - 1px);
@@ -161,4 +195,10 @@ body.panel-collapsed #map{
 
 body.panel-collapsed .collapser {
   bottom: 0px;
+}
+
+@media (max-width:980px){
+  body.configuration-displayed #inputUrl{
+    width: 40%!important;
+  }
 }

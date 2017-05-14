@@ -329,8 +329,8 @@
         map.addLayer(_msLayer);
         //console.log("msLayer added");
         dojo.byId("inputUrl").style.backgroundColor = "#00ff00";
-        dojo.byId("applyRendererButton").style.visibility = "visible";
-        dojo.byId("refreshRateSection").style.visibility = "visible";
+        dojo.byId("applyRendererButton").style.display = "inline-block";
+        dojo.byId("refreshRateSection").style.display = "inline-block";
         dojo.byId("settingsTable").style.visibility = "visible";
         aggMapServiceUrl = url;
 
@@ -384,8 +384,8 @@
           maxOutlineWidth: parseFloat(dojo.byId("maxOutlineWidth").value),
           minValue: parseFloat(dojo.byId("minValue").value),
           maxValue: parseFloat(dojo.byId("maxValue").value),
-          minSize: parseFloat(dojo.byId("OvMinSize").value),
-          maxSize: parseFloat(dojo.byId("OvMaxSize").value),
+          minSize: parseFloat(dojo.byId("minSize").value),
+          maxSize: parseFloat(dojo.byId("maxSize").value),
           normalizeByBinArea: (dojo.byId("normalizeByBinArea")).checked
         };
 
@@ -472,6 +472,7 @@
             dojo.byId("statField").style.display = "none";
             dojo.byId("statType").style.display = "none";
           }
+          domClass.toggle(document.getElementsByTagName("body")[0], "stats-ui-displayed");
         } else if (evt.srcElement.id == "useRotation") {
           if (dojo.byId("useRotation").checked == true) {
             dojo.byId("rotationExpression").style.visibility = "visible";
@@ -611,23 +612,13 @@
       }
 
       function initRefreshRateSpinner() {
-        _refreshRateSpinner = new NumberSpinner({
-          value: 0,
-          smallDelta: 1,
-          largeDelta: 2,
-          constraints: {min:0, max:120000, places:0},
-          id: "refreshRateSpinner",
-          intermediateChanges: true,
-          style: "width: 65px;font-size: 12px; text-align: center;",
-          title:'Refresh Rate',
-          onChange: function(value){
-            if (value == 0)
-              _msLayer.setRefreshInterval(24 * 60);
-            else
-              _msLayer.setRefreshInterval(value / 60);
-          }
-        }, "refreshRateContainer");
-        _refreshRateSpinner.startup();
+        on(dojo.byId("refreshRateSpinner"), "change", function(e) {
+           value = parseInt(e.target.value);
+           if (value == 0)
+             _msLayer.setRefreshInterval(24 * 60);
+           else
+             _msLayer.setRefreshInterval(value / 60);
+         })
       }
     });
   </script>
@@ -647,17 +638,20 @@
     <b>Map Service URL:</b>
     <input type="text" id="inputUrl"
            value="http://storm.esri.com:6080/arcgis/rest/services/faa-4326-hex-flat/MapServer"
-           style="width: 600px; margin-bottom: 5px"/>
+           style="width: 500px; margin-bottom: 5px"/>
     <input type="button" class="button" id="addMapServiceLayerButton" value="Set Layer"/>
-    <input type="button" class="button" id="applyRendererButton" value="Apply Renderer" style="visibility:hidden;"/>
-    <span id="refreshRateSection" style="visibility:hidden"><span style="margin-left:35px">Refresh Rate:</span>
-    <div id="refreshRateContainer"> </div></span>
+    <input type="button" class="button" id="applyRendererButton" value="Apply Renderer" style="display:none;"/>
+    <span id="refreshRateSection" style="display:none">
+      <label for="refreshRateSpinner" style="margin-left:35px">Refresh Rate</label>
+      <input id="refreshRateSpinner" type="number" min="0" max="120000" value="0" />
+
+    </span>
   </div>
 
   <div class="tableContainer">
 
     <table id="settingsTable" class="settingsTable" border="1" cellspacing="0" cellpadding="0">
-      <tr style="text-align: center; background-color: #d8f4ff; color: #6f6e6e; height: 24px;">
+      <tr class="headerRow">
         <th>Aggregation Settings</th>
         <th>Aggregation Style</th>
         <th>Aggregation Bins (MIN - MAX)</th>
@@ -703,7 +697,7 @@
             <tr>
               <td>Style:</td>
               <td colspan="2">
-                <select name="style" id="style" style="width: 120px;">
+                <select name="style" id="style" style="width: 110px;">
                   <option value="Grid">Grid</option>
                   <option value="Oval">Oval</option>
                 </select>
@@ -712,7 +706,7 @@
             <tr>
               <td>LOD Type:</td>
               <td colspan="2">
-                <select name="geoHashStyle" id="geoHashStyle" style="width: 120px;">
+                <select name="geoHashStyle" id="geoHashStyle" style="width: 110px;">
                   <option value="geohash">GeoHash</option>
                   <option value="square">Square</option>
                   <option value="flatHexagon">Flat Hexagon</option>
@@ -725,7 +719,7 @@
             <tr>
               <td>LOD SR:</td>
               <td colspan="2">
-                <input type="text" id="geoHashStyleSR" value="102100" style="width: 120px;"/>
+                <input type="text" id="geoHashStyleSR" value="102100" style="width: 110px;"/>
               </td>
             </tr>
           </table>
@@ -736,43 +730,43 @@
             <tr>
               <td>Fill Color:</td>
               <td>
-                <input title="Min Fill Color" type="color" value="#ff0000" style="width: 90px;" id="minColor"/>
-                <input title="Max Fill Color" type="color" value="#ff0000" style="width: 90px;" id="maxColor"/>
+                <input title="Min Fill Color" type="color" value="#ff0000" style="width: 50px;" id="minColor"/>
+                <input title="Max Fill Color" type="color" value="#ff0000" style="width: 50px;" id="maxColor"/>
               </td>
             </tr>
             <tr>
               <td>Fill Opacity:</td>
               <td>
-                <input title="Min Fill Opacity" type="number" min="0" max="255" style="width: 90px;" id="minColorA" value="50"/>
-                <input title="Max Fill Opacity" type="number" min="0" max="255" style="width: 90px;" id="maxColorA" value="255"/>
+                <input title="Min Fill Opacity" type="number" min="0" max="255" style="width: 50px;" id="minColorA" value="50"/>
+                <input title="Max Fill Opacity" type="number" min="0" max="255" style="width: 50px;" id="maxColorA" value="255"/>
               </td>
             </tr>
             <tr>
               <td>Outline Color:</td>
               <td>
-                <input title="Min Outline Color" type="color" value="#000000" style="width: 90px;" id="minOutlineColor"/>
-                <input title="Max Outline Color" type="color" value="#000000" style="width: 90px;" id="maxOutlineColor"/>
+                <input title="Min Outline Color" type="color" value="#000000" style="width: 50px;" id="minOutlineColor"/>
+                <input title="Max Outline Color" type="color" value="#000000" style="width: 50px;" id="maxOutlineColor"/>
               </td>
             </tr>
             <tr>
               <td>Outline Opacity:</td>
               <td>
-                <input title="Min Outline Opacity" type="number" min="0" max="255" style="width: 90px;" id="minOutlineColorA" value="100"/>
-                <input title="Max Outline Opacity" type="number" min="0" max="255" style="width: 90px;" id="maxOutlineColorA" value="100"/>
+                <input title="Min Outline Opacity" type="number" min="0" max="255" style="width: 50px;" id="minOutlineColorA" value="100"/>
+                <input title="Max Outline Opacity" type="number" min="0" max="255" style="width: 50px;" id="maxOutlineColorA" value="100"/>
               </td>
             </tr>
             <tr>
               <td>Outline Width:</td>
               <td>
-                <input title="Min Outline Width" type="number" min="0" max="1000" style="width: 90px;" id="minOutlineWidth" value="0.5"/>
-                <input title="Max Outline Width" type="number" min="0" max="1000" style="width: 90px;" id="maxOutlineWidth" value="0.5"/>
+                <input title="Min Outline Width" type="number" min="0" max="1000" style="width: 50px;" id="minOutlineWidth" value="0.5"/>
+                <input title="Max Outline Width" type="number" min="0" max="1000" style="width: 50px;" id="maxOutlineWidth" value="0.5"/>
               </td>
             </tr>
             <tr>
               <td>Range:</td>
               <td>
-                <input title="Min Value. Leave empty to auto-calculate dynamically based on actual values in the current extent." type="number" id="minValue" value="" style="width: 90px;"/>
-                <input title="Max Value. Leave empty to auto-calculate dynamically based on actual values in the current extent." type="number" id="maxValue" value="" style="width: 90px;"/>
+                <input title="Min Value. Leave empty to auto-calculate dynamically based on actual values in the current extent." type="number" id="minValue" value="" style="width: 50px;"/>
+                <input title="Max Value. Leave empty to auto-calculate dynamically based on actual values in the current extent." type="number" id="maxValue" value="" style="width: 50px;"/>
               </td>
             </tr>
             <tr>
@@ -781,26 +775,26 @@
             <tr>
               <td>Size:</td>
               <td>
-                <input title="Min Size in Precent" type="number" min="0" max="100" style="width: 90px;" id="OvMinSize" value="100"/>
-                <input title="Max Size in Precent" type="number" min="0" max="100" style="width: 90px;" id="OvMaxSize" value="100"/>
+                <input title="Min Size in Precent" type="number" min="0" max="100" style="width: 50px;" id="minSize" value="100"/>
+                <input title="Max Size in Precent" type="number" min="0" max="100" style="width: 50px;" id="maxSize" value="100"/>
               </td>
             </tr>
             </tbody>
             <tr>
               <td>
-                Stats:<input type="checkbox" id="useStats"/>
+                Statistics:<input type="checkbox" id="useStats"/>
               </td>
               <td>
-                <select name="statField" data-dojo-type="dijit/form/Select" data-dojo-attach-point="statField" id="statField" style="width: 180px; display:none;">
+                <select name="statField" data-dojo-type="dijit/form/Select" data-dojo-attach-point="statField" id="statField" style="width: 101px; display:none;">
                 </select>
 
-                <select name="statType"  data-dojo-type="dijit/form/Select" data-dojo-attach-point="statType" id="statType" style="width: 180px; display:none;">
+                <select name="statType"  data-dojo-type="dijit/form/Select" data-dojo-attach-point="statType" id="statType" style="width: 101px; display:none;">
                 </select>
               </td>
             </tr>
             <tr>
-              <td title='Normalize By Bin Area'>Normalize:</td>
-              <td>
+              <td title='Normalize By Bin Area'>
+                Normalize:
                 <input type="checkbox" id="normalizeByBinArea"/>
               </td>
             </tr>
@@ -854,7 +848,7 @@
             <tr>
               <td>Style:</td>
               <td>
-                <select name="Fstyle" id="Fstyle" style="width: 183px;">
+                <select name="Fstyle" id="Fstyle" style="width: 103px;">
                   <option value="esriSMScircle">Circle</option>
                   <option value="esriSMSCross">Cross</option>
                   <option value="esriSMSDiamond">Diamond</option>
@@ -867,39 +861,39 @@
             <tr>
               <td>Size:</td>
               <td>
-                <input type="number" min="0" id="Fsize" value="12" style="width: 183px;"/>
+                <input type="number" min="0" id="Fsize" value="12" style="width: 103px;"/>
               </td>
             </tr>
             <tr>
               <td>Color:</td>
               <td>
-                <input type="color" value="#9ecae1" id="Fcolor" style="width: 90px;"/>
-                <input type="number" min="0" max="255" id="FcolorA" value="150" style="width: 90px;"/>
+                <input type="color" value="#9ecae1" id="Fcolor" style="width: 50px;"/>
+                <input type="number" min="0" max="255" id="FcolorA" value="150" style="width: 50px;"/>
               </td>
             </tr>
             <tr>
               <td>Outline Color:</td>
               <td>
-                <input type="color" value="#000000" id="Foutline" style="width: 90px;"/>
-                <input type="number" min="0" max="255" id="FoutlineA" value="255" style="width: 90px;"/>
+                <input type="color" value="#000000" id="Foutline" style="width: 50px;"/>
+                <input type="number" min="0" max="255" id="FoutlineA" value="255" style="width: 50px;"/>
               </td>
             </tr>
             <tr>
               <td>Outline Width:</td>
               <td>
-                <input type="number" min="0" max="255" id="FoutlineW" value="1" style="width: 183px;"/>
+                <input type="number" min="0" max="255" id="FoutlineW" value="1" style="width: 103px;"/>
               </td>
             </tr>
             <tr>
               <td>Rotation:<input type="checkbox" id="useRotation"/></td>
               <td>
-                <select id="rotationType" name="rotationType" style="width: 90px; margin-top:3px; visibility:hidden;">
+                <select id="rotationType" name="rotationType" style="width: 50px; margin-top:3px; visibility:hidden;">
                   <option value="arithmetic">Arithmetic</option>
                   <option value="geographic">Geographic</option>
                 </select>
 
                 <select name="rotationExpression" id="rotationExpression"
-                        style="width: 90px; margin-top:3px; visibility:hidden;" value="">
+                        style="width: 50px; margin-top:3px; visibility:hidden;" value="">
                 </select>
               </td>
             </tr>
@@ -911,7 +905,7 @@
             <tr>
               <td>Map Spatial Reference:</td>
               <td>
-                <select id="wkid" name="wkid" style="width: 200px;">
+                <select id="wkid" name="wkid" style="width: 110px;">
                   <option value="102003">102003 (Albers)</option>
                   <option value="102100">102100 (Web Mercator)</option>
                   <option value="4326">4326 (WGS84)</option>
@@ -936,7 +930,7 @@
             <tr>
               <td>Current Map SR:</td>
               <td>
-                <input type="text" id="currentMapSR" value="102100" style="width: 120px;"/>
+                <input type="text" id="currentMapSR" value="102100" style="width: 110px;" disabled="true"/>
               </td>
             </tr>
           </table>
