@@ -402,8 +402,8 @@
           maxColor: hexToRgb(dojo.byId("maxColor").value, parseFloat(dojo.byId("maxColorA").value)),
           minValue: parseFloat(dojo.byId("minValue").value),
           maxValue: parseFloat(dojo.byId("maxValue").value),
-          minSize: parseFloat(dojo.byId("OvMinSize").value),
-          maxSize: parseFloat(dojo.byId("OvMaxSize").value),
+          minSize: parseFloat(dojo.byId("minSize").value),
+          maxSize: parseFloat(dojo.byId("maxSize").value),
           normalizeByBinArea: (dojo.byId("normalizeByBinArea")).checked
         };
 
@@ -695,9 +695,9 @@
         </select>
         <label for="wkid">Spatial Reference</label>
       </div>
-      <div class="input-group" style="display: none;">
-        <input type="text" id="currentMapSR" value="102100" style="width: 120px;"/>
-        <label for="currentMapSR">Current Map SR</label>
+      <div class="input-group input-group-full" style="display: none;">
+        <input type="text" id="currentMapSR" value="102100" style="width: 120px;" disabled="true"/>
+        <label for="currentMapSR">Current</label>
       </div>
       <div class="input-group input-group-full">
         <input id="refreshRateSpinner" type="number" min="0" max="120000" value="0" />
@@ -802,8 +802,8 @@
       </div>
       <div class="input-row input-row-header" id="ovalAttrSection" style="display: none;" >
         <label>Outline Width</label>
-        <input type="number" min="0" max="100" placeholder="min" id="OvMinSize" value="100"/>
-        <input type="number" min="0" max="100" placeholder="max" id="OvMaxSize" value="100"/>
+        <input type="number" min="0" max="100" placeholder="min" id="minSize" value="100"/>
+        <input type="number" min="0" max="100" placeholder="max" id="maxSize" value="100"/>
       </div>
       <div class="input-row input-row-header">
         <label>Range</label>
