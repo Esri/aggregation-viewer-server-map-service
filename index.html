@@ -104,23 +104,24 @@
 
       "dojo/query!css2",
       "dojo/domReady!"
-    ], function (parser, dom, domStyle, domClass, on, JSON, arr, Color, registry, NumberSpinner,
-                 Map, SpatialReference, Extent, GeometryService, GraphicsLayer,
-                 ArcGISDynamicMapServiceLayer, ArcGISTiledMapServiceLayer, LayerDrawingOptions,
-                 SimpleLineSymbol, SimpleFillSymbol, SimpleRenderer, Polygon, Graphic, Point, SimpleMarkerSymbol,
-                 Query, QueryTask, webMercatorUtils,
-                 HeatmapRenderer, smartMapping, TooltipDialog, esriRequest, dojoJson, arcgisUtils, esriLang,
-                 FeatureLayer, BasemapGallery, AggregationRenderer,
-                 TitlePane, Select, BorderContainer, ContentPane, RadioButton, ComboBox, Button, CheckBox, TooltipDialog, DropDownButton) {
+    ], function (
+      parser, dom, domStyle, domClass, on, JSON, arr, Color, registry, NumberSpinner,
+      Map, SpatialReference, Extent, GeometryService, GraphicsLayer,
+      ArcGISDynamicMapServiceLayer, ArcGISTiledMapServiceLayer, LayerDrawingOptions,
+      SimpleLineSymbol, SimpleFillSymbol, SimpleRenderer, Polygon, Graphic, Point, SimpleMarkerSymbol,
+      Query, QueryTask, webMercatorUtils,
+      HeatmapRenderer, smartMapping, TooltipDialog, esriRequest, dojoJson, arcgisUtils, esriLang,
+      FeatureLayer, BasemapGallery, AggregationRenderer,
+      TitlePane, Select, BorderContainer, ContentPane, RadioButton, ComboBox, Button, CheckBox, TooltipDialog, DropDownButton) {
 
       parser.parse();
 
       // class data members
-      var map;
-      var wkid = 102100;
-      var defaultWkid = 102100;
-      var aggMapServiceUrl;
-      var fullExtent;
+      var _map;
+      var _mapExtent;
+      var _wkid = 102100;
+      var _defaultWkid = 102100;
+      var _aggMapServiceUrl;
 
       var _refreshRateSpinner;
       var _msLayer;
@@ -130,16 +131,16 @@
       var _allowRefreshLayer = true;
 
       window.app = {};
-      window.app.bounds = new Extent({
+      _mapExtent = new Extent({
         // http://help.arcgis.com/en/webapps/flexviewer/extenthelper/flexviewer_extenthelper.html
         "xmin": -16155379.6875,
         "xmax": -5464879.6875,
         "ymin": 2273910.15625,
         "ymax": 7051227.34375,
-        "spatialReference": {"wkid": defaultWkid}
+        "spatialReference": {"wkid": _defaultWkid}
       });
 
-      dom.byId("wkid").value = window.app.bounds.spatialReference.wkid;
+      dom.byId("wkid").value = _mapExtent.spatialReference.wkid;
       on(dom.byId("wkid"), "change", projectExtent);
 
       on(dom.byId("controls"), on.selector(".config-header", "click"), function(e) {
@@ -150,26 +151,26 @@
         }
       });
 
-      buildMap(window.app.bounds, true);
+      buildMap(_mapExtent, true);
       initRefreshRateSpinner();
 
       var gs = new GeometryService("http://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer");
 
-      function buildMap(b, tiled) {
+      function buildMap(mapExtent, tiled) {
 
         esri.config.defaults.io.corsEnabledServers.push('http://storm.esri.com:6080');
         esri.config.defaults.io.corsEnabledServers.push('https://storm.esri.com:6443');
 
-        if (window.app.map) { // kill the map, if it already exists
-          window.app.extentChange && window.app.extentChange.remove();
-          window.app.map.destroy();
-          window.app.map = null;
+        if (_map) {
+          // kill the map, if it already exists
+          _map.destroy();
+          _map = null;
           //console.log("destroyed previous map instance");
         }
-        window.app.bounds = b || window.app.bounds;
-        window.app.map = new Map("map", {
+        _mapExtent = mapExtent || _mapExtent;
+        _map = new Map("map", {
           wrapAround180: true,
-          extent: window.app.bounds,
+          extent: _mapExtent,
           showAttribution: false,
           sliderStyle: "small"
         });
@@ -177,14 +178,12 @@
         /*
         var basemapGallery = new BasemapGallery({
           showArcGISBasemaps: true,
-          map: window.app.map
+          map: _map
         }, "basemapGallery");
         basemapGallery.startup();
         */
 
-        map = window.app.map;
-
-        //console.log("map extent wkid: ", window.app.map.extent.spatialReference.wkid);
+        //console.log("map extent wkid: ", _map.extent.spatialReference.wkid);
 
         // uncomment the following section if you want to add feature layers on top of the base map
         /*
@@ -200,9 +199,9 @@
          var outline = new SimpleLineSymbol("solid", new Color([255, 255, 255, 1]), 1);
          var fill = new SimpleFillSymbol("solid", outline, new Color([64, 64, 64, 0.15]));
          layer.setRenderer(new SimpleRenderer(fill));
-         window.app.map.addLayer(layer);
+         _map.addLayer(layer);
 
-         map.on("layer-add-result", function (evt) {
+         _map.on("layer-add-result", function (evt) {
          //console.log("layer-add-result: ", evt);
          });
          */
@@ -214,42 +213,41 @@
         var worldReferenceUrl = worldReferenceUrl_Gray;
         if (tiled) {
           var worldReference = new ArcGISTiledMapServiceLayer(worldReferenceUrl);
-          window.app.map.addLayers([worldReference]);
+          _map.addLayers([worldReference]);
         } else {
           var worldReference = new ArcGISDynamicMapServiceLayer(worldReferenceUrl, {
             "showAttribution": false,
             "opacity": 1.0
           });
-          window.app.map.addLayers([worldReference]);
+          _map.addLayers([worldReference]);
         }
 
         // Map event listeners
-        // map.on("load", requestToUpdateLayerFromUI);
+        // _map.on("load", requestToUpdateLayerFromUI);
 
-        map.on("zoom-end", function (evt) {
+        _map.on("zoom-end", function (evt) {
           //console.log("map zoom to: " + evt);
         });
 
-        dojo.byId("currentMapSR").value = wkid;
+        dojo.byId("currentMapSR").value = _wkid;
       }
 
       function projectExtent(val) {
         //console.log("project extent val: ", val, typeof val);
-        //console.log(window.app.map);
+        //console.log(_map);
         //console.log(val.srcElement.value);
 
-        wkid = parseInt(val.srcElement.value, 10);
-        if (wkid === window.app.map.spatialReference.wkid) {
+        _wkid = parseInt(val.srcElement.value, 10);
+        if (_wkid === _map.spatialReference.wkid) {
           // no need to project
-          //console.log("projectExtent-fullExtent: ", fullExtent);
           return;
         }
         //dom.byId("addMapServiceLayerButton").setAttribute('disabled', false);
-        //console.log(dom.byId("addMapServiceLayerButton"), wkid);
+        //console.log(dom.byId("addMapServiceLayerButton"), _wkid);
 
-        // wkid changed, project the map's current extent
-        var sr = new SpatialReference(wkid);
-        var project = gs.project([window.app.map.extent], sr);
+        // _wkid changed, project the map's current extent
+        var sr = new SpatialReference(_wkid);
+        var project = gs.project([_map.extent], sr);
         project.then(success, failure);
       }
 
@@ -258,10 +256,9 @@
         if (result.length) {
           var bounds = result[0];
           buildMap(bounds, false);
-          dojo.byId("currentMapSR").value = wkid;
-          //console.log("success-fullExtent: ", fullExtent);
+          dojo.byId("currentMapSR").value = _wkid;
 
-          if (aggMapServiceUrl) {
+          if (_aggMapServiceUrl) {
             addMapServiceLayer();
           }
         } else {
@@ -314,8 +311,8 @@
       // Layer related functions
 
       function addMapServiceLayer() {
-        if (map.getLayer(_msLayerName)) {
-          map.removeLayer(map.getLayer(_msLayerName));
+        if (_map.getLayer(_msLayerName)) {
+          _map.removeLayer(map.getLayer(_msLayerName));
         }
 
         var url = dojo.byId("inputUrl").value;
@@ -344,7 +341,7 @@
           //dojo.byId("inputUrl").style.backgroundColor = "#ff0000";
         });
 
-        map.addLayer(_msLayer);
+        _map.addLayer(_msLayer);
         //console.log("msLayer added");
         dojo.byId("inputUrl").style.backgroundColor = "#00ff00";
         // dojo.byId("applyRendererButton").style.visibility = "block";
@@ -353,7 +350,7 @@
           var section = sections[i];
           domStyle.set(section, "display", "block");
         }
-        aggMapServiceUrl = url;
+        _aggMapServiceUrl = url;
 
         updateLayerFields();
       }
@@ -373,7 +370,7 @@
         if (!_allowRefreshLayer)
           return;
 
-        _msLayer = map.getLayer(_msLayerName); // this is a dynamicMapServiceLayer
+        _msLayer = _map.getLayer(_msLayerName); // this is a dynamicMapServiceLayer
 
         var renderer = new AggregationRenderer();
         updateRendererFromUI(renderer);
