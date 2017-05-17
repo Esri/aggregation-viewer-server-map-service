@@ -119,8 +119,8 @@
       // class data members
       var _map;
       var _mapExtent;
-      var _wkid = 102100;
       var _defaultWkid = 102100;
+      var _wkid = 102100;
       var _aggMapServiceUrl;
 
       var _refreshRateSpinner;
@@ -130,13 +130,14 @@
       var _changeTimer;
       var _allowRefreshLayer = true;
 
-      window.app = {};
+      var _gs = new GeometryService("http://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer");
+
       _mapExtent = new Extent({
         // http://help.arcgis.com/en/webapps/flexviewer/extenthelper/flexviewer_extenthelper.html
-        "xmin": -16155379.6875,
-        "xmax": -5464879.6875,
-        "ymin": 2273910.15625,
-        "ymax": 7051227.34375,
+        "xmin": -31641260.73269701,
+        "ymin": -21485531.406618062,
+        "xmax": 31758668.008143142,
+        "ymax": 20389730.169122037,
         "spatialReference": {"wkid": _defaultWkid}
       });
 
@@ -153,8 +154,6 @@
 
       buildMap(_mapExtent, true);
       initRefreshRateSpinner();
-
-      var gs = new GeometryService("http://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer");
 
       function buildMap(mapExtent, tiled) {
 
@@ -242,12 +241,10 @@
           // no need to project
           return;
         }
-        //dom.byId("addMapServiceLayerButton").setAttribute('disabled', false);
-        //console.log(dom.byId("addMapServiceLayerButton"), _wkid);
 
         // _wkid changed, project the map's current extent
         var sr = new SpatialReference(_wkid);
-        var project = gs.project([_map.extent], sr);
+        var project = _gs.project([_map.extent], sr);
         project.then(success, failure);
       }
 
@@ -259,7 +256,7 @@
           dojo.byId("currentMapSR").value = _wkid;
 
           if (_aggMapServiceUrl) {
-            addMapServiceLayer();
+            setLayer();
           }
         } else {
           console.log("Project was successful, but no results were returned.");
@@ -278,12 +275,12 @@
 
       // UI event listeners
       on(dom.byId("applyRendererButton"), "click", requestToUpdateLayerFromUI);
-      on(dom.byId("addMapServiceLayerButton"), "click", addMapServiceLayer);
+      on(dom.byId("setLayerButton"), "click", setLayer);
 
       var inputs = document.getElementsByTagName("input");
       for (var i = 0; i < inputs.length; i++) {
         var input = inputs[i];
-        if ("addMapServiceLayerButton" != input.id)
+        if ("setLayerButton" != input.id)
           on(input, "change", requestToUpdateLayerFromUI);
       }
 
@@ -310,9 +307,10 @@
 
       // Layer related functions
 
-      function addMapServiceLayer() {
-        if (_map.getLayer(_msLayerName)) {
-          _map.removeLayer(map.getLayer(_msLayerName));
+      function setLayer() {
+        var msLayer = _map.getLayer(_msLayerName);
+        if (msLayer) {
+          _map.removeLayer(msLayer);
         }
 
         var url = dojo.byId("inputUrl").value;
@@ -325,7 +323,7 @@
         _msLayer = new ArcGISDynamicMapServiceLayer(url, options);
 
         _msLayer.on("load", function (evt) {
-          //dojo.byId("addMapServiceLayerButton").setAttribute('disabled', true);
+          //dojo.byId("setLayerButton").setAttribute('disabled', true);
           if (evt.layer.version == "10.4") {
             dojo.byId("geoHashStyle").disabled = true;
             dojo.byId("labelFormat").value = "#.##"
@@ -671,7 +669,7 @@
       </div>
       <div class="input-row">
         <input type="button" class="button" id="applyRendererButton" value="Apply Renderer"/>
-        <input type="button" class="button" id="addMapServiceLayerButton" value="Set Layer"/>
+        <input type="button" class="button" id="setLayerButton" value="Set Layer"/>
       </div>
       <div class="input-group input-group-full">
         <select id="wkid" name="wkid" style="width: 120px;">
