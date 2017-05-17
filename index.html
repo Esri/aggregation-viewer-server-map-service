@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <!--
   Copyright 1995-2017 Esri
 
@@ -23,16 +22,18 @@
   email: contracts@esri.com
 -->
 
+<!DOCTYPE html>
+
 <html>
 
 <head lang="en">
   <meta charset="UTF-8">
+
   <title>Aggregation Viewer - Server Side Dynamic Map Service Layer</title>
+
   <link rel="stylesheet" href="https://js.arcgis.com/3.19/esri/css/esri.css">
+  <link rel="stylesheet" href="./mapServiceViewerStyles.css">
 
-  <link rel="stylesheet" href="./styles.css">
-
-  <script src="https://use.fontawesome.com/9482a0b1d1.js"></script>
   <script type="text/javascript">
     var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
     var dojoConfig = {
@@ -44,6 +45,7 @@
     };
   </script>
   <script src="https://js.arcgis.com/3.19/"></script>
+  <script src="https://use.fontawesome.com/9482a0b1d1.js"></script>
   <script>
     require([
       "dojo/parser",
@@ -665,7 +667,7 @@
     </div>
     <div class="config-content">
       <div style="display: inline-block; width:100%;">
-        <input type="text" id="inputUrl" value="http://storm.esri.com:6080/arcgis/rest/services/faa-4326-hex-flat/MapServer" style="width:calc(100% - 5px);"/>
+        <input type="text" id="inputUrl" value="/arcgis/rest/services/@service/MapServer" style="width:calc(100% - 5px);"/>
       </div>
       <div class="input-row">
         <input type="button" class="button" id="applyRendererButton" value="Apply Renderer"/>
