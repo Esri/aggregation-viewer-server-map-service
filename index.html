@@ -236,9 +236,9 @@
       function projectExtent(val) {
         //console.log("project extent val: ", val, typeof val);
         //console.log(_map);
-        //console.log(val.srcElement.value);
+        //console.log(val.target.value);
 
-        _wkid = parseInt(val.srcElement.value, 10);
+        _wkid = parseInt(val.target.value, 10);
         if (_wkid === _map.spatialReference.wkid) {
           // no need to project
           return;
@@ -476,13 +476,13 @@
       }
 
       function uiTrigger(evt) {
-        if (evt.srcElement.id == "style") {
-          if (evt.srcElement.value == "Oval") {
+        if (evt.target.id == "style") {
+          if (evt.target.value == "Oval") {
             domStyle.set(dom.byId("ovalAttrSection"), "display", 'flex');
           } else {
             domStyle.set(dom.byId("ovalAttrSection"), "display", 'none');
           }
-        } else if (evt.srcElement.id == "useStats") {
+        } else if (evt.target.id == "useStats") {
           if (dojo.byId("useStats").checked == true) {
             dojo.byId("statField").style.display = "block";
             dojo.byId("statType").style.display = "block";
@@ -490,7 +490,7 @@
             dojo.byId("statField").style.display = "none";
             dojo.byId("statType").style.display = "none";
           }
-        } else if (evt.srcElement.id == "useRotation") {
+        } else if (evt.target.id == "useRotation") {
           if (dojo.byId("useRotation").checked == true) {
             dojo.byId("rotationExpression").style.display = "block";
             dojo.byId("rotationType").style.display = "block";
@@ -498,7 +498,7 @@
             dojo.byId("rotationExpression").style.display = "none";
             dojo.byId("rotationType").style.display = "none";
           }
-        } else if (evt.srcElement.id == "renderLabels") {
+        } else if (evt.target.id == "renderLabels") {
           if (dojo.byId("renderLabels").checked == true) {
             dojo.byId("aggLabelsSection").style.display = "block";
           } else {
@@ -726,7 +726,7 @@
       </div>
       <div class="input-row input-row-header" style="margin: 8px 0px 0px 0px; justify-content: flex-start;">
         <label for="fullLodGrid">Full LOD Grid</label>
-        <input type="checkbox" id="fullLodGrid"/>
+        <input title="Render all LOD grid bins only without the actual data." type="checkbox" id="fullLodGrid"/>
       </div>
     </div>
   </section>
@@ -778,43 +778,43 @@
       </div>
       <div class="input-row input-row-header" >
         <label>Fill Color</label>
-        <input type="color" value="#ff0000" id="minColor" style="width: 20%;"/>
-        <input type="color" value="#ff0000" id="maxColor" style="width: 20%;"/>
+        <input title="Min Fill Color" type="color" value="#ff0000" id="minColor" style="width: 20%;"/>
+        <input title="Max Fill Color" type="color" value="#ff0000" id="maxColor" style="width: 20%;"/>
       </div>
       <div class="input-row input-row-header" >
         <label>Fill Opacity</label>
-        <input type="number" min="0" max="255" id="minColorA" value="0" style="width: 20%;"/>
-        <input type="number" min="0" max="255" id="maxColorA" value="255" style="width: 20%;"/>
+        <input title="Min Fill Opacity" type="number" min="0" max="255" id="minColorA" value="0" style="width: 20%;"/>
+        <input title="Max Fill Opacity" type="number" min="0" max="255" id="maxColorA" value="255" style="width: 20%;"/>
       </div>
       <div class="input-row input-row-header" >
         <label>Outline Color</label>
-        <input type="color" value="#000000" id="minOutlineColor" style="width: 20%;"/>
-        <input type="color" value="#000000" id="maxOutlineColor" style="width: 20%;"/>
+        <input title="Min Outline Color" type="color" value="#000000" id="minOutlineColor" style="width: 20%;"/>
+        <input title="Max Outline Color" type="color" value="#000000" id="maxOutlineColor" style="width: 20%;"/>
       </div>
       <div class="input-row input-row-header" >
         <label>Outline Opacity</label>
-        <input type="number" min="0" max="255" id="minOutlineColorA" value="100" style="width: 20%;"/>
-        <input type="number" min="0" max="255" id="maxOutlineColorA" value="100" style="width: 20%;"/>
+        <input title="Min Outline Opacity" type="number" min="0" max="255" id="minOutlineColorA" value="100" style="width: 20%;"/>
+        <input title="Max Outline Opacity" type="number" min="0" max="255" id="maxOutlineColorA" value="100" style="width: 20%;"/>
       </div>
       <div class="input-row input-row-header" >
         <label>Outline Width</label>
-        <input type="number" min="0" id="minOutlineWidth" value="0.5" style="width: 20%;"/>
-        <input type="number" min="0" id="maxOutlineWidth" value="0.5" style="width: 20%;"/>
+        <input title="Min Outline Width" type="number" min="0" id="minOutlineWidth" value="0.5" style="width: 20%;"/>
+        <input title="Max Outline Width" type="number" min="0" id="maxOutlineWidth" value="0.5" style="width: 20%;"/>
       </div>
       <div class="input-row input-row-header" id="ovalAttrSection" style="display: none;" >
         <label>Size</label>
-        <input type="number" min="0" max="100" placeholder="min" id="minSize" value="100" style="width: 20%;"/>
-        <input type="number" min="0" max="100" placeholder="max" id="maxSize" value="100" style="width: 20%;"/>
+        <input title="Min Size in Precent" type="number" min="0" max="100" placeholder="min" id="minSize" value="100" style="width: 20%;"/>
+        <input title="Max Size in Precent" type="number" min="0" max="100" placeholder="max" id="maxSize" value="100" style="width: 20%;"/>
       </div>
       <div class="input-row input-row-header">
         <label>Range</label>
-        <input type="number" id="minValue" value="" placeholder="min" style="width: 20%;"/>
-        <input type="number" id="maxValue" value="" placeholder="max" style="width: 20%;"/>
+        <input title="Min Value. Leave empty to auto-calculate dynamically based on actual values in the current extent." type="number" id="minValue" value="" placeholder="min" style="width: 20%;"/>
+        <input title="Max Value. Leave empty to auto-calculate dynamically based on actual values in the current extent." type="number" id="maxValue" value="" placeholder="max" style="width: 20%;"/>
       </div>
 
       <div class="input-row input-row-header" style="justify-content: flex-start;">
         <label for="normalizeByBinArea">Normalize</label>
-        <input type="checkbox" id="normalizeByBinArea"/>
+        <input title="Normalize By Bin Area" type="checkbox" id="normalizeByBinArea"/>
       </div>
 
       <div class="input-row input-row-header" style="justify-content: flex-start;">
