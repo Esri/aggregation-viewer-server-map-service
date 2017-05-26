@@ -156,6 +156,8 @@
 
       buildMap(_mapExtent, true);
       initRefreshRateSpinner();
+      populateSelectFontOptions("labelFont");
+
 
       function buildMap(mapExtent, tiled) {
 
@@ -224,7 +226,7 @@
         }
 
         // Map event listeners
-        // _map.on("load", requestToUpdateLayerFromUI);
+        _map.on("load", setLayer);
 
         _map.on("zoom-end", function (evt) {
           //console.log("map zoom to: " + evt);
@@ -637,6 +639,26 @@
             _msLayer.setRefreshInterval(value / 60);
         })
       }
+
+      function populateSelectFontOptions(selectName) {
+        var fontsSelect = dojo.byId(selectName);
+        if (!fontsSelect)
+          return;
+
+        var fonts = [
+          "Arial", "Arial Black", "Arial Narrow", "Baskerville Old Face", "Batang", "Bauhaus 93", "Bell MT", "Bernard MT Condensed", "Book Antiqua", "Bookman Old Style", "Brush Script MT", "Calisto MT", "Century", "Century Gothic", "Century Schoolbook", "Colonna MT", "Comic Sans MS", "Cooper Black", "Copperplate Gothic Light", "Courier", "Courier New", "Curlz MT", "Edwardian  Script ITC", "Engravers MT", "Footlight MT Light", "Garamond", "Georgia", "Goudy Old Style", "Gulim", "Haettenschweiler", "Handwriting - Dakota", "Harrington", "Helvetica", "Impact", "Imprint MT Shadow", "Lucida Bright", "Lucida Calligraphy", "Lucida Fax", "Lucida Handwriting", "Lucida Sans", "Lucida Sans Typewriter", "Matura MT Script Capitals", "Mistral", "Modern No. 20", "Monotype Corsiva", "MS Gothic", "MS Mincho", "MS PGothic", "MS PMincho", "Onyx", "Papyrus", "Perpetua Titling MT", "Plantagenet Cherokee", "Playbill", "PMingLiU", "Rockwell", "Serif", "SimSun", "Stencil", "Symbol", "Tahoma", "Times", "Times New Roman", "Trebuchet MS", "Verdana", "Webdings", "Wide Latin", "Wingdings", "Wingdings 2", "Wingdings 3" ];
+
+
+        for (i = 0; i < fonts.length; i++) {
+          var font = fonts[i];
+          //fontsSelect.push({ 'label': fonts[i], 'value': fonts[i] });
+          var selectOption = document.createElement('option');
+          selectOption.value = font;
+          selectOption.innerHTML = font;
+          fontsSelect.appendChild(selectOption);
+        }
+      }
+
     });
   </script>
 </head>
@@ -845,7 +867,8 @@
 
     <div class="config-content" id="aggLabelsSection" style="display: block;">
       <div class="input-group input-group-full">
-        <input type="text" id="labelFont" value="Arial" style="width: 82px;"/>
+        <select id="labelFont" value="Arial" style="width: 90px;">
+        </select>
         <label for="labelFont">Font</label>
       </div>
       <div class="input-group input-group-full">
