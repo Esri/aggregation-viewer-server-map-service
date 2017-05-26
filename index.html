@@ -104,6 +104,9 @@
       "dijit/TooltipDialog",
       "dijit/form/DropDownButton",
 
+      "dijit/form/FilteringSelect",
+      "dojo/data/ItemFileReadStore",
+
       "dojo/query!css2",
       "dojo/domReady!"
     ], function (
@@ -114,7 +117,8 @@
       Query, QueryTask, webMercatorUtils,
       HeatmapRenderer, smartMapping, TooltipDialog, esriRequest, dojoJson, arcgisUtils, esriLang,
       FeatureLayer, BasemapGallery, AggregationRenderer,
-      TitlePane, Select, BorderContainer, ContentPane, RadioButton, ComboBox, Button, CheckBox, TooltipDialog, DropDownButton) {
+      TitlePane, Select, BorderContainer, ContentPane, RadioButton, ComboBox, Button, CheckBox, TooltipDialog, DropDownButton,
+      FilteringSelect, ItemFileReadStore ) {
 
       parser.parse();
 
@@ -156,7 +160,7 @@
 
       buildMap(_mapExtent, true);
       initRefreshRateSpinner();
-      populateSelectFontOptions("labelFont");
+      populateFilteringSelectFonts("labelFont");
 
 
       function buildMap(mapExtent, tiled) {
@@ -299,6 +303,7 @@
       on(dom.byId("useRotation"), "change", uiTrigger);
       on(dom.byId("renderLabels"), "change", uiTrigger);
 
+      on(dijit.byId("labelFont"), "change", requestToUpdateLayerFromUI);
       on(dijit.byId("statField"), "change", statFieldChanged);
       on(dijit.byId("statType"), "change", requestToUpdateLayerFromUI);
 
@@ -411,7 +416,7 @@
 
         var labels = {
           color: hexToRgb(dojo.byId("labelColor").value, parseFloat(dojo.byId("labelColorA").value)),
-          font: dojo.byId("labelFont").value,
+          font: dijit.byId("labelFont").get('displayedValue'),
           size: parseFloat(dojo.byId("labelSize").value),
           style: dojo.byId("labelStyle").value,
           format: dojo.byId("labelFormat").value
@@ -640,23 +645,43 @@
         })
       }
 
-      function populateSelectFontOptions(selectName) {
-        var fontsSelect = dojo.byId(selectName);
-        if (!fontsSelect)
-          return;
-
+      function populateFilteringSelectFonts(selectId) {
+        var selectContainer = dojo.byId(selectId + "Container");
+          if (!selectContainer)
+            return;
+           
         var fonts = [
           "Arial", "Arial Black", "Arial Narrow", "Baskerville Old Face", "Batang", "Bauhaus 93", "Bell MT", "Bernard MT Condensed", "Book Antiqua", "Bookman Old Style", "Brush Script MT", "Calisto MT", "Century", "Century Gothic", "Century Schoolbook", "Colonna MT", "Comic Sans MS", "Cooper Black", "Copperplate Gothic Light", "Courier", "Courier New", "Curlz MT", "Edwardian  Script ITC", "Engravers MT", "Footlight MT Light", "Garamond", "Georgia", "Goudy Old Style", "Gulim", "Haettenschweiler", "Handwriting - Dakota", "Harrington", "Helvetica", "Impact", "Imprint MT Shadow", "Lucida Bright", "Lucida Calligraphy", "Lucida Fax", "Lucida Handwriting", "Lucida Sans", "Lucida Sans Typewriter", "Matura MT Script Capitals", "Mistral", "Modern No. 20", "Monotype Corsiva", "MS Gothic", "MS Mincho", "MS PGothic", "MS PMincho", "Onyx", "Papyrus", "Perpetua Titling MT", "Plantagenet Cherokee", "Playbill", "PMingLiU", "Rockwell", "Serif", "SimSun", "Stencil", "Symbol", "Tahoma", "Times", "Times New Roman", "Trebuchet MS", "Verdana", "Webdings", "Wide Latin", "Wingdings", "Wingdings 2", "Wingdings 3" ];
 
-
-        for (i = 0; i < fonts.length; i++) {
+        var items = [];
+        for (var i = 0; i < fonts.length; i++) {
           var font = fonts[i];
-          //fontsSelect.push({ 'label': fonts[i], 'value': fonts[i] });
-          var selectOption = document.createElement('option');
-          selectOption.value = font;
-          selectOption.innerHTML = font;
-          fontsSelect.appendChild(selectOption);
+          var item = {'id': font, 'label': font, 'value': font, 'type': 'Windows' };
+          items.push(item);
         }
+
+        var fontsData = {
+            "identifier": "id",
+            "label": "label",
+            "items": items
+        };
+        
+        var store = new ItemFileReadStore({
+          data: fontsData
+        });
+
+        var fontsSelect = new FilteringSelect({
+          store: store,
+          searchAttr: "label",
+          id: selectId,
+          value: "Arial"
+        }).placeAt(selectContainer);
+        
+        fontsSelect.isValid = function() {
+          var val = this.get('displayedValue');
+          return true;
+        };
+	
       }
 
     });
@@ -738,11 +763,11 @@
           <label for="featureThreshold">Feature Threshold</label>
         </div>
         <div class="input-group">
-          <input type="number" id="lodOffset" value="0" style="width: 40px;"/>
+          <input type="number" id="lodOffset" value="0" style="width: 50px;"/>
           <label for="lodOffset">LOD Offset</label>
         </div>
         <div class="input-group">
-          <input type="number" id="minBinSizeInPixels" value="25" style="width: 40px;"/>
+          <input type="number" id="minBinSizeInPixels" value="25" style="width: 50px;"/>
           <label for="minBinSizeInPixels">Min Bin Size (in pixels)</label>
         </div>
       </div>
@@ -845,12 +870,12 @@
       </div>
       <div class="input-row input-row-header">
         <label></label>
-        <select name="statField" data-dojo-type="dijit/form/Select" data-dojo-attach-point="statField" id="statField" style="display:none;">
+        <select name="statField" data-dojo-type="dijit/form/Select" data-dojo-attach-point="statField" id="statField" style="display:none; width: calc(64%);">
         </select>
       </div>
       <div class="input-row input-row-header">
         <label></label>
-        <select name="statType"  data-dojo-type="dijit/form/Select" data-dojo-attach-point="statType" id="statType" style="display:none;">
+        <select name="statType" data-dojo-type="dijit/form/Select" data-dojo-attach-point="statType" id="statType" style="display:none; width: calc(64%);"">
         </select>
       </div>
     </div>
@@ -866,36 +891,36 @@
     </div>
 
     <div class="config-content" id="aggLabelsSection" style="display: block;">
-      <div class="input-group input-group-full">
-        <select id="labelFont" value="Arial" style="width: 90px;">
-        </select>
-        <label for="labelFont">Font</label>
+      <div class="input-row input-row-header">
+        <label for="labelFontContainer">Font</label>
+        <div id="labelFontContainer">
+        </div>
       </div>
-      <div class="input-group input-group-full">
+      <div class="input-row input-row-header">
+        <label for="labelStyle">Style</label>
         <select name="labelStyle" id="labelStyle" style="width: 90px;">
           <option value="PLAIN">Plain</option>
           <option value="BOLD">Bold</option>
           <option value="ITALIC">Italic</option>
         </select>
-        <label for="labelStyle">Style</label>
+      </div>
+      <div class="input-row input-row-header">
+        <label for="labelFormat">Format</label>
+        <input type="text" id="labelFormat" value="###.#KMB" style="width: 90px;"/>
       </div>
       <div class="input-row">
         <div class="input-group">
-          <input type="number" id="labelSize" value="12" style="width: 35px;"/>
+          <input type="number" id="labelSize" value="12" style="width: 50px;"/>
           <label for="labelSize">Size</label>
         </div>
         <div class="input-group">
-          <input type="color" value="#000000" id="labelColor" style="width: 30px;"/>
+          <input type="color" value="#000000" id="labelColor" style="width: 50px;"/>
           <label for="labelColor">Color</label>
         </div>
         <div class="input-group">
-          <input type="number" min="0" max="255" style="width: 35px;" id="labelColorA" value="255"/>
+          <input type="number" min="0" max="255" style="width: 50px;" id="labelColorA" value="255"/>
           <label for="labelColorA">Opacity</label>
         </div>
-      </div>
-      <div class="input-group input-group-full">
-        <input type="text" id="labelFormat" value="###.#KMB" style="width: 90px;"/>
-        <label for="labelFormat">Format</label>
       </div>
     </div>
   </section>
