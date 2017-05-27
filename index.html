@@ -665,7 +665,7 @@
             "label": "label",
             "items": items
         };
-        
+
         var store = new ItemFileReadStore({
           data: fontsData
         });
@@ -674,14 +674,14 @@
           store: store,
           searchAttr: "label",
           id: selectId,
-          value: "Arial"
+          value: "Arial",
+          style: { width: '98%' }
         }).placeAt(selectContainer);
         
         fontsSelect.isValid = function() {
           var val = this.get('displayedValue');
           return true;
         };
-	
       }
 
     });
@@ -694,7 +694,7 @@
 <div id="map">
   <div class="basemapGallery-container" style="opacity:0.70" data-dojo-type="dijit/TitlePane"
        data-dojo-props="title:'Basemap', closable:false, open:false">
-    <div data-dojo-type="dijit/layout/ContentPane" style="width:380px; height:280px; overflow:auto">
+    <div data-dojo-type="dijit/layout/ContentPane" style="width: 380px; height: 280px; overflow: auto">
       <div id="basemapGallery"></div>
     </div>
   </div>
@@ -713,8 +713,8 @@
       </div>
     </div>
     <div class="config-content">
-      <div style="display: inline-block; width:100%;">
-        <input type="text" id="inputUrl" value="http://storm.esri.com:6080/arcgis/rest/services/faa-4326-hex-flat/MapServer" style="width:calc(100% - 5px);"/>
+      <div style="display: inline-block; width: 100%;">
+        <input type="text" id="inputUrl" value="http://storm.esri.com:6080/arcgis/rest/services/faa-4326-hex-flat/MapServer" style="width: calc(100% - 5px);"/>
       </div>
       <div class="input-row">
         <input type="button" class="button" id="applyRendererButton" value="Apply Renderer"/>
@@ -759,15 +759,15 @@
     <div class="config-content">
       <div class="input-row">
         <div class="input-group">
-          <input type="number" id="featureThreshold" value="100" style="width: 50px;"/>
+          <input type="number" id="featureThreshold" value="100" style="width: 60px;"/>
           <label for="featureThreshold">Feature Threshold</label>
         </div>
         <div class="input-group">
-          <input type="number" id="lodOffset" value="0" style="width: 50px;"/>
+          <input type="number" id="lodOffset" value="0" style="width: 60px;"/>
           <label for="lodOffset">LOD Offset</label>
         </div>
         <div class="input-group">
-          <input type="number" id="minBinSizeInPixels" value="25" style="width: 50px;"/>
+          <input type="number" id="minBinSizeInPixels" value="25" style="width: 60px;"/>
           <label for="minBinSizeInPixels">Min Bin Size (in pixels)</label>
         </div>
       </div>
@@ -891,34 +891,39 @@
     </div>
 
     <div class="config-content" id="aggLabelsSection" style="display: block;">
-      <div class="input-row input-row-header">
-        <label for="labelFontContainer">Font</label>
-        <div id="labelFontContainer">
+      <div style='display: inline-block; width: 100%;'>
+        <div style='float: left; width: 30%;'>Font</div>
+        <div style='float: left; width: 70%;'>
+          <div id="labelFontContainer"></div>
         </div>
       </div>
-      <div class="input-row input-row-header">
-        <label for="labelStyle">Style</label>
-        <select name="labelStyle" id="labelStyle" style="width: 90px;">
-          <option value="PLAIN">Plain</option>
-          <option value="BOLD">Bold</option>
-          <option value="ITALIC">Italic</option>
-        </select>
+      <div style='display: inline-block; width: 100%;'>
+        <div style='float: left; width: 30%;'>Style</div>
+        <div style='float: left; width: 70%;'>
+          <select name="labelStyle" id="labelStyle" style="width: 99%;">
+            <option value="PLAIN">Plain</option>
+            <option value="BOLD">Bold</option>
+            <option value="ITALIC">Italic</option>
+          </select>
+        </div>
       </div>
-      <div class="input-row input-row-header">
-        <label for="labelFormat">Format</label>
-        <input type="text" id="labelFormat" value="###.#KMB" style="width: 90px;"/>
+      <div style='display: inline-block; width: 100%;'>
+        <div style='float: left; width: 30%;'>Format</div>
+        <div style='float: left; width: 70%;'>
+          <input type="text" id="labelFormat" value="###.#KMB" style="width: 97%;"/>
+        </div>
       </div>
       <div class="input-row">
         <div class="input-group">
-          <input type="number" id="labelSize" value="12" style="width: 50px;"/>
+          <input type="number" id="labelSize" value="12" style="width: 60px;"/>
           <label for="labelSize">Size</label>
         </div>
         <div class="input-group">
-          <input type="color" value="#000000" id="labelColor" style="width: 50px;"/>
+          <input type="color" value="#000000" id="labelColor" style="width: 60px;"/>
           <label for="labelColor">Color</label>
         </div>
         <div class="input-group">
-          <input type="number" min="0" max="255" style="width: 50px;" id="labelColorA" value="255"/>
+          <input type="number" min="0" max="255" id="labelColorA" value="255" style="width: 60px;"/>
           <label for="labelColorA">Opacity</label>
         </div>
       </div>
@@ -933,7 +938,8 @@
       </div>
     </div>
     <div class="config-content">
-      <div class="input-group input-group-full">
+      <div class="input-row input-row-header">
+        <label for="Fstyle">Style</label>
         <select name="Fstyle" id="Fstyle" style="width: 90px;">
           <option value="esriSMScircle">Circle</option>
           <option value="esriSMSCross">Cross</option>
@@ -942,34 +948,33 @@
           <option value="esriSMSX">X</option>
           <option value="esriSMSPointer">Pointer</option>
         </select>
-        <label for="Fstyle">Style</label>
       </div>
       <div class="input-row">
         <div class="input-group">
-          <input type="number" min="0" id="Fsize" value="12" style="width: 35px;"/>
+          <input type="number" min="0" id="Fsize" value="12" style="width: 60px;"/>
           <label for="Fsize">Size</label>
         </div>
         <div class="input-group">
-          <input type="color" value="#9ecae1" id="Fcolor" style="width: 30px;"/>
+          <input type="color" value="#9ecae1" id="Fcolor" style="width: 60px;"/>
           <label for="Fcolor">Color</label>
         </div>
         <div class="input-group">
-          <input type="number" min="0" max="255" id="FcolorA" value="150" style="width: 35px;"/>
+          <input type="number" min="0" max="255" id="FcolorA" value="150" style="width: 60px;"/>
           <label for="FcolorA">Opacity</label>
         </div>
       </div>
       <div class="input-row">
         <div class="input-group">
-          <input type="color" value="#000000" id="Foutline" style="width: 30px;"/>
+          <input type="number" min="0" max="255" id="FoutlineW" value="1" style="width: 60px;"/>
+          <label for="FoutlineW">Outline Width</label>
+        </div>
+        <div class="input-group">
+          <input type="color" value="#000000" id="Foutline" style="width: 60px;""/>
           <label for="Foutline">Outline Color</label>
         </div>
         <div class="input-group">
-          <input type="number" min="0" max="255" id="FoutlineA" value="255" style="width: 35px;"/>
-          <label for="FoutlineA">Opacity</label>
-        </div>
-        <div class="input-group">
-          <input type="number" min="0" max="255" id="FoutlineW" value="1" style="width: 35px;"/>
-          <label for="FoutlineW">Width</label>
+          <input type="number" min="0" max="255" id="FoutlineA" value="255" style="width: 60px;"/>
+          <label for="FoutlineA">Outline Opacity</label>
         </div>
       </div>
 
