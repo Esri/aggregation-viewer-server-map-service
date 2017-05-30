@@ -123,7 +123,7 @@
       parser.parse();
 
       // class data members
-      var _map;
+      var _map = null;
       var _mapExtent;
       var _defaultWkid = 102100;
       var _wkid = 102100;
@@ -170,6 +170,7 @@
 
         if (_map) {
           // kill the map, if it already exists
+          _map.removeAllLayers();
           _map.destroy();
           _map = null;
           //console.log("destroyed previous map instance");
@@ -262,10 +263,6 @@
           var bounds = result[0];
           buildMap(bounds, false);
           dojo.byId("currentMapSR").value = _wkid;
-
-          if (_aggMapServiceUrl) {
-            setLayer();
-          }
         } else {
           console.log("Project was successful, but no results were returned.");
         }
