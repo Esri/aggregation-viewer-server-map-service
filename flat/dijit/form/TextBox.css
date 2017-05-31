@@ -20,6 +20,8 @@
 .flat .dijitTextBox,
 .flat .dijitInputInner {
   line-height: 17px;
+  font-size: small;
+  color: black;
 }
 .flat .dijitTextBox {
   background: #fff;
@@ -36,7 +38,7 @@
 }
 .flat .dijitTextBox .dijitInputField {
   padding: 0 4px;
-  margin: 0 2px;
+  margin: 0 0px;
 }
 .flat .dijitSelect.alt-primary,
 .flat .dijitComboBox.alt-primary,
