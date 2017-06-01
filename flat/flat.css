@@ -1,0 +1,22 @@
+/* dijit base */
+@import url("./flat_dijit.css");
+
+/* dijit */
+@import url("./dijit/Common.css");
+@import url("./dijit/Dialog.css");
+@import url("./dijit/Menu.css");
+
+/* layout */
+@import url("./dijit/layout/ContentPane.css");
+
+/* form */
+@import url("./dijit/form/Button.css");
+@import url("./dijit/form/Checkbox.css");
+@import url("./dijit/form/NumberSpinner.css");
+@import url("./dijit/form/RadioButton.css");
+@import url("./dijit/form/Select.css");
+@import url("./dijit/form/Slider.css");
+@import url("./dijit/form/TextBox.css");
+
+/* icons */
+@import url("./icons/flat-icons.css");
