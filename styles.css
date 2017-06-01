@@ -146,8 +146,8 @@ body .settingsTable td {
   vertical-align: top;
   padding: 1px 2px;
   text-align: left;
+  white-space: nowrap;
 }
-
 
 body .settingsSectionTable {
   padding-left: 4px;
@@ -169,7 +169,6 @@ body.configuration-displayed .collapser {
   bottom: 290px;
 }
 
-
 body.stats-ui-displayed #controls .tableContainer{
   height: 280px;
 }
@@ -184,9 +183,6 @@ body.stats-ui-displayed .collapser{
   bottom: 310px;
 }
 
-
-
-
 body.panel-collapsed #map{
   height: -moz-calc(100% - 1px);
   height: -webkit-calc(100% - 1px);
@@ -195,6 +191,26 @@ body.panel-collapsed #map{
 
 body.panel-collapsed .collapser {
   bottom: 0px;
+}
+
+#aggSettingsTable{
+  width: 200px;
+}
+
+#aggStyleTable{
+  width: 190px;
+}
+
+#aggBinsTable{
+  width: 280px;
+}
+
+#aggBinsTable tbody td:nth-of-type(2){
+  width: 170px;
+}
+
+#featureRenderingTable{
+  width: 225px;
 }
 
 @media (max-width:980px){
