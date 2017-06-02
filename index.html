@@ -22,12 +22,15 @@
   email: contracts@esri.com
 -->
 
+<!DOCTYPE html>
+
 <html>
 
 <head lang="en">
   <meta charset="UTF-8">
+
   <title>Aggregation Viewer - Server Side Dynamic Map Service Layer</title>
-  <link rel="stylesheet" href="https://js.arcgis.com/3.19/dijit/themes/claro/claro.css">
+
   <link rel="stylesheet" href="https://js.arcgis.com/3.19/esri/css/esri.css">
   <link rel="stylesheet" href="./mapServiceViewerStyles.css">
 
@@ -42,6 +45,7 @@
     };
   </script>
   <script src="https://js.arcgis.com/3.19/"></script>
+  <script src="https://use.fontawesome.com/9482a0b1d1.js"></script>
   <script>
     require([
       "dojo/parser",
@@ -100,6 +104,10 @@
       "dijit/TooltipDialog",
       "dijit/form/DropDownButton",
 
+      "dijit/form/FilteringSelect",
+      "dojo/data/ItemFileReadStore",
+
+      "dojo/query!css2",
       "dojo/domReady!"
     ], function (
       parser, dom, domStyle, domClass, on, JSON, arr, Color, registry, NumberSpinner,
@@ -109,17 +117,17 @@
       Query, QueryTask, webMercatorUtils,
       HeatmapRenderer, smartMapping, TooltipDialog, esriRequest, dojoJson, arcgisUtils, esriLang,
       FeatureLayer, BasemapGallery, AggregationRenderer,
-      TitlePane, Select, BorderContainer, ContentPane, RadioButton, ComboBox, Button, CheckBox, TooltipDialog, DropDownButton) {
+      TitlePane, Select, BorderContainer, ContentPane, RadioButton, ComboBox, Button, CheckBox, TooltipDialog, DropDownButton,
+      FilteringSelect, ItemFileReadStore ) {
 
       parser.parse();
 
       // class data members
-      var _map;
+      var _map = null;
       var _mapExtent;
-      var _wkid = 102100;
       var _defaultWkid = 102100;
+      var _wkid = 102100;
       var _aggMapServiceUrl;
-      var _fullExtent;
 
       var _refreshRateSpinner;
       var _msLayer;
@@ -128,12 +136,14 @@
       var _changeTimer;
       var _allowRefreshLayer = true;
 
+      var _gs = new GeometryService("http://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer");
+
       _mapExtent = new Extent({
         // http://help.arcgis.com/en/webapps/flexviewer/extenthelper/flexviewer_extenthelper.html
-        "xmin": -16155379.6875,
-        "xmax": -5464879.6875,
-        "ymin": 2273910.15625,
-        "ymax": 7051227.34375,
+        "xmin": -31641260.73269701,
+        "ymin": -21485531.406618062,
+        "xmax": 31758668.008143142,
+        "ymax": 20389730.169122037,
         "spatialReference": {"wkid": _defaultWkid}
       });
 
@@ -142,8 +152,8 @@
 
       buildMap(_mapExtent, true);
       initRefreshRateSpinner();
+      populateFilteringSelectFonts("labelFont");
 
-      var gs = new GeometryService("http://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer");
 
       function buildMap(mapExtent, tiled) {
 
@@ -152,6 +162,7 @@
 
         if (_map) {
           // kill the map, if it already exists
+          _map.removeAllLayers();
           _map.destroy();
           _map = null;
           //console.log("destroyed previous map instance");
@@ -163,6 +174,14 @@
           showAttribution: false,
           sliderStyle: "small"
         });
+
+        /*
+        var basemapGallery = new BasemapGallery({
+          showArcGISBasemaps: true,
+          map: _map
+        }, "basemapGallery");
+        basemapGallery.startup();
+        */
 
         //console.log("map extent wkid: ", _map.extent.spatialReference.wkid);
 
@@ -187,9 +206,11 @@
          });
          */
 
-        // you can choose different base maps as reference but has to use it as dynamic map
-        var worldReferenceUrl = "http://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer";
-
+        // you can choose different base maps as reference but has to use it as dynamic map service layer
+        //TODO - replace this with a custom UI synamic map service basemap layer widget
+        var worldReferenceUrl_Topo = "http://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer";
+        var worldReferenceUrl_Gray = "https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer";
+        var worldReferenceUrl = worldReferenceUrl_Gray;
         if (tiled) {
           var worldReference = new ArcGISTiledMapServiceLayer(worldReferenceUrl);
           _map.addLayers([worldReference]);
@@ -202,7 +223,7 @@
         }
 
         // Map event listeners
-        //_map.on("load", requestToUpdateLayerFromUI);
+        _map.on("load", setLayer);
 
         _map.on("zoom-end", function (evt) {
           //console.log("map zoom to: " + evt);
@@ -214,20 +235,17 @@
       function projectExtent(val) {
         //console.log("project extent val: ", val, typeof val);
         //console.log(_map);
-        //console.log(val.srcElement.value);
+        //console.log(val.target.value);
 
-        _wkid = parseInt(val.srcElement.value, 10);
+        _wkid = parseInt(val.target.value, 10);
         if (_wkid === _map.spatialReference.wkid) {
           // no need to project
-          //console.log("projectExtent-fullExtent: ", _fullExtent);
           return;
         }
-        //dom.byId("addMapServiceLayerButton").setAttribute('disabled', false);
-        //console.log(dom.byId("addMapServiceLayerButton"), _wkid);
 
-        // wkid changed, project the map's current extent
+        // _wkid changed, project the map's current extent
         var sr = new SpatialReference(_wkid);
-        var project = gs.project([_map.extent], sr);
+        var project = _gs.project([_map.extent], sr);
         project.then(success, failure);
       }
 
@@ -237,11 +255,6 @@
           var bounds = result[0];
           buildMap(bounds, false);
           dojo.byId("currentMapSR").value = _wkid;
-          //console.log("success-fullExtent: ", _fullExtent);
-
-          if (_aggMapServiceUrl) {
-            addMapServiceLayer();
-          }
         } else {
           console.log("Project was successful, but no results were returned.");
         }
@@ -259,12 +272,12 @@
 
       // UI event listeners
       on(dom.byId("applyRendererButton"), "click", requestToUpdateLayerFromUI);
-      on(dom.byId("addMapServiceLayerButton"), "click", addMapServiceLayer);
+      on(dom.byId("setLayerButton"), "click", setLayer);
 
       var inputs = document.getElementsByTagName("input");
       for (var i = 0; i < inputs.length; i++) {
         var input = inputs[i];
-        if ("addMapServiceLayerButton" != input.id)
+        if ("setLayerButton" != input.id)
           on(input, "change", requestToUpdateLayerFromUI);
       }
 
@@ -279,11 +292,12 @@
       on(dom.byId("useRotation"), "change", uiTrigger);
       on(dom.byId("renderLabels"), "change", uiTrigger);
 
+      on(dijit.byId("labelFont"), "change", requestToUpdateLayerFromUI);
       on(dijit.byId("statField"), "change", statFieldChanged);
       on(dijit.byId("statType"), "change", requestToUpdateLayerFromUI);
 
-
       on(document.getElementsByClassName("collapser")[0], "click", togglePanel);
+
 
       function togglePanel() {
         domClass.toggle(document.getElementsByTagName("body")[0], "panel-collapsed");
@@ -291,10 +305,11 @@
 
       // Layer related functions
 
-      function addMapServiceLayer() {
+      function setLayer() {
         domClass.add(document.getElementsByTagName("body")[0], "configuration-displayed");
-        if (_map.getLayer(_msLayerName)) {
-          _map.removeLayer(_map.getLayer(_msLayerName));
+        var msLayer = _map.getLayer(_msLayerName);
+        if (msLayer) {
+          _map.removeLayer(msLayer);
         }
 
         var url = dojo.byId("inputUrl").value;
@@ -307,7 +322,7 @@
         _msLayer = new ArcGISDynamicMapServiceLayer(url, options);
 
         _msLayer.on("load", function (evt) {
-          //dojo.byId("addMapServiceLayerButton").setAttribute('disabled', true);
+          //dojo.byId("setLayerButton").setAttribute('disabled', true);
           if (evt.layer.version == "10.4") {
             dojo.byId("geoHashStyle").disabled = true;
             dojo.byId("labelFormat").value = "#.##"
@@ -388,7 +403,7 @@
 
         var labels = {
           color: hexToRgb(dojo.byId("labelColor").value, parseFloat(dojo.byId("labelColorA").value)),
-          font: dojo.byId("labelFont").value,
+          font: dijit.byId("labelFont").get('displayedValue'),
           size: parseFloat(dojo.byId("labelSize").value),
           style: dojo.byId("labelStyle").value,
           format: dojo.byId("labelFormat").value
@@ -455,13 +470,13 @@
       }
 
       function uiTrigger(evt) {
-        if (evt.srcElement.id == "style") {
-          if (evt.srcElement.value == "Oval") {
-            domStyle.set(dom.byId("ovalAttrSection"), "display", 'table-row-group');
+        if (evt.target.id == "style") {
+          if (evt.target.value == "Oval") {
+            domStyle.set(dom.byId("ovalAttrSection"), "display", 'flex');
           } else {
             domStyle.set(dom.byId("ovalAttrSection"), "display", 'none');
           }
-        } else if (evt.srcElement.id == "useStats") {
+        } else if (evt.target.id == "useStats") {
           if (dojo.byId("useStats").checked == true) {
             dojo.byId("statField").style.display = "block";
             dojo.byId("statType").style.display = "block";
@@ -469,8 +484,7 @@
             dojo.byId("statField").style.display = "none";
             dojo.byId("statType").style.display = "none";
           }
-          domClass.toggle(document.getElementsByTagName("body")[0], "stats-ui-displayed");
-        } else if (evt.srcElement.id == "useRotation") {
+        } else if (evt.target.id == "useRotation") {
           if (dojo.byId("useRotation").checked == true) {
             dojo.byId("rotationExpression").style.visibility = "visible";
             dojo.byId("rotationType").style.visibility = "visible";
@@ -478,7 +492,7 @@
             dojo.byId("rotationExpression").style.visibility = "hidden";
             dojo.byId("rotationType").style.visibility = "hidden";
           }
-        } else if (evt.srcElement.id == "renderLabels") {
+        } else if (evt.target.id == "renderLabels") {
           if (dojo.byId("renderLabels").checked == true) {
             dojo.byId("aggLabelsSection").style.visibility = "visible";
           } else {
@@ -533,7 +547,7 @@
         requestToUpdateLayerFromUI();
       }
 
-      function updateLayerFields(msLayer) {
+      function updateLayerFields() {
         var mapServiceInfoDeferred = esri.request({
           url: _msLayer.url + "/0",
           content: {
@@ -610,21 +624,69 @@
 
       function initRefreshRateSpinner() {
         on(dojo.byId("refreshRateSpinner"), "change", function(e) {
-           value = parseInt(e.target.value);
-           if (value == 0)
-             _msLayer.setRefreshInterval(24 * 60);
-           else
-             _msLayer.setRefreshInterval(value / 60);
-         })
+          value = parseInt(e.target.value);
+          if (value == 0)
+            _msLayer.setRefreshInterval(24 * 60);
+          else
+            _msLayer.setRefreshInterval(value / 60);
+        })
       }
+
+      function populateFilteringSelectFonts(selectId) {
+        var selectContainer = dojo.byId(selectId + "Container");
+          if (!selectContainer)
+            return;
+           
+        var fonts = [
+          "Arial", "Arial Black", "Arial Narrow", "Baskerville Old Face", "Batang", "Bauhaus 93", "Bell MT", "Bernard MT Condensed", "Book Antiqua", "Bookman Old Style", "Brush Script MT", "Calisto MT", "Century", "Century Gothic", "Century Schoolbook", "Colonna MT", "Comic Sans MS", "Cooper Black", "Copperplate Gothic Light", "Courier", "Courier New", "Curlz MT", "Edwardian  Script ITC", "Engravers MT", "Footlight MT Light", "Garamond", "Georgia", "Goudy Old Style", "Gulim", "Haettenschweiler", "Handwriting - Dakota", "Harrington", "Helvetica", "Impact", "Imprint MT Shadow", "Lucida Bright", "Lucida Calligraphy", "Lucida Fax", "Lucida Handwriting", "Lucida Sans", "Lucida Sans Typewriter", "Matura MT Script Capitals", "Mistral", "Modern No. 20", "Monotype Corsiva", "MS Gothic", "MS Mincho", "MS PGothic", "MS PMincho", "Onyx", "Papyrus", "Perpetua Titling MT", "Plantagenet Cherokee", "Playbill", "PMingLiU", "Rockwell", "Serif", "SimSun", "Stencil", "Symbol", "Tahoma", "Times", "Times New Roman", "Trebuchet MS", "Verdana", "Webdings", "Wide Latin", "Wingdings", "Wingdings 2", "Wingdings 3" ];
+
+        var items = [];
+        for (var i = 0; i < fonts.length; i++) {
+          var font = fonts[i];
+          var item = {'id': font, 'label': font, 'value': font, 'type': 'Windows' };
+          items.push(item);
+        }
+
+        var fontsData = {
+            "identifier": "id",
+            "label": "label",
+            "items": items
+        };
+
+        var store = new ItemFileReadStore({
+          data: fontsData
+        });
+
+        var fontsSelect = new FilteringSelect({
+          store: store,
+          searchAttr: "label",
+          id: selectId,
+          value: "Arial",
+          style: { width: '98%' }
+        }).placeAt(selectContainer);
+        
+        fontsSelect.isValid = function() {
+          var val = this.get('displayedValue');
+          return true;
+        };
+      }
+
     });
   </script>
 </head>
 
-<body>
-
+<body class="flat">
 <div id="map"></div>
-
+<!--
+<div id="map">
+  <div class="basemapGallery-container" style="opacity:0.70" data-dojo-type="dijit/TitlePane"
+       data-dojo-props="title:'Basemap', closable:false, open:false">
+    <div data-dojo-type="dijit/layout/ContentPane" style="width: 380px; height: 280px; overflow: auto">
+      <div id="basemapGallery"></div>
+    </div>
+  </div>
+</div>
+-->
 <div class="collapser">
   <i id="collapserIcon" class="flat-chevron-down"></i>
   <i id="expanderIcon" class="flat-chevron-up"></i>
@@ -636,7 +698,7 @@
     <input type="text" id="inputUrl"
            value="http://storm.esri.com:6080/arcgis/rest/services/faa-4326-hex-flat/MapServer"
            style="width: 500px; margin-bottom: 5px"/>
-    <input type="button" class="button" id="addMapServiceLayerButton" value="Set Layer"/>
+    <input type="button" class="button" id="setLayerButton" value="Set Layer"/>
     <input type="button" class="button" id="applyRendererButton" value="Apply Renderer" style="display:none;"/>
     <span id="refreshRateSection" style="display:none">
       <label for="refreshRateSpinner" style="margin-left:35px">Refresh Rate</label>
@@ -804,7 +866,8 @@
             <tr>
               <td>Font:</td>
               <td>
-                <input type="text" id="labelFont" value="Arial" style="width: 90px;"/>
+                <div id="labelFontContainer"></div>
+                </div>
               </td>
             </tr>
             <tr>
