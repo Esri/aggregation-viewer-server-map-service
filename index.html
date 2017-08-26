@@ -436,45 +436,25 @@
           var currentSymbol = featureRenderer.symbol;
           if (currentSymbol.type && currentSymbol.type === "esriSMS") {
             // SMS simple symbol
-            var newSymbol = {
-              type: "esriSMS",
-              style: dojo.byId("Fstyle").value,
-              color: hexToRgb(dojo.byId("Fcolor").value, parseFloat(dojo.byId("FcolorA").value)),
-              size: parseFloat(dojo.byId("Fsize").value),
-              angle: 0,
-              xoffset: 0,
-              yoffset: 0,
-              outline: {
-                color: hexToRgb(dojo.byId("Foutline").value, parseFloat(dojo.byId("FoutlineA").value)),
-                width: parseFloat(dojo.byId("FoutlineW").value)
-              }
-            };
-            featureRenderer.symbol = newSymbol;
+            currentSymbol.style = dojo.byId("Fstyle").value;
+            currentSymbol.color = hexToRgb(dojo.byId("Fcolor").value, parseFloat(dojo.byId("FcolorA").value));
+            currentSymbol.size = parseFloat(dojo.byId("Fsize").value);
+            currentSymbol.outline.color = hexToRgb(dojo.byId("Foutline").value, parseFloat(dojo.byId("FoutlineA").value));
+            currentSymbol.outline.width = parseFloat(dojo.byId("FoutlineW").value);
+            featureRenderer.symbol = currentSymbol;
           }
           else if (currentSymbol.type && currentSymbol.type === "esriSFS") {
             // SFS simple symbol
-            var newSymbol = {
-              type: "esriSFS",
-              style: "esriSFSSolid",
-              color: hexToRgb(dojo.byId("Fcolor").value, parseFloat(dojo.byId("FcolorA").value)),
-              outline: {
-              type: "esriSLS",
-              style: "esriSLSSolid",
-              color: hexToRgb(dojo.byId("Foutline").value, parseFloat(dojo.byId("FoutlineA").value)),
-              width: parseFloat(dojo.byId("FoutlineW").value)
-              }
-            };
-            featureRenderer.symbol = newSymbol;
+            currentSymbol.color = hexToRgb(dojo.byId("Fcolor").value, parseFloat(dojo.byId("FcolorA").value));
+            currentSymbol.outline.color = hexToRgb(dojo.byId("Foutline").value, parseFloat(dojo.byId("FoutlineA").value));
+            currentSymbol.outline.width = parseFloat(dojo.byId("FoutlineW").value);
+            featureRenderer.symbol = currentSymbol;
           }
           else if (currentSymbol.type && currentSymbol.type === "esriSLS") {
             // SLS simple symbol
-            var newSymbol =  {
-              type: "esriSLS",
-              style: "esriSLSSolid",
-              color: hexToRgb(dojo.byId("Fcolor").value, parseFloat(dojo.byId("FcolorA").value)),
-              width: parseFloat(dojo.byId("FoutlineW").value)
-             };
-             featureRenderer.symbol = newSymbol;
+            currentSymbol.color = hexToRgb(dojo.byId("Fcolor").value, parseFloat(dojo.byId("FcolorA").value));
+            currentSymbol.width = parseFloat(dojo.byId("FoutlineW").value);
+            featureRenderer.symbol = currentSymbol;
           }
         }
 
