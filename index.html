@@ -148,7 +148,7 @@
       });
 
       dom.byId("wkid").value = _mapExtent.spatialReference.wkid;
-      on(dom.byId("wkid"), "change", projectExtent);
+      on(dom.byId("wkid"), "change", onWkidButtonChange);
 
       on(dom.byId("controls"), on.selector(".config-header", "click"), function(e) {
         if (e.target.type !== "checkbox") {
@@ -240,36 +240,56 @@
         dojo.byId("currentMapSR").value = _wkid;
       }
 
-      function projectExtent(val) {
-        //console.log("project extent val: ", val, typeof val);
-        //console.log(_map);
-        //console.log(val.target.value);
-
-        _wkid = parseInt(val.target.value, 10);
+      function onWkidButtonChange(evt) {
+        _wkid = parseInt(evt.target.value, 10);
         if (_wkid === _map.spatialReference.wkid) {
           // no need to project
           return;
         }
 
         // _wkid changed, project the map's current extent
-        var sr = new SpatialReference(_wkid);
-        var project = _gs.project([_map.extent], sr);
-        project.then(success, failure);
+        projectMapToSR(_wkid);
       }
 
-      function success(result) {
+      function projectMapToSR(wkid) {
+        var sr = new SpatialReference(wkid);
+        var project = _gs.project([_map.extent], sr);
+        project.then(projectMapToSRSuccess, projectMapToSRFailure);
+      }
+
+      function projectMapToSRSuccess(result) {
         //console.log("project successful: ", result);
         if (result.length) {
-          var bounds = result[0];
-          buildMap(bounds, false);
+          var newMapExtent = result[0];
+          buildMap(newMapExtent, false);
           dojo.byId("currentMapSR").value = _wkid;
         } else {
           console.log("Project was successful, but no results were returned.");
         }
       }
 
-      function failure(err) {
-        console.log("Project failed:  ", err);
+      function projectMapToSRFailure(err) {
+        console.log("Project Map to SR failed: ", err);
+      }
+
+      function projectAndSetMapExtent(extent, wkid) {
+        var sr = new SpatialReference(wkid);
+        var project = _gs.project([extent], sr);
+        project.then(projectAndSetMapExtentSuccess, projectAndSetMapExtentFailure);
+      }
+
+      function projectAndSetMapExtentSuccess(result) {
+        //console.log("project successful: ", result);
+        if (result.length) {
+          _mapExtent = result[0];
+          _map.setExtent(_mapExtent);
+        } else {
+          console.log("Project was successful, but no results were returned.");
+        }
+      }
+
+      function projectAndSetMapExtentFailure(err) {
+        console.log("Project extent failed: ", err);
       }
 
       //The Measurement Widget require a proxy page to handle communications with the ArcGIS Server services. You will need to
@@ -337,6 +357,16 @@
             dojo.byId("geoHashStyle").disabled = false;
             dojo.byId("labelFormat").value = "###.#KMB"
           }
+
+          var initialExtent = new Extent({
+            "xmin": evt.layer.initialExtent.xmin,
+            "ymin": evt.layer.initialExtent.ymin,
+            "xmax": evt.layer.initialExtent.xmax,
+            "ymax": evt.layer.initialExtent.ymax,
+            "spatialReference": {"wkid": 4326}
+          });
+          projectAndSetMapExtent(initialExtent, _wkid);
+
         });
 
         _msLayer.on("error", function (err) {
