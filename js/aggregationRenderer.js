@@ -36,77 +36,77 @@ function (declare, lang, Renderer, rendererJsonUtils) {
     constructor: function (properties, labels, fieldStatistic, binRenderer, geoHashStyle, featureRenderer, backgroundColor) {
 
       this.defaultAggregationRenderer = {
-        "type": "aggregation",
-        "style": "Grid",
-        "featureThreshold": 0,
-        "lodOffset": 0,
-        "minBinSizeInPixels": 25,
-        "fullLodGrid": false,
-        "labels": {
-          "color": [0,0,0,255],
-          "font": "Arial",
-          "size": 12,
-          "style": "PLAIN",
-          "format": "###.#KMB"
+        type: "aggregation",
+        style: "Grid",
+        featureThreshold: 0,
+        lodOffset: 0,
+        minBinSizeInPixels: 25,
+        fullLodGrid: false,
+        labels: {
+          color: [0,0,0,255],
+          font: "Arial",
+          size: 12,
+          style: "PLAIN",
+          format: "###.#KMB"
         },
-        "fieldStatistic": {
-          "fieldName": "",
-          "statisticType": ""
+        fieldStatistic: {
+          fieldName: "",
+          statisticType: ""
         },
-        "binRenderer": {
-          "type": "Continuous",
-          "minColor": [255,0,0,20],
-          "maxColor": [255,0,0,255],
-          "minOutlineColor": [0,0,0,100],
-          "maxOutlineColor": [0,0,0,100],
-          "minOutlineWidth": 0.5,
-          "maxOutlineWidth": 0.5,
-          "minValue": null,
-          "maxValue": null,
-          "minSize": 100,
-          "maxSize": 100,
-          "normalizeByBinArea": false
+        binRenderer: {
+          type: "Continuous",
+          minColor: [255,0,0,20],
+          maxColor: [255,0,0,255],
+          minOutlineColor: [0,0,0,100],
+          maxOutlineColor: [0,0,0,100],
+          minOutlineWidth: 0.5,
+          maxOutlineWidth: 0.5,
+          minValue: null,
+          maxValue: null,
+          minSize: 100,
+          maxSize: 100,
+          normalizeByBinArea: false
         },
-        "geoHashStyle": {
-          "style": "geohash",
-          "sr": "4326"
+        geoHashStyle: {
+          style: "geohash",
+          sr: "4326"
         },
-        "featureRenderer": {
-          "type": "simple",
-          "symbol":  {
-            "type": "esriSMS",
-            "style": "esriSMSCircle",
-            "color": [255,0,0,255],
-            "size": 12,
-            "angle": 0,
-            "xoffset": 0,
-            "yoffset": 0,
-            "outline": {
-              "color": [0,0,0,255],
-              "width": 1
+        featureRenderer: {
+          type: "simple",
+          symbol:  {
+            type: "esriSMS",
+            style: "esriSMSCircle",
+            color: [255,0,0,255],
+            size: 12,
+            angle: 0,
+            xoffset: 0,
+            yoffset: 0,
+            outline: {
+              color: [0,0,0,255],
+              width: 1
             }
           },
-          "rotationType": "",
-          "rotationExpression": "",
-          "label": "",
-          "description": ""
+          rotationType: "",
+          rotationExpression: "",
+          label: "",
+          description: ""
         },
-        "backgroundColor": [0,0,255,0]
+        backgroundColor: [0,0,255,0]
       };
 
       this.agg = {
-        "type": this.defaultAggregationRenderer.type,
-        "style": properties ? properties.style : this.defaultAggregationRenderer.style,
-        "featureThreshold": properties ? properties.featureThreshold : this.defaultAggregationRenderer.featureThreshold,
-        "lodOffset": properties ? properties.lodOffset : this.defaultAggregationRenderer.lodOffset,
-        "minBinSizeInPixels": properties ? properties.minBinSizeInPixels : this.defaultAggregationRenderer.minBinSizeInPixels,
-        "fullLodGrid": fullLodGrid ? fullLodGrid : this.defaultAggregationRenderer.fullLodGrid,
-        "labels": labels ? labels : this.defaultAggregationRenderer.labels,
-        "fieldStatistic": fieldStatistic ? fieldStatistic : this.defaultAggregationRenderer.fieldStatistic,
-        "binRenderer": binRenderer ? binRenderer : this.defaultAggregationRenderer.binRenderer,
-        "geoHashStyle": geoHashStyle ? geoHashStyle : this.defaultAggregationRenderer.geoHashStyle,
-        "featureRenderer": featureRenderer ? featureRenderer : this.defaultAggregationRenderer.featureRenderer,
-        "backgroundColor": backgroundColor ? backgroundColor : this.defaultAggregationRenderer.backgroundColor
+        type: this.defaultAggregationRenderer.type,
+        style: properties ? properties.style : this.defaultAggregationRenderer.style,
+        featureThreshold: properties ? properties.featureThreshold : this.defaultAggregationRenderer.featureThreshold,
+        lodOffset: properties ? properties.lodOffset : this.defaultAggregationRenderer.lodOffset,
+        minBinSizeInPixels: properties ? properties.minBinSizeInPixels : this.defaultAggregationRenderer.minBinSizeInPixels,
+        fullLodGrid: fullLodGrid ? fullLodGrid : this.defaultAggregationRenderer.fullLodGrid,
+        labels: labels ? labels : this.defaultAggregationRenderer.labels,
+        fieldStatistic: fieldStatistic ? fieldStatistic : this.defaultAggregationRenderer.fieldStatistic,
+        binRenderer: binRenderer ? binRenderer : this.defaultAggregationRenderer.binRenderer,
+        geoHashStyle: geoHashStyle ? geoHashStyle : this.defaultAggregationRenderer.geoHashStyle,
+        featureRenderer: featureRenderer ? featureRenderer : this.defaultAggregationRenderer.featureRenderer,
+        backgroundColor: backgroundColor ? backgroundColor : this.defaultAggregationRenderer.backgroundColor
       };
     },
 

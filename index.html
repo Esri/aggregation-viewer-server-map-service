@@ -132,7 +132,7 @@
       var _refreshRateSpinner;
       var _msLayer;
       var _msLayerName = "MapService1";
-      var _msLayerFields;
+      var _msLayerInfo;
       var _changeTimer;
       var _allowRefreshLayer = true;
 
@@ -356,7 +356,7 @@
         }
         _aggMapServiceUrl = url;
 
-        updateLayerFields();
+        getLayerInfo();
       }
 
       function requestToUpdateLayerFromUI() {
@@ -421,30 +421,66 @@
 
         var useRotation = (dojo.byId("useRotation").checked == true);
 
-        var featureRenderer = {
-          "type": "simple",
-          symbol: {
-            type: "esriSMS",
-            style: dojo.byId("Fstyle").value,
-            color: hexToRgb(dojo.byId("Fcolor").value, parseFloat(dojo.byId("FcolorA").value)),
-            size: parseFloat(dojo.byId("Fsize").value),
-            angle: 0,
-            xoffset: 0,
-            yoffset: 0,
-            outline: {
+        // feature renderer
+        var defaultAggregationRenderer = new AggregationRenderer();
+        var featureRenderer = defaultAggregationRenderer.defaultAggregationRenderer.featureRenderer;
+        if (_msLayerInfo && _msLayerInfo.drawingInfo && _msLayerInfo.drawingInfo.renderer)
+          featureRenderer = _msLayerInfo.drawingInfo.renderer;
+
+        if (featureRenderer.type && featureRenderer.type === "simple" && featureRenderer.symbol) {
+          featureRenderer.label = "";
+          featureRenderer.description = "";
+          featureRenderer.rotationType = useRotation ? dojo.byId("rotationType").value : "";
+          featureRenderer.rotationExpression = useRotation ? dojo.byId("rotationExpression").value : "";
+
+          var currentSymbol = featureRenderer.symbol;
+          if (currentSymbol.type && currentSymbol.type === "esriSMS") {
+            // SMS simple symbol
+            var newSymbol = {
+              type: "esriSMS",
+              style: dojo.byId("Fstyle").value,
+              color: hexToRgb(dojo.byId("Fcolor").value, parseFloat(dojo.byId("FcolorA").value)),
+              size: parseFloat(dojo.byId("Fsize").value),
+              angle: 0,
+              xoffset: 0,
+              yoffset: 0,
+              outline: {
+                color: hexToRgb(dojo.byId("Foutline").value, parseFloat(dojo.byId("FoutlineA").value)),
+                width: parseFloat(dojo.byId("FoutlineW").value)
+              }
+            };
+            featureRenderer.symbol = newSymbol;
+          }
+          else if (currentSymbol.type && currentSymbol.type === "esriSFS") {
+            // SFS simple symbol
+            var newSymbol = {
+              type: "esriSFS",
+              style: "esriSFSSolid",
+              color: hexToRgb(dojo.byId("Fcolor").value, parseFloat(dojo.byId("FcolorA").value)),
+              outline: {
+              type: "esriSLS",
+              style: "esriSLSSolid",
               color: hexToRgb(dojo.byId("Foutline").value, parseFloat(dojo.byId("FoutlineA").value)),
               width: parseFloat(dojo.byId("FoutlineW").value)
-            }
-          },
-          "label": "",
-          "description": "",
-          "rotationType": useRotation ? dojo.byId("rotationType").value : "",
-          "rotationExpression": useRotation ? dojo.byId("rotationExpression").value : ""
-        };
+              }
+            };
+            featureRenderer.symbol = newSymbol;
+          }
+          else if (currentSymbol.type && currentSymbol.type === "esriSLS") {
+            // SLS simple symbol
+            var newSymbol =  {
+              type: "esriSLS",
+              style: "esriSLSSolid",
+              color: hexToRgb(dojo.byId("Fcolor").value, parseFloat(dojo.byId("FcolorA").value)),
+              width: parseFloat(dojo.byId("FoutlineW").value)
+             };
+             featureRenderer.symbol = newSymbol;
+          }
+        }
 
         var fieldStatistic = {
-          "fieldName": dijit.byId("statField").value,
-          "statisticType": dijit.byId("statType").value
+          fieldName: dijit.byId("statField").value,
+          statisticType: dijit.byId("statType").value
         };
 
         renderer.setStyle(dojo.byId("style").value);
@@ -528,8 +564,8 @@
         // find the field by name
         var fieldName = dijit.byId("statField").value;
         var field = null;
-        for (i = 0; i < _msLayerFields.length; i++) {
-          var currentField = _msLayerFields[i];
+        for (i = 0; i < _msLayerInfo.fields.length; i++) {
+          var currentField = _msLayerInfo.fields[i];
           if (currentField.name == fieldName)
             field = currentField;
         }
@@ -557,7 +593,7 @@
         requestToUpdateLayerFromUI();
       }
 
-      function updateLayerFields() {
+      function getLayerInfo() {
         var mapServiceInfoDeferred = esri.request({
           url: _msLayer.url + "/0",
           content: {
@@ -566,7 +602,7 @@
           callbackParamName: "callback"
         });
         mapServiceInfoDeferred.then(function (response) {
-              _msLayerFields = response.fields;
+              _msLayerInfo = response;
               populateDijitSelectWithLayerFields(dijit.byId("statField"), false);
               populateSelectWithLayerFields(dojo.byId(rotationExpression), true);
               _allowRefreshLayer = false;
@@ -580,10 +616,10 @@
         // clear exiting options
         select.removeOption(select.getOptions());
 
-        // populate options based on the _msLayerFields array
+        // populate options based on the _msLayerInfo.fields array
         var i;
-        for (i = 0; i < _msLayerFields.length; i++) {
-          var field = _msLayerFields[i];
+        for (i = 0; i < _msLayerInfo.fields.length; i++) {
+          var field = _msLayerInfo.fields[i];
           var fieldType = field.type.substring(13);
           var option = {'label': field.name + "&nbsp;&nbsp;" + "<em class='fieldTypeSelect'>" + fieldType + '</em>', 'value': field.name, 'type': field.type };
           if (numericOnly) {
@@ -603,10 +639,10 @@
           select.remove(i);
         }
 
-        // populate options based on the _msLayerFields array
+        // populate options based on the _msLayerInfo.fields array
         var pos = 0;
-        for (i = 0; i < _msLayerFields.length; i++) {
-          var field = _msLayerFields[i];
+        for (i = 0; i < _msLayerInfo.fields.length; i++) {
+          var field = _msLayerInfo.fields[i];
           if (numericOnly) {
             if (isFieldNumeric(field))
               select.options[pos++] = new Option(field.name, field.name);
@@ -658,9 +694,9 @@
         }
 
         var fontsData = {
-            "identifier": "id",
-            "label": "label",
-            "items": items
+          identifier: "id",
+          label: "label",
+          items: items
         };
 
         var store = new ItemFileReadStore({
