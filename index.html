@@ -482,7 +482,7 @@
           }
           else if (currentSymbol.type && currentSymbol.type === "esriSLS") {
             // SLS simple symbol
-            currentSymbol.color = hexToRgb(dojo.byId("Fcolor").value, parseFloat(dojo.byId("FcolorA").value));
+            currentSymbol.color = hexToRgb(dojo.byId("Foutline").value, parseFloat(dojo.byId("FoutlineA").value));
             currentSymbol.width = parseFloat(dojo.byId("FoutlineW").value);
             featureRenderer.symbol = currentSymbol;
           }
