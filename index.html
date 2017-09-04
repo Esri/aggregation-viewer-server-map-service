@@ -166,7 +166,7 @@
         _mapExtent = newMapExtent || _mapExtent;
         buildMap();
       }
-      
+
       function buildMap() {
 
         esri.config.defaults.io.corsEnabledServers.push('http://storm.esri.com:6080');
@@ -187,7 +187,7 @@
         });
 
         // only the first map built is tiled
-        var basemapUrl = dom.byId("basemapUrl").value
+        var basemapUrl = dom.byId("basemapUrl").value;
         if (_isBasemapTiled) {
           var worldReference = new ArcGISTiledMapServiceLayer(basemapUrl);
           _map.addLayers([worldReference]);
