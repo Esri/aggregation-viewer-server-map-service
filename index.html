@@ -31,7 +31,7 @@
 
   <title>Aggregation Viewer - Server Side Dynamic Map Service Layer</title>
 
-  <link rel="stylesheet" href="https://js.arcgis.com/3.19/esri/css/esri.css">
+  <link rel="stylesheet" href="https://js.arcgis.com/3.21/esri/css/esri.css">
   <link rel="stylesheet" href="./mapServiceViewerStyles.css">
 
   <script type="text/javascript">
@@ -44,7 +44,7 @@
       }]
     };
   </script>
-  <script src="https://js.arcgis.com/3.19/"></script>
+  <script src="https://js.arcgis.com/3.21/"></script>
   <script src="https://use.fontawesome.com/9482a0b1d1.js"></script>
   <script>
     require([
@@ -124,12 +124,11 @@
       // class data members
       var _map = null;
       var _isBasemapTiled = true;
-      var _mapExtent;
       var _defaultWkid = 102100;
       var _wkid = 102100;
       var _aggMapServiceUrl;
+      var _zoomMapToLayerExtent = true;
 
-      var _refreshRateSpinner;
       var _msLayer;
       var _msLayerName = "MapService1";
       var _msLayerInfo;
@@ -138,7 +137,7 @@
 
       var _gs = new GeometryService("http://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer");
 
-      _mapExtent = new Extent({
+      var initMapExtent = new Extent({
         // http://help.arcgis.com/en/webapps/flexviewer/extenthelper/flexviewer_extenthelper.html
         "xmin": -31641260.73269701,
         "ymin": -21485531.406618062,
@@ -147,7 +146,7 @@
         "spatialReference": {"wkid": _defaultWkid}
       });
 
-      dom.byId("wkid").value = _mapExtent.spatialReference.wkid;
+      dom.byId("wkid").value = initMapExtent.spatialReference.wkid;
       on(dom.byId("wkid"), "change", onWkidButtonChange);
 
       on(dom.byId("controls"), on.selector(".config-header", "click"), function(e) {
@@ -158,16 +157,15 @@
         }
       });
 
-      buildMap();
+      buildMap(initMapExtent);
       initRefreshRateSpinner();
       populateFilteringSelectFonts("labelFont");
 
-      function reBuildMap(newMapExtent) {
-        _mapExtent = newMapExtent || _mapExtent;
-        buildMap();
+      function onSelectedBasemapChanged() {
+        buildMap(_map.extent);
       }
 
-      function buildMap() {
+      function buildMap(mapExtent) {
 
         esri.config.defaults.io.corsEnabledServers.push('http://storm.esri.com:6080');
         esri.config.defaults.io.corsEnabledServers.push('https://storm.esri.com:6443');
@@ -181,31 +179,28 @@
         }
         _map = new Map("map", {
           wrapAround180: true,
-          extent: _mapExtent,
+          extent: mapExtent,
           showAttribution: false,
           sliderStyle: "small"
         });
 
-        // only the first map built is tiled
+        _map.on("load", setLayer);
+
+        // add the basemap
         var basemapUrl = dom.byId("basemapUrl").value;
+        var basemapLayer;
         if (_isBasemapTiled) {
-          var worldReference = new ArcGISTiledMapServiceLayer(basemapUrl);
-          _map.addLayers([worldReference]);
+          basemapLayer = new ArcGISTiledMapServiceLayer(basemapUrl);
         } else {
-          var worldReference = new ArcGISDynamicMapServiceLayer(basemapUrl, {
+          basemapLayer = new ArcGISDynamicMapServiceLayer(basemapUrl, {
             "showAttribution": false,
             "opacity": 1.0
           });
-          _map.addLayers([worldReference]);
         }
+        _map.addLayers([basemapLayer]);
+
+        // only the first map built is tiled
         _isBasemapTiled = false;
-
-        // Map event listeners
-        _map.on("load", setLayer);
-
-        _map.on("zoom-end", function (evt) {
-          //console.log("map zoom to: " + evt);
-        });
 
         dojo.byId("currentMapSR").value = _wkid;
       }
@@ -231,7 +226,7 @@
         //console.log("project successful: ", result);
         if (result.length) {
           var newMapExtent = result[0];
-          reBuildMap(newMapExtent);
+          buildMap(newMapExtent);
           dojo.byId("currentMapSR").value = _wkid;
         } else {
           console.log("Project was successful, but no results were returned.");
@@ -251,8 +246,9 @@
       function projectAndSetMapExtentSuccess(result) {
         //console.log("project successful: ", result);
         if (result.length) {
-          _mapExtent = result[0];
-          _map.setExtent(_mapExtent);
+          var newMapExtent = result[0];
+          _map.setExtent(newMapExtent);
+          _msLayer.refresh();
         } else {
           console.log("Project was successful, but no results were returned.");
         }
@@ -270,7 +266,7 @@
 
       // UI event listeners
       on(dom.byId("applyRendererButton"), "click", requestToUpdateLayerFromUI);
-      on(dom.byId("setLayerButton"), "click", setLayer);
+      on(dom.byId("setLayerButton"), "click", onSetLayerButton);
 
       var inputs = document.getElementsByTagName("input");
       for (var i = 0; i < inputs.length; i++) {
@@ -283,7 +279,7 @@
       for (var i = 0; i < selects.length; i++) {
         var select = selects[i];
         if ("basemapUrl" == select.id)
-          on(select, "change", buildMap);
+          on(select, "change", onSelectedBasemapChanged);
         else
           on(select, "change", requestToUpdateLayerFromUI);
       }
@@ -300,17 +296,21 @@
       on(document.getElementsByClassName("collapser")[0], "click", togglePanel);
 
 
+      // functions
+
       function togglePanel() {
         domClass.toggle(document.getElementsByTagName("body")[0], "panel-collapsed");
       }
 
-      // Layer related functions
+      function onSetLayerButton() {
+        _zoomMapToLayerExtent = true;
+        setLayer();
+      }
 
       function setLayer() {
         var msLayer = _map.getLayer(_msLayerName);
-        if (msLayer) {
+        if (msLayer)
           _map.removeLayer(msLayer);
-        }
 
         var url = dojo.byId("inputUrl").value;
         var options = {
@@ -322,7 +322,6 @@
         _msLayer = new ArcGISDynamicMapServiceLayer(url, options);
 
         _msLayer.on("load", function (evt) {
-          //dojo.byId("setLayerButton").setAttribute('disabled', true);
           if (evt.layer.version == "10.4") {
             dojo.byId("geoHashStyle").disabled = true;
             dojo.byId("labelFormat").value = "#.##"
@@ -331,15 +330,19 @@
             dojo.byId("labelFormat").value = "###.#KMB"
           }
 
-          var initialExtent = new Extent({
-            "xmin": evt.layer.initialExtent.xmin,
-            "ymin": evt.layer.initialExtent.ymin,
-            "xmax": evt.layer.initialExtent.xmax,
-            "ymax": evt.layer.initialExtent.ymax,
-            "spatialReference": {"wkid": 4326}
-          });
-          projectAndSetMapExtent(initialExtent, _wkid);
-
+          if (_zoomMapToLayerExtent || !_map || !_map.extent) {
+            _zoomMapToLayerExtent = false;
+            var initialExtent = new Extent({
+              "xmin": evt.layer.initialExtent.xmin,
+              "ymin": evt.layer.initialExtent.ymin,
+              "xmax": evt.layer.initialExtent.xmax,
+              "ymax": evt.layer.initialExtent.ymax,
+              "spatialReference": {"wkid": 4326}
+            });
+            projectAndSetMapExtent(initialExtent, _wkid);
+          } else {
+            projectAndSetMapExtent(_map.extent, _wkid);
+          }
         });
 
         _msLayer.on("error", function (err) {
@@ -349,14 +352,16 @@
         });
 
         _map.addLayer(_msLayer);
-        //console.log("msLayer added");
+
         dojo.byId("inputUrl").style.backgroundColor = "#00ff00";
-        // dojo.byId("applyRendererButton").style.visibility = "block";
+
+        // enable UI controls
         var sections = document.getElementsByTagName("section");
         for (var i = 0; i < sections.length; i++) {
           var section = sections[i];
           domStyle.set(section, "display", "block");
         }
+
         _aggMapServiceUrl = url;
 
         getLayerInfo();
@@ -999,7 +1004,7 @@
           <label for="FoutlineW">Outline Width</label>
         </div>
         <div class="input-group">
-          <input type="color" value="#000000" id="Foutline" style="width: 60px;""/>
+          <input type="color" value="#000000" id="Foutline" style="width: 60px;"/>
           <label for="Foutline">Outline Color</label>
         </div>
         <div class="input-group">
