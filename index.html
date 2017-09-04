@@ -124,6 +124,7 @@
 
       // class data members
       var _map = null;
+      var _isBasemapTiled = true;
       var _mapExtent;
       var _defaultWkid = 102100;
       var _wkid = 102100;
@@ -158,12 +159,16 @@
         }
       });
 
-      buildMap(_mapExtent, true);
+      buildMap();
       initRefreshRateSpinner();
       populateFilteringSelectFonts("labelFont");
 
-
-      function buildMap(mapExtent, tiled) {
+      function reBuildMap(newMapExtent) {
+        _mapExtent = newMapExtent || _mapExtent;
+        buildMap();
+      }
+      
+      function buildMap() {
 
         esri.config.defaults.io.corsEnabledServers.push('http://storm.esri.com:6080');
         esri.config.defaults.io.corsEnabledServers.push('https://storm.esri.com:6443');
@@ -175,7 +180,6 @@
           _map = null;
           //console.log("destroyed previous map instance");
         }
-        _mapExtent = mapExtent || _mapExtent;
         _map = new Map("map", {
           wrapAround180: true,
           extent: _mapExtent,
@@ -183,52 +187,19 @@
           sliderStyle: "small"
         });
 
-        /*
-        var basemapGallery = new BasemapGallery({
-          showArcGISBasemaps: true,
-          map: _map
-        }, "basemapGallery");
-        basemapGallery.startup();
-        */
-
-        //console.log("map extent wkid: ", _map.extent.spatialReference.wkid);
-
-        // uncomment the following section if you want to add feature layers on top of the base map
-        /*
-         // USA
-         var layer = new FeatureLayer("https://sampleserver6.arcgisonline.com/arcgis/rest/services/Census/MapServer/3");
-
-         // other layers to use - world regions:
-         var layer = new FeatureLayer("https://sampleserver6.arcgisonline.com/arcgis/rest/services/WorldTimeZones/MapServer/2");
-
-         // countries:
-         var layer = new FeatureLayer("https://wwtw.esriuk.com/ArcGIS/rest/services/CG/WorldCountries/MapServer/0");
-
-         var outline = new SimpleLineSymbol("solid", new Color([255, 255, 255, 1]), 1);
-         var fill = new SimpleFillSymbol("solid", outline, new Color([64, 64, 64, 0.15]));
-         layer.setRenderer(new SimpleRenderer(fill));
-         _map.addLayer(layer);
-
-         _map.on("layer-add-result", function (evt) {
-         //console.log("layer-add-result: ", evt);
-         });
-         */
-
-        // you can choose different base maps as reference but has to use it as dynamic map service layer
-        //TODO - replace this with a custom UI synamic map service basemap layer widget
-        var worldReferenceUrl_Topo = "http://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer";
-        var worldReferenceUrl_Gray = "https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer";
-        var worldReferenceUrl = worldReferenceUrl_Gray;
-        if (tiled) {
-          var worldReference = new ArcGISTiledMapServiceLayer(worldReferenceUrl);
+        // only the first map built is tiled
+        var basemapUrl = dom.byId("basemapUrl").value
+        if (_isBasemapTiled) {
+          var worldReference = new ArcGISTiledMapServiceLayer(basemapUrl);
           _map.addLayers([worldReference]);
         } else {
-          var worldReference = new ArcGISDynamicMapServiceLayer(worldReferenceUrl, {
+          var worldReference = new ArcGISDynamicMapServiceLayer(basemapUrl, {
             "showAttribution": false,
             "opacity": 1.0
           });
           _map.addLayers([worldReference]);
         }
+        _isBasemapTiled = false;
 
         // Map event listeners
         _map.on("load", setLayer);
@@ -261,7 +232,7 @@
         //console.log("project successful: ", result);
         if (result.length) {
           var newMapExtent = result[0];
-          buildMap(newMapExtent, false);
+          reBuildMap(newMapExtent);
           dojo.byId("currentMapSR").value = _wkid;
         } else {
           console.log("Project was successful, but no results were returned.");
@@ -312,7 +283,10 @@
       var selects = document.getElementsByTagName("select");
       for (var i = 0; i < selects.length; i++) {
         var select = selects[i];
-        on(select, "change", requestToUpdateLayerFromUI);
+        if ("basemapUrl" == select.id)
+          on(select, "change", buildMap);
+        else
+          on(select, "change", requestToUpdateLayerFromUI);
       }
 
       on(dom.byId("style"), "change", uiTrigger);
@@ -762,6 +736,30 @@
       <div class="input-row">
         <input type="button" class="button" id="applyRendererButton" value="Apply Renderer"/>
         <input type="button" class="button" id="setLayerButton" value="Set Layer"/>
+      </div>
+      <div class="input-group input-group-full">
+        <select id="basemapUrl" name="basemapUrl" style="width: 120px;">
+          <option value="https://services.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer">Streets</option>
+          <option value="https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer">Imagery</option>
+          <option value="https://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer">Topographic</option>
+          <option value="https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer">Dark Gray Canvas</option>
+          <option value="https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer">Light Gray Canvas</option>
+          <option value="https://services.arcgisonline.com/arcgis/rest/services/NatGeo_World_Map/MapServer">National Geographic</option>
+          <option value="https://services.arcgisonline.com/arcgis/rest/services/World_Terrain_Base/MapServer">Terrain</option>
+          <option value="https://services.arcgisonline.com/arcgis/rest/services/World_Shaded_Relief/MapServer">Shaded Relief</option>
+          <option value="https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Transportation/MapServer">Transportation</option>
+          <option value="https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Reference_Overlay/MapServer">World Reference</option>
+          <option value="https://services.arcgisonline.com/arcgis/rest/services/Ocean/World_Ocean_Base/MapServer">Oceans</option>
+          <option value="https://services.arcgisonline.com/arcgis/rest/services/USA_Topo_Maps/MapServer">USA Topo Maps</option>
+          <option value="https://services.arcgisonline.com/arcgis/rest/services/Specialty/World_Navigation_Charts/MapServer">Navigation Charts</option>
+          <option value="https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Boundaries_and_Places/MapServer">Boundaries and Places</option>
+          <option value="https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Boundaries_and_Places_Alternate/MapServer">Boundaries and Places Alternate</option>
+          <option value="https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer">USGS National Map</option>
+          <option value="https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer">USGS Imagery</option>
+          <option value="https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer">USGS Imagery with Labels</option>
+          <option value="https://basemap.nationalmap.gov/arcgis/rest/services/USGSHydroCached/MapServer">USGS Hydro</option>
+        </select>
+        <label for="basemapUrl">Basemap</label>
       </div>
       <div class="input-group input-group-full">
         <select id="wkid" name="wkid" style="width: 120px;">
