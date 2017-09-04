@@ -90,7 +90,6 @@
       "esri/lang",
 
       "esri/layers/FeatureLayer",
-      "esri/dijit/BasemapGallery",
       "app/aggregationRenderer",
 
       "dijit/TitlePane",
@@ -116,7 +115,7 @@
       SimpleLineSymbol, SimpleFillSymbol, SimpleRenderer, Polygon, Graphic, Point, SimpleMarkerSymbol,
       Query, QueryTask, webMercatorUtils,
       HeatmapRenderer, smartMapping, TooltipDialog, esriRequest, dojoJson, arcgisUtils, esriLang,
-      FeatureLayer, BasemapGallery, AggregationRenderer,
+      FeatureLayer, AggregationRenderer,
       TitlePane, Select, BorderContainer, ContentPane, RadioButton, ComboBox, Button, CheckBox, TooltipDialog, DropDownButton,
       FilteringSelect, ItemFileReadStore ) {
 
@@ -707,16 +706,6 @@
 
 <body class="flat">
 <div id="map"></div>
-<!--
-<div id="map">
-  <div class="basemapGallery-container" style="opacity:0.70" data-dojo-type="dijit/TitlePane"
-       data-dojo-props="title:'Basemap', closable:false, open:false">
-    <div data-dojo-type="dijit/layout/ContentPane" style="width: 380px; height: 280px; overflow: auto">
-      <div id="basemapGallery"></div>
-    </div>
-  </div>
-</div>
--->
 <div class="collapser">
   <i id="collapserIcon" class="flat-chevron-right"></i>
   <i id="expanderIcon" class="flat-chevron-left"></i>
@@ -739,12 +728,12 @@
       </div>
       <div class="input-group input-group-full">
         <select id="basemapUrl" name="basemapUrl" style="width: 120px;">
-          <option value="https://services.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer">Streets</option>
-          <option value="https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer">Imagery</option>
           <option value="https://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer">Topographic</option>
-          <option value="https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer">Dark Gray Canvas</option>
-          <option value="https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer">Light Gray Canvas</option>
+          <option value="https://services.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer">Streets</option>
           <option value="https://services.arcgisonline.com/arcgis/rest/services/NatGeo_World_Map/MapServer">National Geographic</option>
+          <option value="https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer">Light Gray Canvas</option>
+          <option value="https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer">Dark Gray Canvas</option>
+          <option value="https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer">Imagery</option>
           <option value="https://services.arcgisonline.com/arcgis/rest/services/World_Terrain_Base/MapServer">Terrain</option>
           <option value="https://services.arcgisonline.com/arcgis/rest/services/World_Shaded_Relief/MapServer">Shaded Relief</option>
           <option value="https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Transportation/MapServer">Transportation</option>
