@@ -133,7 +133,8 @@
       var _msLayerName = "MapService1";
       var _msLayerInfo;
       var _changeTimer;
-      var _allowRefreshLayer = true;
+      var _allowApplyRenderer = false;
+      var _skipApplyRenderer = false;
 
       var _gs = new GeometryService("http://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer");
 
@@ -248,7 +249,7 @@
         if (result.length) {
           var newMapExtent = result[0];
           _map.setExtent(newMapExtent);
-          _msLayer.refresh();
+          requestToUpdateLayerFromUI();
         } else {
           console.log("Project was successful, but no results were returned.");
         }
@@ -265,7 +266,7 @@
       esriConfig.defaults.io.alwaysUseProxy = false;
 
       // UI event listeners
-      on(dom.byId("applyRendererButton"), "click", requestToUpdateLayerFromUI);
+      on(dom.byId("applyRendererButton"), "click", onApplyRendererButton);
       on(dom.byId("setLayerButton"), "click", onSetLayerButton);
 
       var inputs = document.getElementsByTagName("input");
@@ -302,7 +303,13 @@
         domClass.toggle(document.getElementsByTagName("body")[0], "panel-collapsed");
       }
 
+      function onApplyRendererButton() {
+        _allowApplyRenderer = true;
+        requestToUpdateLayerFromUI();
+      }
+
       function onSetLayerButton() {
+        _allowApplyRenderer = false;
         _zoomMapToLayerExtent = true;
         setLayer();
       }
@@ -370,7 +377,7 @@
       function requestToUpdateLayerFromUI() {
         // postpone invoking updateLayerFromUI() for at least one second
         // to accumulate multiple requests to update the layer
-        if (!_allowRefreshLayer)
+        if (_skipApplyRenderer || ! _allowApplyRenderer)
           return;
         if (_changeTimer)
           window.clearTimeout(_changeTimer);
@@ -379,7 +386,7 @@
       }
 
       function updateLayerFromUI() {
-        if (!_allowRefreshLayer)
+        if (_skipApplyRenderer || !_allowApplyRenderer)
           return;
 
         _msLayer = _map.getLayer(_msLayerName); // this is a dynamicMapServiceLayer
@@ -394,7 +401,7 @@
         layerDrawingOptions[0] = drawingOptions;
         _msLayer.setLayerDrawingOptions(layerDrawingOptions);
         _msLayer._updateDynamicLayers();
-        _msLayer.refresh(true);
+        _msLayer.refresh();
       }
 
       function updateRendererFromUI(renderer) {
@@ -593,9 +600,9 @@
               _msLayerInfo = response;
               populateDijitSelectWithLayerFields(dijit.byId("statField"), false);
               populateSelectWithLayerFields(dojo.byId(rotationExpression), true);
-              _allowRefreshLayer = false;
+              _skipApplyRenderer = true;
               statFieldChanged(dijit.byId('statField').value); // to init-populate the stat types control
-              _allowRefreshLayer = true;
+              _skipApplyRenderer = false;
             }
         );
       }
@@ -728,8 +735,8 @@
         <input type="text" id="inputUrl" value="http://storm.esri.com:6080/arcgis/rest/services/faa-4326-hex-flat/MapServer" style="width: calc(100% - 5px);"/>
       </div>
       <div class="input-row">
-        <input type="button" class="button" id="applyRendererButton" value="Apply Renderer"/>
-        <input type="button" class="button" id="setLayerButton" value="Set Layer"/>
+        <input type="button" class="button" id="applyRendererButton" value="Apply Renderer" title="Apply Renderer. Switch to start using the 'DynamicLayers' Drawing Info and Renderer properties from the UI below."/>
+        <input type="button" class="button" id="setLayerButton" value="Set Layer" title="Set Layer. Switch to use the published service layer's default Drawing Info and Renderer. Zoom the Map to the layer's Extent."/>
       </div>
       <div class="input-group input-group-full">
         <select id="basemapUrl" name="basemapUrl" style="width: 120px;">
