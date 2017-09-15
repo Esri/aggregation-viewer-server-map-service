@@ -315,6 +315,8 @@
       }
 
       function setLayer() {
+        dojo.byId("inputUrl").style.backgroundColor = "#00ffff";
+
         var msLayer = _map.getLayer(_msLayerName);
         if (msLayer)
           _map.removeLayer(msLayer);
@@ -329,6 +331,7 @@
         _msLayer = new ArcGISDynamicMapServiceLayer(url, options);
 
         _msLayer.on("load", function (evt) {
+
           if (evt.layer.version == "10.4") {
             dojo.byId("geoHashStyle").disabled = true;
             dojo.byId("labelFormat").value = "#.##"
@@ -350,17 +353,16 @@
           } else {
             projectAndSetMapExtent(_map.extent, _wkid);
           }
+
+          dojo.byId("inputUrl").style.backgroundColor = "#00ff00";
+          _map.addLayer(_msLayer);
         });
 
         _msLayer.on("error", function (err) {
           //console.log("Error occured loading the " + err.target.id + " error: " + err.error.message);
           //console.log("Invalid layer URL: " + err.target.url);
-          //dojo.byId("inputUrl").style.backgroundColor = "#ff0000";
+          dojo.byId("inputUrl").style.backgroundColor = "#ff0000";
         });
-
-        _map.addLayer(_msLayer);
-
-        dojo.byId("inputUrl").style.backgroundColor = "#00ff00";
 
         // enable UI controls
         var sections = document.getElementsByTagName("section");
