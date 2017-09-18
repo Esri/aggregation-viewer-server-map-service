@@ -135,6 +135,11 @@
       var _changeTimer;
       var _allowApplyRenderer = false;
       var _skipApplyRenderer = false;
+      
+      var _stateError      = "#ff0000";  // red
+      var _stateRequested  = "#00ffff";  // light blue
+      var _stateInProgress = "#00b100";  // dark green
+      var _stateReady      = "#00ff00";  // green
 
       var _gs = new GeometryService("http://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer");
 
@@ -162,6 +167,10 @@
       initRefreshRateSpinner();
       populateFilteringSelectFonts("labelFont");
 
+      function setState(state) {
+        dojo.byId("inputUrl").style.backgroundColor = state;
+      }
+      
       function onSelectedBasemapChanged() {
         buildMap(_map.extent);
       }
@@ -315,7 +324,7 @@
       }
 
       function setLayer() {
-        dojo.byId("inputUrl").style.backgroundColor = "#00ffff";
+        setState(_stateRequested);
 
         var msLayer = _map.getLayer(_msLayerName);
         if (msLayer)
@@ -354,14 +363,22 @@
             projectAndSetMapExtent(_map.extent, _wkid);
           }
 
-          dojo.byId("inputUrl").style.backgroundColor = "#00ff00";
+          setState(_stateInProgress);
           _map.addLayer(_msLayer);
         });
 
+        _msLayer.on("map-image-export", function (evt) {
+          setState(_stateReady);
+        });
+        
+        _msLayer.on("update", function (evt) {
+          setState(_stateReady);
+        });
+        
         _msLayer.on("error", function (err) {
           //console.log("Error occured loading the " + err.target.id + " error: " + err.error.message);
           //console.log("Invalid layer URL: " + err.target.url);
-          dojo.byId("inputUrl").style.backgroundColor = "#ff0000";
+          setState(_stateError);
         });
 
         // enable UI controls
@@ -381,6 +398,8 @@
         // to accumulate multiple requests to update the layer
         if (_skipApplyRenderer || ! _allowApplyRenderer)
           return;
+
+        setState(_stateRequested);
         if (_changeTimer)
           window.clearTimeout(_changeTimer);
 
@@ -391,6 +410,7 @@
         if (_skipApplyRenderer || !_allowApplyRenderer)
           return;
 
+        setState(_stateInProgress);
         _msLayer = _map.getLayer(_msLayerName); // this is a dynamicMapServiceLayer
 
         var renderer = new AggregationRenderer();
@@ -404,6 +424,7 @@
         _msLayer.setLayerDrawingOptions(layerDrawingOptions);
         _msLayer._updateDynamicLayers();
         _msLayer.refresh();
+        setState(_stateInProgress);
       }
 
       function updateRendererFromUI(renderer) {
