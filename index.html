@@ -196,6 +196,10 @@
 
         _map.on("load", setLayer);
 
+        _map.on("extent-change", function (evt) {
+          setState(_stateInProgress);
+        });
+
         // add the basemap
         var basemapUrl = dom.byId("basemapUrl").value;
         var basemapLayer;
