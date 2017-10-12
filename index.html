@@ -104,7 +104,7 @@
       "dijit/form/DropDownButton",
 
       "dijit/form/FilteringSelect",
-      "dojo/data/ItemFileReadStore",
+      "dojo/data/ItemFileWriteStore",
 
       "dojo/query!css2",
       "dojo/domReady!"
@@ -117,7 +117,7 @@
       HeatmapRenderer, smartMapping, TooltipDialog, esriRequest, dojoJson, arcgisUtils, esriLang,
       FeatureLayer, AggregationRenderer,
       TitlePane, Select, BorderContainer, ContentPane, RadioButton, ComboBox, Button, CheckBox, TooltipDialog, DropDownButton,
-      FilteringSelect, ItemFileReadStore ) {
+      FilteringSelect, ItemFileWriteStore ) {
 
       parser.parse();
 
@@ -131,6 +131,7 @@
 
       var _msLayer;
       var _msLayerName = "MapService1";
+      var _msServiceInfo;
       var _msLayerInfo;
       var _changeTimer;
       var _allowApplyRenderer = false;
@@ -140,6 +141,11 @@
       var _stateRequested  = "#00ffff";  // light blue
       var _stateInProgress = "#00b100";  // dark green
       var _stateReady      = "#00ff00";  // green
+
+      var _fontsStore        = null;
+      var _fontItems         = [];
+      var _defaultFontsArray = [
+        "Arial", "Arial Black", "Arial Narrow", "Baskerville Old Face", "Batang", "Bauhaus 93", "Bell MT", "Bernard MT Condensed", "Book Antiqua", "Bookman Old Style", "Brush Script MT", "Calisto MT", "Century", "Century Gothic", "Century Schoolbook", "Colonna MT", "Comic Sans MS", "Cooper Black", "Copperplate Gothic Light", "Courier", "Courier New", "Curlz MT", "Edwardian  Script ITC", "Engravers MT", "Footlight MT Light", "Garamond", "Georgia", "Goudy Old Style", "Gulim", "Haettenschweiler", "Handwriting - Dakota", "Harrington", "Helvetica", "Impact", "Imprint MT Shadow", "Lucida Bright", "Lucida Calligraphy", "Lucida Fax", "Lucida Handwriting", "Lucida Sans", "Lucida Sans Typewriter", "Matura MT Script Capitals", "Mistral", "Modern No. 20", "Monotype Corsiva", "MS Gothic", "MS Mincho", "MS PGothic", "MS PMincho", "Onyx", "Papyrus", "Perpetua Titling MT", "Plantagenet Cherokee", "Playbill", "PMingLiU", "Rockwell", "Serif", "SimSun", "Stencil", "Symbol", "Tahoma", "Times", "Times New Roman", "Trebuchet MS", "Verdana", "Webdings", "Wide Latin", "Wingdings", "Wingdings 2", "Wingdings 3" ];
 
       var _gs = new GeometryService("http://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer");
 
@@ -394,6 +400,7 @@
 
         _aggMapServiceUrl = url;
 
+        getServiceInfo();
         getLayerInfo();
       }
 
@@ -615,15 +622,30 @@
         requestToUpdateLayerFromUI();
       }
 
-      function getLayerInfo() {
+      function getServiceInfo() {
         var mapServiceInfoDeferred = esri.request({
-          url: _msLayer.url + "/0",
+          url: _msLayer.url,
           content: {
             f: 'json'
           },
           callbackParamName: "callback"
         });
         mapServiceInfoDeferred.then(function (response) {
+            _msServiceInfo = response;
+            populateFonts();
+          }
+        );
+      }
+
+      function getLayerInfo() {
+        var mapServiceLayerInfoDeferred = esri.request({
+          url: _msLayer.url + "/0",
+          content: {
+            f: 'json'
+          },
+          callbackParamName: "callback"
+        });
+        mapServiceLayerInfoDeferred.then(function (response) {
               _msLayerInfo = response;
               populateDijitSelectWithLayerFields(dijit.byId("statField"), false);
               populateSelectWithLayerFields(dojo.byId(rotationExpression), true);
@@ -675,6 +697,14 @@
         }
       }
 
+      function populateFonts() {
+        if (_msServiceInfo && _msServiceInfo.hasOwnProperty("supportedFonts")) {
+          var fontsString = _msServiceInfo.supportedFonts;
+          var fontsArray = fontsString.split(',');
+          populateFilteringSelectFonts("labelFont", fontsArray);
+        }
+      }
+
       // field type can be one of the following: "esriFieldTypeSmallInteger", "esriFieldTypeInteger", "esriFieldTypeSingle", "esriFieldTypeDouble", "esriFieldTypeString", "esriFieldTypeDate", "esriFieldTypeOID", "esriFieldTypeGeometry", "esriFieldTypeBlob", "esriFieldTypeRaster", "esriFieldTypeGUID", "esriFieldTypeGlobalID", "esriFieldTypeXML"
       function isFieldNumeric(field) {
           if (!field || !field.type)
@@ -700,43 +730,67 @@
         })
       }
 
-      function populateFilteringSelectFonts(selectId) {
+      function populateFilteringSelectFonts(selectId, fontsArray) {
         var selectContainer = dojo.byId(selectId + "Container");
-          if (!selectContainer)
-            return;
-           
-        var fonts = [
-          "Arial", "Arial Black", "Arial Narrow", "Baskerville Old Face", "Batang", "Bauhaus 93", "Bell MT", "Bernard MT Condensed", "Book Antiqua", "Bookman Old Style", "Brush Script MT", "Calisto MT", "Century", "Century Gothic", "Century Schoolbook", "Colonna MT", "Comic Sans MS", "Cooper Black", "Copperplate Gothic Light", "Courier", "Courier New", "Curlz MT", "Edwardian  Script ITC", "Engravers MT", "Footlight MT Light", "Garamond", "Georgia", "Goudy Old Style", "Gulim", "Haettenschweiler", "Handwriting - Dakota", "Harrington", "Helvetica", "Impact", "Imprint MT Shadow", "Lucida Bright", "Lucida Calligraphy", "Lucida Fax", "Lucida Handwriting", "Lucida Sans", "Lucida Sans Typewriter", "Matura MT Script Capitals", "Mistral", "Modern No. 20", "Monotype Corsiva", "MS Gothic", "MS Mincho", "MS PGothic", "MS PMincho", "Onyx", "Papyrus", "Perpetua Titling MT", "Plantagenet Cherokee", "Playbill", "PMingLiU", "Rockwell", "Serif", "SimSun", "Stencil", "Symbol", "Tahoma", "Times", "Times New Roman", "Trebuchet MS", "Verdana", "Webdings", "Wide Latin", "Wingdings", "Wingdings 2", "Wingdings 3" ];
+        if (!selectContainer)
+          return;
 
-        var items = [];
-        for (var i = 0; i < fonts.length; i++) {
-          var font = fonts[i];
-          var item = {'id': font, 'label': font, 'value': font, 'type': 'Windows' };
-          items.push(item);
+        if (!fontsArray || !fontsArray.length || fontsArray.length < 1)
+          fontsArray = _defaultFontsArray;
+
+        _fontItems = [];
+        for (var i = 0; i < fontsArray.length; i++) {
+          var font = fontsArray[i];
+          var item = {'id': font, 'label': font, 'value': font};
+          _fontItems.push(item);
         }
 
         var fontsData = {
           identifier: "id",
           label: "label",
-          items: items
+          items: _fontItems
         };
 
-        var store = new ItemFileReadStore({
-          data: fontsData
-        });
+        if (_fontsStore) {
+          _fontsStore.fetch({query: {}, onComplete: onFontsQueryDone});
+        } else {
+          _fontsStore = new ItemFileWriteStore({
+            data: fontsData
+          });
 
-        var fontsSelect = new FilteringSelect({
-          store: store,
-          searchAttr: "label",
-          id: selectId,
-          value: "Arial",
-          style: { width: '98%' }
-        }).placeAt(selectContainer);
-        
-        fontsSelect.isValid = function() {
-          var val = this.get('displayedValue');
-          return true;
-        };
+          var fontsFilteringSelect = new FilteringSelect({
+            store: _fontsStore,
+            searchAttr: "label",
+            id: selectId,
+            value: "Arial",
+            style: {width: '98%'}
+          }).placeAt(selectContainer);
+
+          fontsFilteringSelect.isValid = function () {
+            var val = this.get('displayedValue');
+            return true;
+          };
+        }
+      }
+
+      function onFontsQueryDone(items, request){
+        // remove all items from the fonts store
+        var i;
+        for (i = 0; i < items.length; i++) {
+          var item = items[i];
+          //_fontsStore.setValue(item, "population", value);
+          _fontsStore.deleteItem(item);
+        }
+        _fontsStore.save({onComplete: onFontsRemoveDone});
+      }
+
+      function onFontsRemoveDone(){
+        // add the new set of fonts to the fonts store
+        for (i = 0; i < _fontItems.length; i++) {
+          var item = _fontItems[i];
+          _fontsStore.newItem(item);
+        }
+        _fontsStore.save();
       }
 
     });
