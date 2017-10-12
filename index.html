@@ -778,7 +778,6 @@
         var i;
         for (i = 0; i < items.length; i++) {
           var item = items[i];
-          //_fontsStore.setValue(item, "population", value);
           _fontsStore.deleteItem(item);
         }
         _fontsStore.save({onComplete: onFontsRemoveDone});
