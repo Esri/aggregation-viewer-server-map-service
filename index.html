@@ -699,8 +699,8 @@
 
       function populateFonts() {
         if (_msServiceInfo && _msServiceInfo.hasOwnProperty("supportedFonts")) {
-          var fontsString = _msServiceInfo.supportedFonts;
-          var fontsArray = fontsString.split(',');
+          var fontsArray = _msServiceInfo.supportedFonts;
+          fontsArray.sort();
           populateFilteringSelectFonts("labelFont", fontsArray);
         }
       }
