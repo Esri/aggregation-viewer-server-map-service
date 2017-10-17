@@ -135,16 +135,17 @@
       var _msLayerInfo;
       var _changeTimer;
       var _allowApplyRenderer = false;
-      var _skipApplyRenderer = false;
+      var _skipApplyRenderer  = false;
       
       var _stateError      = "#ff0000";  // red
       var _stateRequested  = "#00ffff";  // light blue
       var _stateInProgress = "#00b100";  // dark green
       var _stateReady      = "#00ff00";  // green
 
-      var _fontsStore        = null;
-      var _fontItems         = [];
-      var _defaultFontsArray = [
+      var _fontsFilteringSelect = null
+      var _fontsStore           = null;
+      var _fontItems            = [];
+      var _defaultFontsArray    = [
         "Arial", "Arial Black", "Arial Narrow", "Baskerville Old Face", "Batang", "Bauhaus 93", "Bell MT", "Bernard MT Condensed", "Book Antiqua", "Bookman Old Style", "Brush Script MT", "Calisto MT", "Century", "Century Gothic", "Century Schoolbook", "Colonna MT", "Comic Sans MS", "Cooper Black", "Copperplate Gothic Light", "Courier", "Courier New", "Curlz MT", "Edwardian  Script ITC", "Engravers MT", "Footlight MT Light", "Garamond", "Georgia", "Goudy Old Style", "Gulim", "Haettenschweiler", "Handwriting - Dakota", "Harrington", "Helvetica", "Impact", "Imprint MT Shadow", "Lucida Bright", "Lucida Calligraphy", "Lucida Fax", "Lucida Handwriting", "Lucida Sans", "Lucida Sans Typewriter", "Matura MT Script Capitals", "Mistral", "Modern No. 20", "Monotype Corsiva", "MS Gothic", "MS Mincho", "MS PGothic", "MS PMincho", "Onyx", "Papyrus", "Perpetua Titling MT", "Plantagenet Cherokee", "Playbill", "PMingLiU", "Rockwell", "Serif", "SimSun", "Stencil", "Symbol", "Tahoma", "Times", "Times New Roman", "Trebuchet MS", "Verdana", "Webdings", "Wide Latin", "Wingdings", "Wingdings 2", "Wingdings 3" ];
 
       var _gs = new GeometryService("http://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer");
@@ -758,7 +759,7 @@
             data: fontsData
           });
 
-          var fontsFilteringSelect = new FilteringSelect({
+          _fontsFilteringSelect = new FilteringSelect({
             store: _fontsStore,
             searchAttr: "label",
             id: selectId,
@@ -766,7 +767,7 @@
             style: {width: '98%'}
           }).placeAt(selectContainer);
 
-          fontsFilteringSelect.isValid = function () {
+          _fontsFilteringSelect.isValid = function () {
             var val = this.get('displayedValue');
             return true;
           };
@@ -789,10 +790,23 @@
           var item = _fontItems[i];
           _fontsStore.newItem(item);
         }
-        _fontsStore.save();
+        _fontsStore.save({onComplete: onFontsAddedDone});
       }
 
-    });
+      function onFontsAddedDone() {
+        // select the first font
+        if (_fontsStore && _fontsFilteringSelect) {
+          _fontsStore.query().then(function (items) {
+            if (items && items.length && items.length > 0) {
+              var item = items[0];
+              if (item && item.label)
+                _fontsFilteringSelect.set('value', item.label);
+            }
+          });
+        }
+      }
+
+      });
   </script>
 </head>
 
