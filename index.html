@@ -92,6 +92,9 @@
       "esri/layers/FeatureLayer",
       "app/aggregationRenderer",
 
+      "esri/TimeExtent",
+      "esri/dijit/TimeSlider",
+
       "dijit/TitlePane",
       "dijit/form/Select",
       "dijit/layout/BorderContainer",
@@ -116,6 +119,7 @@
       Query, QueryTask, webMercatorUtils,
       HeatmapRenderer, smartMapping, TooltipDialog, esriRequest, dojoJson, arcgisUtils, esriLang,
       FeatureLayer, AggregationRenderer,
+      TimeExtent, TimeSlider,
       TitlePane, Select, BorderContainer, ContentPane, RadioButton, ComboBox, Button, CheckBox, TooltipDialog, DropDownButton,
       FilteringSelect, ItemFileWriteStore ) {
 
@@ -136,6 +140,14 @@
       var _changeTimer;
       var _allowApplyRenderer = false;
       var _skipApplyRenderer  = false;
+
+      var _layerTimeExtent;
+      var _replay = false;
+      var _live = false;
+      var _startTimeSlider = true;
+      var _minValue;
+      var _maxValue;
+      var _ignoreChangeEvent = false;
       
       var _stateError      = "#ff0000";  // red
       var _stateRequested  = "#00ffff";  // light blue
@@ -314,8 +326,22 @@
       on(dijit.byId("statField"), "change", statFieldChanged);
       on(dijit.byId("statType"), "change", requestToUpdateLayerFromUI);
 
+      on(dojo.byId("refreshMode"), "change", toggleMode);
+
       on(document.getElementsByClassName("collapser")[0], "click", togglePanel);
 
+      var refreshModeVisibility = true;
+      on(dojo.byId("refreshModeToggle"), "click", function () {
+        // toggle section visibility
+        if (refreshModeVisibility) {
+          domClass.add(dojo.byId("refreshModeSection"), "section-hidden");
+          domClass.replace(domQuery("#refreshModeToggle i")[0], "fa-chevron-down", "fa-chevron-up");
+        } else {
+          domClass.remove(dojo.byId("refreshModeSection"), "section-hidden");
+          domClass.replace(domQuery("#refreshModeToggle i")[0], "fa-chevron-up", "fa-chevron-down");
+        }
+        refreshModeVisibility = !refreshModeVisibility;
+      });
 
       // functions
 
@@ -376,6 +402,8 @@
 
           setState(_stateInProgress);
           _map.addLayer(_msLayer);
+
+          queryLayerTimeExtent();
         });
 
         _msLayer.on("map-image-export", function (evt) {
@@ -806,12 +834,146 @@
         }
       }
 
+      //Refesh Mode Toggle
+      function toggleMode(evt) {
+        if (evt.target.value == "manual") {
+          _live = false;
+          _replay = false;
+          domStyle.set(dom.byId('timeSlider'), "display", 'none');
+          domStyle.set(dom.byId('refreshRateSpinner'), "display", 'none');
+          domStyle.set(dom.byId('refreshRateSpinnerLabel'), "display", 'none');
+          _map.setTimeSlider(null);
+          _map.setTimeExtent(null);
+          requestToUpdateLayerFromUI();
+        } else if (evt.target.value == "live") {
+          _live = true;
+          _replay = false;
+          autoUpdate();
+          domStyle.set(dom.byId('timeSlider'), "display", 'none');
+          domStyle.set(dom.byId('refreshRateSpinner'), "display", 'block');
+          domStyle.set(dom.byId('refreshRateSpinnerLabel'), "display", 'block');
+          _map.setTimeSlider(null);
+          _map.setTimeExtent(null);
+        } else if (evt.target.value == "replay") {
+          _live = false;
+          _replay = true;
+          if (_startTimeSlider) {
+            initTimeSlider();
+            _startTimeSlider = false;
+          } else {
+            _ignoreChangeEvent = true;
+            updateTimeSlider();
+          };
+          domStyle.set(dom.byId('timeSlider'), "display", 'block');
+          domStyle.set(dom.byId('refreshRateSpinner'), "display", 'none');
+          domStyle.set(dom.byId('refreshRateSpinnerLabel'), "display", 'none');
+        };
+      };
+
+      // ### FeatureLayer Time Info query###
+
+      function queryLayerTimeExtent() {
+        var url = dojo.byId("inputUrl").value + "?f=json";
+        var request = esriRequest({
+          "url": url,
+          "handleAs": "json",
+          "callbackParamName": "callback"
+        });
+        request.then(
+                function (response) {
+                  _layerTimeExtent = new TimeExtent(new Date(response.timeInfo.timeExtent[0]), new Date(response.timeInfo.timeExtent[1]));
+                },
+                function (error) {
+                  console.log("Error getting the layers time extent: ", error.message);
+                });
+      };
+
+      //
+      // Time Slider (init & update incl. labels)
+      //
+      function initTimeSlider() {
+        timeSlider = new TimeSlider({
+          style: "width: 100%;"
+        }, dom.byId("timeSlider"));
+        _map.setTimeSlider(timeSlider);
+        timeSlider.setThumbCount(2);
+        timeSlider.createTimeStopsByCount(_layerTimeExtent, 21);
+        timeSlider.setThumbIndexes([0, 21]);
+        timeSlider.setThumbMovingRate(2000);
+        timeSlider.startup();
+        timeSlider.on("time-extent-change", function () {
+          if (!_ignoreChangeEvent) {
+            _layerTimeExtent = timeSlider.getCurrentTimeExtent();
+            requestToUpdateLayerFromUI();
+          };
+        });
+        // add labels for every other time stop
+        var labels = createLabels();
+        timeSlider.setLabels(labels);
+      }
+
+      function updateTimeSlider() {
+        queryLayerTimeExtent();
+        setTimeout(function () {
+          timeSlider.createTimeStopsByCount(_layerTimeExtent, 21);
+          timeSlider.setThumbIndexes([0, 21]);
+          timeSlider.startup();
+          _map.setTimeSlider(timeSlider);
+          // add labels for every other time stop
+          var labels = createLabels();
+          timeSlider.setLabels(labels);
+          domStyle.set(dom.byId('timeSlider'), "display", 'block');
+          requestToUpdateLayerFromUI();
+          _ignoreChangeEvent = false;
+        }, 1000);
+      };
+
+      // time slider labels
+      function createLabels() {
+        var labels = arr.map(timeSlider.timeStops, function (timeStop, i) {
+          if (i % 2 === 0) {
+            if (timeStop.getHours() < 10) {
+              var hours = "0" + timeStop.getHours();
+            } else {
+              var hours = timeStop.getHours();
+            };
+            if (timeStop.getMinutes() < 10) {
+              var minutes = "0" + timeStop.getMinutes();
+            } else {
+              var minutes = timeStop.getMinutes();
+            };
+            if (timeStop.getSeconds() < 10) {
+              var seconds = "0" + timeStop.getSeconds();
+            } else {
+              var seconds = timeStop.getSeconds();
+            };
+            var month = timeStop.getMonth() + 1;
+            var day = timeStop.getDate();
+            //return hours + ":" + minutes;
+            return month + "/" + day + "<br>" + hours + ":" + minutes + ":" + seconds;
+          } else {
+            return "";
+          };
+        });
+        return labels;
+      }
+
+      function autoUpdate() {
+        setTimeout(function () {
+          requestToUpdateLayerFromUI();
+          if (_live) {
+            autoUpdate();
+          };
+        }, 2000);
+      }
+
       });
   </script>
 </head>
 
 <body class="flat">
 <div id="map"></div>
+<div id="timeSlider"></div>
 <div class="collapser">
   <i id="collapserIcon" class="flat-chevron-right"></i>
   <i id="expanderIcon" class="flat-chevron-left"></i>
@@ -877,10 +1039,6 @@
       <div class="input-group input-group-full" style="display: none;">
         <input type="text" id="currentMapSR" value="102100" style="width: 120px;" disabled="true"/>
         <label for="currentMapSR">Current</label>
-      </div>
-      <div class="input-group input-group-full">
-        <input id="refreshRateSpinner" type="number" min="0" max="120000" value="0" />
-        <label for="refreshRateSpinner">Refresh Rate</label>
       </div>
     </div>
   </section>
@@ -1011,7 +1169,7 @@
       </div>
       <div class="input-row input-row-header">
         <label></label>
-        <select name="statType" data-dojo-type="dijit/form/Select" data-dojo-attach-point="statType" id="statType" style="display:none; width: calc(64%);"">
+        <select name="statType" data-dojo-type="dijit/form/Select" data-dojo-attach-point="statType" id="statType" style="display:none; width: calc(64%);">
         </select>
       </div>
     </div>
@@ -1133,7 +1291,28 @@
       </div>
     </div>
   </section>
-
+  <section id="refreshModeSection">
+    <div class="config-header">
+      <h2>Refresh Mode</h2>
+      <div class="header-actions-group">
+        <a href="#" id="refreshModeToggle"><i class="fa fa-chevron-up"></i></a>
+      </div>
+    </div>
+    <div class="config-content">
+      <div class="input-group">
+        <select name="aggRefreshMode" id="refreshMode" style="width: 120px;">
+          <option value="manual">Manual</option>
+          <option value="live">Live</option>
+          <option value="replay">Replay</option>
+        </select>
+        <label for="refreshMode">Mode</label>
+      </div>
+      <div class="input-group input-group-full">
+        <input id="refreshRateSpinner" type="number" min="0" max="120000" value="0" style="display:none;" />
+        <label id="refreshRateSpinnerLabel" for="refreshRateSpinner" style="display:none;">Refresh Rate</label>
+      </div>
+    </div>
+  </section>
 </div>
 </body>
 
