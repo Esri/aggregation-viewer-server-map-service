@@ -144,6 +144,7 @@
       var _layerTimeExtent;
       var _replay = false;
       var _live = false;
+
       var _startTimeSlider = true;
       var _minValue;
       var _maxValue;
@@ -326,7 +327,7 @@
       on(dijit.byId("statField"), "change", statFieldChanged);
       on(dijit.byId("statType"), "change", requestToUpdateLayerFromUI);
 
-      on(dojo.byId("refreshMode"), "change", toggleMode);
+      on(dojo.byId("refreshMode"), "change", setResfreshMode);
 
       on(document.getElementsByClassName("collapser")[0], "click", togglePanel);
 
@@ -751,11 +752,7 @@
 
       function initRefreshRateSpinner() {
         on(dojo.byId("refreshRateSpinner"), "change", function(e) {
-          value = parseInt(e.target.value);
-          if (value == 0)
-            _msLayer.setRefreshInterval(24 * 60);
-          else
-            _msLayer.setRefreshInterval(value / 60);
+          setRefreshRate();
         })
       }
 
@@ -834,11 +831,11 @@
         }
       }
 
-      //Refesh Mode Toggle
-      function toggleMode(evt) {
+      function setResfreshMode(evt) {
         if (evt.target.value == "manual") {
           _live = false;
           _replay = false;
+          setRefreshRate();
           domStyle.set(dom.byId('timeSlider'), "display", 'none');
           domStyle.set(dom.byId('refreshRateSpinner'), "display", 'none');
           domStyle.set(dom.byId('refreshRateSpinnerLabel'), "display", 'none');
@@ -848,29 +845,38 @@
         } else if (evt.target.value == "live") {
           _live = true;
           _replay = false;
-          autoUpdate();
           domStyle.set(dom.byId('timeSlider'), "display", 'none');
           domStyle.set(dom.byId('refreshRateSpinner'), "display", 'block');
           domStyle.set(dom.byId('refreshRateSpinnerLabel'), "display", 'block');
           _map.setTimeSlider(null);
           _map.setTimeExtent(null);
+          setRefreshRate();
         } else if (evt.target.value == "replay") {
           _live = false;
           _replay = true;
+          setRefreshRate();
           if (_startTimeSlider) {
             initTimeSlider();
             _startTimeSlider = false;
           } else {
             _ignoreChangeEvent = true;
             updateTimeSlider();
-          };
+          }
           domStyle.set(dom.byId('timeSlider'), "display", 'block');
           domStyle.set(dom.byId('refreshRateSpinner'), "display", 'none');
           domStyle.set(dom.byId('refreshRateSpinnerLabel'), "display", 'none');
-        };
-      };
+        }
+      }
 
-      // ### FeatureLayer Time Info query###
+      function setRefreshRate() {
+        var refreshRateInSeconds = parseInt(dojo.byId("refreshRateSpinner").value);
+        var refreshRateInMinutes = refreshRateInSeconds / 60;
+        if (_live && refreshRateInMinutes > 0) {
+          _msLayer.setRefreshInterval(refreshRateInMinutes);
+        } else {
+          _msLayer.setRefreshInterval(24 * 60); // one day in minutes
+        }        
+      }
 
       function queryLayerTimeExtent() {
         var url = dojo.byId("inputUrl").value + "?f=json";
@@ -888,9 +894,6 @@
                 });
       };
 
-      //
-      // Time Slider (init & update incl. labels)
-      //
       function initTimeSlider() {
         timeSlider = new TimeSlider({
           style: "width: 100%;"
@@ -908,7 +911,7 @@
           };
         });
         // add labels for every other time stop
-        var labels = createLabels();
+        var labels = createTimeSliderLabels();
         timeSlider.setLabels(labels);
       }
 
@@ -920,7 +923,7 @@
           timeSlider.startup();
           _map.setTimeSlider(timeSlider);
           // add labels for every other time stop
-          var labels = createLabels();
+          var labels = createTimeSliderLabels();
           timeSlider.setLabels(labels);
           domStyle.set(dom.byId('timeSlider'), "display", 'block');
           requestToUpdateLayerFromUI();
@@ -928,8 +931,7 @@
         }, 1000);
       };
 
-      // time slider labels
-      function createLabels() {
+      function createTimeSliderLabels() {
         var labels = arr.map(timeSlider.timeStops, function (timeStop, i) {
           if (i % 2 === 0) {
             if (timeStop.getHours() < 10) {
@@ -956,15 +958,6 @@
           };
         });
         return labels;
-      }
-
-      function autoUpdate() {
-        setTimeout(function () {
-          requestToUpdateLayerFromUI();
-          if (_live) {
-            autoUpdate();
-          };
-        }, 2000);
       }
 
       });
@@ -1308,7 +1301,7 @@
         <label for="refreshMode">Mode</label>
       </div>
       <div class="input-group input-group-full">
-        <input id="refreshRateSpinner" type="number" min="0" max="120000" value="0" style="display:none;" />
+        <input id="refreshRateSpinner" type="number" min="0" max="120000" value="5" style="display:none;" />
         <label id="refreshRateSpinnerLabel" for="refreshRateSpinner" style="display:none;">Refresh Rate</label>
       </div>
     </div>
