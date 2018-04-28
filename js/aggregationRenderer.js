@@ -94,6 +94,56 @@ function (declare, lang, Renderer, rendererJsonUtils) {
         backgroundColor: [0,0,255,0]
       };
 
+      this.defaultPointFeatureRenderer = {
+        type: "simple",
+        symbol:  {
+          type: "esriSMS",
+          style: "esriSMSCircle",
+          color: [255,0,0,255],
+          size: 12,
+          angle: 0,
+          xoffset: 0,
+          yoffset: 0,
+          outline: {
+            color: [0,0,0,255],
+            width: 1
+          }
+        },
+        rotationType: "",
+        rotationExpression: "",
+        label: "",
+        description: ""
+      };
+
+      this.defaultPolygonFeatureRenderer = {
+        type: "simple",
+          "symbol": {
+          "type": "esriSFS",
+          "style": "esriSFSSolid",
+          "color": [255,0,0,150],
+          "outline": {
+            "type": "esriSLS",
+            "style": "esriSLSSolid",
+            "color": [0,0,0,255],
+            "width": 1
+          }
+        },
+        label: "",
+        description: ""
+      };
+
+      this.defaultPolylineFeatureRenderer = {
+        "type": "simple",
+        "symbol": {
+          "type": "esriSLS",
+          "style": "esriSLSSolid",
+          "color": [255,0,0,255],
+          "width": 2
+        },
+        "label": "",
+        "description": ""
+      };
+
       this.agg = {
         type: this.defaultAggregationRenderer.type,
         style: properties ? properties.style : this.defaultAggregationRenderer.style,
@@ -190,6 +240,15 @@ function (declare, lang, Renderer, rendererJsonUtils) {
       return this
     },
 
+    getDefaultFeatureRendererByType: function(geometryType) {
+      if (geometryType == "esriGeometryPolygon" || geometryType == "esriGeometryEnvelope")
+        return this.defaultPolygonFeatureRenderer;
+      if (geometryType == "esriGeometryPolyline" || geometryType == "esriGeometryLine")
+        return this.defaultPolylineFeatureRenderer;
+      else //(geometryType == "esriGeometryPoint" || geometryType == "esriGeometryMultipoint")
+        return this.defaultPointFeatureRenderer;
+    },
+
     toJson: function () {
       var json = lang.mixin(this.inherited(arguments), {
         type: this.agg.type,
@@ -207,7 +266,7 @@ function (declare, lang, Renderer, rendererJsonUtils) {
 
       return json;
     }
-
+    
   });
 
   return AggregationRenderer;
