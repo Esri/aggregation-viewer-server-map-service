@@ -507,7 +507,7 @@
           featureRenderer = _msLayerInfo.drawingInfo.renderer;
         else if (_msLayerInfo && _msLayerInfo.geometryType)
           featureRenderer = defaultAggregationRenderer.getDefaultFeatureRendererByType(_msLayerInfo.geometryType);
-          
+
         if (featureRenderer.type && featureRenderer.type === "simple" && featureRenderer.symbol) {
           featureRenderer.label = "";
           featureRenderer.description = "";

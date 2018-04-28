@@ -266,7 +266,7 @@ function (declare, lang, Renderer, rendererJsonUtils) {
 
       return json;
     }
-    
+
   });
 
   return AggregationRenderer;
