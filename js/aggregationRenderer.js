@@ -38,7 +38,7 @@ function (declare, lang, Renderer, rendererJsonUtils) {
       this.defaultAggregationRenderer = {
         type: "aggregation",
         style: "Grid",
-        featureThreshold: 0,
+        featureThreshold: 2000,
         lodOffset: 0,
         minBinSizeInPixels: 25,
         fullLodGrid: false,
@@ -55,7 +55,7 @@ function (declare, lang, Renderer, rendererJsonUtils) {
         },
         binRenderer: {
           type: "Continuous",
-          minColor: [255,0,0,20],
+          minColor: [255,0,0,50],
           maxColor: [255,0,0,255],
           minOutlineColor: [0,0,0,100],
           maxOutlineColor: [0,0,0,100],
@@ -91,7 +91,7 @@ function (declare, lang, Renderer, rendererJsonUtils) {
           label: "",
           description: ""
         },
-        backgroundColor: [0,0,255,0]
+        backgroundColor: [0,0,0,0]
       };
 
       this.defaultPointFeatureRenderer = {
