@@ -94,6 +94,7 @@
 
       "esri/TimeExtent",
       "esri/dijit/TimeSlider",
+      "esri/InfoTemplate",
 
       "dijit/TitlePane",
       "dijit/form/Select",
@@ -119,7 +120,7 @@
       Query, QueryTask, webMercatorUtils,
       HeatmapRenderer, smartMapping, TooltipDialog, esriRequest, dojoJson, arcgisUtils, esriLang,
       FeatureLayer, AggregationRenderer,
-      TimeExtent, TimeSlider,
+      TimeExtent, TimeSlider, InfoTemplate,
       TitlePane, Select, BorderContainer, ContentPane, RadioButton, ComboBox, Button, CheckBox, TooltipDialog, DropDownButton,
       FilteringSelect, ItemFileWriteStore ) {
 
@@ -369,9 +370,20 @@
           _map.removeLayer(msLayer);
 
         var url = dojo.byId("inputUrl").value;
+        var layerUrl = url + "/0";
+
+        // popup support
+        var infoTemplates = {
+          0: {
+            infoTemplate: new InfoTemplate("Attributes", "${*}"),
+            layerUrl: null
+          }
+        };
+
         var options = {
           id: _msLayerName,
           showAttribution: true,
+          infoTemplates: infoTemplates,
           refreshInterval: 0
         };
 
