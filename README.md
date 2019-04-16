@@ -16,6 +16,8 @@ Server side rendering auto-switched to render Raw Features based on actual Featu
 
 ![alt text](server-flat-hexagon-raw-features.png?raw=true)
 
+## Aggregation Renderer Specification
+./doc/aggregation-renderer-spec/README.md 
 
 ## Issues
 
