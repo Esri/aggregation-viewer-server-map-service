@@ -1,8 +1,6 @@
-|   |
-|---|
+# Aggregation Renderer Map Service Specification
 
-
-<br>Overview
+Overview
 ============
 
 This document outlines the specification for the spatiotemporal big data store
