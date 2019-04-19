@@ -63,3 +63,6 @@ bin/
 
 # Binary files
 *.gz
+
+# Office temp files
+~$*.docx
