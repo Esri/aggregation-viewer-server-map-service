@@ -13,7 +13,7 @@ You can access map service specification by following two methods from ArcGIS Ge
 2.  When you edit an existing spatiotemporal big data store map service in
     GeoEvent Manager:
     1.  Navigate to **Site Spatiotemporal Big Data Stores**
-    2.  Locate the existing spatiotemporal big data store map service and click ![edit button](media/button-edit.png) to edit the map service
+    2.  Locate the existing spatiotemporal big data store map service and click ![edit button](./media/button-edit.png) to edit the map service
     3.  Access map service properties under *Aggregation Rendering* and *Feature Rendering*
 
 ## Map Service Specification
@@ -27,7 +27,7 @@ Hosted spatiotemporal big data store map services can be rendered using
 different aggregation styles. The aggregation styles and associated properties
 for the supporting map services are highlighted below.
 
-![Aggregation Rendering](media/aggregation-rendering-ui.png)
+![Aggregation Rendering](./media/aggregation-rendering-ui.png)
 
 #### Feature Threshold
 
@@ -39,27 +39,27 @@ style; if equal or less, the features will be rendered using raw discrete
 features. With the feature threshold set to the default value of 0, the features
 will render aggregated using the chosen aggregation style at all scales.
 
-##### EXAMPLE:
+##### Example
 With a feature threshold value set to 20, when the map is zoomed out and more than
 20 features in the current map extent need to be rendered, the features will be 
 aggregated into bins and will be rendered using the defined aggregation style as illustrated below.
 
-![](media/feature-threshold-1.png)
+![](./media/feature-threshold-1.png)
 
 When you zoom in on the map to display equal or less than 20 features in the
 current map extent, the features will be rendered using the defined raw discrete
 feature rendering style as illustrated below.
 
-![](media/feature-threshold-2.png)
+![](./media/feature-threshold-2.png)
 
 #### Aggregation Style
 The aggregation style the aggregation renderer will use to display the
 aggregated features.
 
-| Aggregation Style  | Image                                      |
-|--------------------|--------------------------------------------|
-| Geohash            | ![](./media/agg-style-xxx.png)             |
-| Square             | ![](./media/agg-style-xxx.png)             |
+| Aggregation Style  | Image                                    |
+|--------------------|------------------------------------------|
+| Geohash            | ![](./media/agg-style-geohash.png)         |
+| Square             | ![](./media/agg-style-square.png)          |
 | Flat Hexagon       | ![](./media/agg-style-flat-hexagon.png)    |
 | Poiny Hexagon      | ![](./media/agg-style-pointy-hexagon.png)  |
 | Flat Triangle      | ![](./media/agg-style-flat-triangle.png)   | 
@@ -72,7 +72,7 @@ Geohash aggregation style is NOT selected. The Geohash aggregation style is
 defined to only use WKID=4326 (using predefined 12 level of details), as defined
 by the Geohash specification.
 
-![](media/agg-sr-ui.png)
+![](./media/agg-sr-ui.png)
 
 #### Bin Rendering Style
 The aggregation bin-rendering-style is used to determine how the aggregated bins
@@ -85,14 +85,14 @@ Using the *Oval* bin-rendering-style, the bins will be rendered as ellipses with
 diameters that will encapsulate an oval inside the bin’s shape, centered around
 the bin’s center point, following the aggregation style axes.
 
-| Aggregation Style | Grid                                | Oval                                |
-|-------------------|-------------------------------------|-------------------------------------|
-| Geohash           | ![](media/style-geohash-grid.png)   | ![](media/style-geohash-oval.png)   |
-| Square            | ![](media/style-square-grid.png)    | ![](media/style-square-oval.png)    |
-| Flat Hexagon      | ![](style-flat-hexagon-grid.png)    | ![](style-flat-hexagon-oval.png)    |
-| Pointy Hexagon    | ![](style-pointy-hexagon-grid.png)  | ![](style-pointy-hexagon-oval.png)  |
-| Flat Triangle     | ![](style-flat-triangle-grid.png)   | ![](style-flat-triangle-oval.png)   |
-| Pointy Triangle   | ![](style-pointy-triangle-grid.png) | ![](style-pointy-triangle-ovel.png) |
+| Aggregation Style | Grid                                        | Oval                                        |
+|-------------------|---------------------------------------------|---------------------------------------------|
+| Geohash           | ![](./media/style-geohash-grid.png)         | ![](./media/style-geohash-oval.png)         |
+| Square            | ![](./media/style-square-grid.png)          | ![](./media/style-square-oval.png)          |
+| Flat Hexagon      | ![](./media/style-flat-hexagon-grid.png)    | ![](./media/style-flat-hexagon-oval.png)    |
+| Pointy Hexagon    | ![](./media/style-pointy-hexagon-grid.png)  | ![](./media/style-pointy-hexagon-oval.png)  |
+| Flat Triangle     | ![](./media/style-flat-triangle-grid.png)   | ![](./media/style-flat-triangle-oval.png)   |
+| Pointy Triangle   | ![](./media/style-pointy-triangle-grid.png) | ![](./media/style-pointy-triangle-ovel.png) |
 
 When the *Oval* bin rendering style is selected, the *Size (in percentage)*
 parameter is enabled in the *Bin Renderer* property for calculating each oval
@@ -100,7 +100,7 @@ bin size based on its bin value. The oval bin size for each bin is determined by
 using its bin value as a weight to interpolate from the min to the max size
 values.
 
-##### EXAMPLE:
+##### Example
 As illustrated below, the oval bin sizes are interpolated from
 30% for the min value to 100% for the max value. Bins with the min bin value
 use 30% of the oval size, bins with the max bin value use 100% of the oval
@@ -111,10 +111,12 @@ to the same value, oval bin sizes are not differentiated by bin values and
 result in the same oval bin size for all bins. Also see the *Range* setting
 in the *Bin Renderer* property.
 
-| **Oval – 30%/100%**       |                          |
+| **Oval – 30%/100%**       | Image                    |
 |---------------------------|--------------------------|
 | ![](./media/image24.png)  | ![](./media/image25.png) |
-| **Oval – Size 100%/100%** |                          |
+
+| **Oval – Size 100%/100%** | Image                    |
+|---------------------------|--------------------------|
 | ![](./media/image26.png)  | ![](./media/image27.png) |
 
 #### Aggregation Method
@@ -125,7 +127,7 @@ and the *Statistics Type* parameters below.
 
 Values: Count \| Statistics
 
-##### EXAMPLE:
+##### Example
 The aggregation bin value could be the number of sensors in a bin or the average temperature reported from all sensors in a bin.
 
 #### Statistics Field
@@ -163,7 +165,7 @@ You can also add `KMB` or `kMG` to format big number values with `K/k` for
 thousands (aka `kilo`), `M` for millions (aka `mega`), and `B/G` for billions
 (aka `giga`).
 
-##### EXAMPLES:
+##### Examples
  - `###.##KMB` format will render `789.12B` instead of `789,123,456,789`.
  - `###.##kMG` format will render `789.12G` instead of `789,123,456,789`.
  - `###.#kMG` or `###.##KMB` formats will render `789.1M` instead of `789,123,456`.
@@ -179,7 +181,7 @@ aggregating features. The goal is to render the most detailed level of detail
 bin size specified. The aggregation renderer then applies the LOD offset to
 determine the final LOD to use for rendering. The default value is: 25.
 
-##### EXAMPLE:
+##### Example
 With the Min Bin Size=150 pixels and LOD Offset=2, if rendering
 using LOD=4, the number of pixels per bin is 200. If the LOD=5, the number
 of pixels per bin is 100. In this case, to satisfy the min bin size of 150,
@@ -189,26 +191,26 @@ LOD=4+2=6. If the LOD offset value is set to -2, it will render using
 LOD=4-2=2.
 
 ###### Different Min Bin Size in pixels values with LOD offset set to 0
-| Min Bin Size | Image                          |
-|--------------|--------------------------------|
-| 10           | ![](media/min-bin-size-10.png) |
-| 25           | ![](media/min-bin-size-10.png) |
-| 50           | ![](media/min-bin-size-50.png) |
+| Min Bin Size | Image                            |
+|--------------|----------------------------------|
+| 10           | ![](./media/min-bin-size-10.png) |
+| 25           | ![](./media/min-bin-size-25.png) |
+| 50           | ![](./media/min-bin-size-50.png) |
 
 #### LOD Offset
 The LOD offset to apply to in addition to the LOD determined by the *Min Bin
 Size* parameter above.
 
-##### EXAMPLE:
+##### Example
 If based on the min bin size, the map service renders using
 LOD=5. If the LOD Offset=3 it eventually renders using LOD=5+3=8. For the
 same case, if LOD Offset=-3, it renders using LOD=5-3=2.
 
-| LOD Offset | Image                             |
-|------------|-----------------------------------|
-| -1         | ![](media/lod-offset-minus-1.png) |
-| 0          | ![](media/lod-offset-0.png)       |
-| 1          | ![](media/lod-offset-1.png)       |
+| LOD Offset | Image                               |
+|------------|-------------------------------------|
+| -1         | ![](./media/lod-offset-minus-1.png) |
+| 0          | ![](./media/lod-offset-0.png)       |
+| 1          | ![](./media/lod-offset-1.png)       |
 
 
 #### Bin Renderer
@@ -229,31 +231,24 @@ values blank, the aggregation renderer will calculate the min and max bin values
 from the current map extent and use them as the min and max for the range
 values.
 
-##### EXAMPLE:
+##### Example
 As illustrated below, the range is set to min=100 and max=1000
 and corresponding fill color for the min is transparent red R=255, A=0% (A
 is the transparency) and the max is opaque red R=255 and A=100%. From the
 final rendering, you can observe the following:
-
-
-For bin values less than 100: the min fill color of R=255 and A=0% is used.
-
-
-For bin values greater than 1000: the max fill color of R=255 and A=100% is
+ - For bin values less than 100: the min fill color of R=255 and A=0% is used.
+ - For bin values greater than 1000: the max fill color of R=255 and A=100% is
 used.
-
-
-For a bin value between 100 and 1000, its bin value as a weight is used to
+ - For a bin value between 100 and 1000, its bin value as a weight is used to
 interpolate from A=0% to A=100% to determine the transparency for that bin.
 
+![](./media/bin-renderer-ui-1.png)
 
-![](media/bin-renderer-ui-1.png)
+![](./media/bin-renderer-ui-2.png)
 
-![](media/bin-renderer-ui-2.png)
+![](./media/bin-renderer-ui-3.png)
 
-![](media/bin-renderer-ui-3.png)
-
-![](media/bin-renderer-ui-4.png)
+![](./media/bin-renderer-ui-4.png)
 
 #### Normalize by Bin Area
 Bins that appear the same size on a map can cover a different geographically
@@ -267,7 +262,6 @@ fill color the max value uses is a darker color than the min value. When
 *Normalize by Bin Area* is unchecked, the renderer treats all bins as the same
 sized geographic area.
 
-
 ### Feature Rendering
 Spatiotemporal big data store map services can render using the aggregation
 style or the discrete feature style based on *Feature Threshold* parameter’s
@@ -276,7 +270,7 @@ features.
 
 ### Feature Rendering for Points and Multipoints
 
-![](media/feature-rendering-ui-points-multipoints-ui.png)
+![](./media/feature-rendering-ui-points-multipoints-ui.png)
 
 #### Style
 The simple marker symbol style to render discrete features.
@@ -301,28 +295,28 @@ all features. The rotation starts in the east in a counter-clockwise direction,
 where east is 0°.
 
 #### Examples
-| Angle | Image                       |
-|-------|-----------------------------|
-| 0°    | ![](media/sms-angle-0.png)  |
-| 45°   | ![](media/sms-angle-45.png) |
+| Angle | Image                         |
+|-------|-------------------------------|
+| 0°    | ![](./media/sms-angle-0.png)  |
+| 45°   | ![](./media/sms-angle-45.png) |
 
 #### Color
 The color of the simple marker symbol used to represent discrete features.
 The default is: Red
 
-![](media/sms-color-ui.png)
+![](./media/sms-color-ui.png)
 
-![](media/sms-color.png)
+![](./media/sms-color.png)
 
 #### Size
 The size of the simple marker symbol used to represent discrete features.
 The default size is: 12.
 
 ##### Examples
-| Size | Image                      |
-|------|----------------------------|
-| 12   | ![](media/sms-size-12.png) | 
-| 24   | ![](media/sms-size-24.png) |
+| Size | Image                        |
+|------|------------------------------|
+| 12   | ![](./media/sms-size-12.png) | 
+| 24   | ![](./media/sms-size-24.png) |
 
 #### Outline Color
 The outline color of the simple marker symbol used to represent discrete features.
@@ -333,10 +327,10 @@ The outline size for the simple marker symbol used to represent discrete
 features. The default is: 1
 
 ##### Outline Color & Size Examples
-| Color | Size | Image                              |
-|-------|------|------------------------------------|
-| Black | 1    | ![](media/sms-outline-black-1.png) |
-| Pink  | 3    | ![](media/sms-outline-pink-3.png)  |
+| Color | Size | Image                                |
+|-------|------|--------------------------------------|
+| Black | 1    | ![](./media/sms-outline-black-1.png) |
+| Pink  | 3    | ![](./media/sms-outline-pink-3.png)  |
 
 
 #### X-Offset (pixels)
@@ -347,10 +341,10 @@ The value, in pixels, to offset the discrete features on the y-axis.
 
 ##### Offset Examples
 
-| (x,y)   | Offset               | Image                           |
-|---------|--------------------- |---------------------------------|
-| (0,0)   | No Offset            | ![](media/sms-offset-0x0.png)   |
-| (10,10) | Move to upper right) | ![](media/sms-offset-10x10.png) |
+| (x,y)   | Offset               | Image                             |
+|---------|--------------------- |-----------------------------------|
+| (0,0)   | No Offset            | ![](./media/sms-offset-0x0.png)   |
+| (10,10) | Move to upper right) | ![](./media/sms-offset-10x10.png) |
 
 #### Rotate Symbols (degrees)
 The value to rotate the simple marker symbols based on a rotation type and field value in degrees (0°-360°).
@@ -371,20 +365,22 @@ The rotation types:
 The field containing the value in degrees (0° - 360°) to rotate the discrete features.
 
 ##### User interface
-| **Arithmetic **                | **Geographic **                |
+| Arithmetic                     | Geographic                     |
 |--------------------------------|--------------------------------|
 | ![](./media/arithmetic-ui.png) | ![](./media/geographic-ui.png) |
 
-##### Screenshots
-| **Arithmetic Not Rotated**              | **Arithmetic Rotated**              |
+##### Images
+| Arithmetic Not Rotated                  | Arithmetic Rotated              |
 |-----------------------------------------|-------------------------------------|
 | ![](./media/arithmetic-not-rotated.png) | ![](./media/arithmetic-rotated.png) |
-| **Geographic Not Rotated**              | **Geographic Rotated**              |
+| Geographic Not Rotated                  | Geographic Rotated              |
+|-----------------------------------------|-------------------------------------|
 | ![](./media/geographic-not-rotated.png) | ![](./media/geographic-rotated.png) |
 
 ### Feature Rendering for Polygons
-![](media/feature-rendering-polygons-ui.png)
-![](media/feature-rendering-polygons.png)
+![](./media/feature-rendering-polygons-ui.png)
+
+![](./media/feature-rendering-polygons.png)
 
 #### Fill Color
 The fill color of the polygon.
@@ -396,8 +392,9 @@ The outline color of the polygon.
 The size of the polygon outline.
 
 ### Feature Rendering for Polylines
-![](media/feature-rendering-polylines-ui.png)
-![](media/feature-rendering-polylines.png)
+![](./media/feature-rendering-polylines-ui.png)
+
+![](./media/feature-rendering-polylines.png)
 
 #### Color
 The color of the polyline.
