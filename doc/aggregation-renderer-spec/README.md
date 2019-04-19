@@ -56,8 +56,8 @@ feature rendering style as illustrated below.
 The aggregation style the aggregation renderer will use to display the
 aggregated features.
 
-| Aggregation Style  | Image                                    |
-|--------------------|------------------------------------------|
+| Aggregation Style  | Image                                      |
+|--------------------|--------------------------------------------|
 | Geohash            | ![](./media/agg-style-geohash.png)         |
 | Square             | ![](./media/agg-style-square.png)          |
 | Flat Hexagon       | ![](./media/agg-style-flat-hexagon.png)    |
@@ -370,10 +370,10 @@ The field containing the value in degrees (0° - 360°) to rotate the discrete f
 | ![](./media/arithmetic-ui.png) | ![](./media/geographic-ui.png) |
 
 ##### Images
-| Arithmetic Not Rotated                  | Arithmetic Rotated              |
+| Arithmetic Not Rotated                  | Arithmetic Rotated                  |
 |-----------------------------------------|-------------------------------------|
 | ![](./media/arithmetic-not-rotated.png) | ![](./media/arithmetic-rotated.png) |
-| Geographic Not Rotated                  | Geographic Rotated              |
+| Geographic Not Rotated                  | Geographic Rotated                  |
 |-----------------------------------------|-------------------------------------|
 | ![](./media/geographic-not-rotated.png) | ![](./media/geographic-rotated.png) |
 
