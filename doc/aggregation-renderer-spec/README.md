@@ -111,13 +111,10 @@ to the same value, oval bin sizes are not differentiated by bin values and
 result in the same oval bin size for all bins. Also see the *Range* setting
 in the *Bin Renderer* property.
 
-| **Oval – 30%/100%**       | Image                    |
-|---------------------------|--------------------------|
-| ![](./media/image24.png)  | ![](./media/image25.png) |
-
-| **Oval – Size 100%/100%** | Image                    |
-|---------------------------|--------------------------|
-| ![](./media/image26.png)  | ![](./media/image27.png) |
+| Oval Size Range | User Interface                                 | Image                    |
+|-----------------|------------------------------------------------|---------------------------------------------|
+| 30% - 100%      | ![](./media/bin-rendering-oval-30-100-ui.png)  | ![](./media/bin-rendering-oval-30-100.png)  |
+| 100% - 100%     | ![](./media/bin-rendering-oval-100-100-ui.png) | ![](./media/bin-rendering-oval-100-100.png) |
 
 #### Aggregation Method
 The method for calculating the aggregated bin values that appear in each bin.
