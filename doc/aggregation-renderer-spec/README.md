@@ -341,7 +341,7 @@ The value, in pixels, to offset the discrete features on the y-axis.
 | (x,y)   | Offset               | Image                             |
 |---------|--------------------- |-----------------------------------|
 | (0,0)   | No Offset            | ![](./media/sms-offset-0x0.png)   |
-| (10,10) | Move to upper right) | ![](./media/sms-offset-10x10.png) |
+| (10,10) | Move to upper right  | ![](./media/sms-offset-10x10.png) |
 
 #### Rotate Symbols (degrees)
 The value to rotate the simple marker symbols based on a rotation type and field value in degrees (0°-360°).
@@ -370,6 +370,7 @@ The field containing the value in degrees (0° - 360°) to rotate the discrete f
 | Arithmetic Not Rotated                  | Arithmetic Rotated                  |
 |-----------------------------------------|-------------------------------------|
 | ![](./media/arithmetic-not-rotated.png) | ![](./media/arithmetic-rotated.png) |
+
 | Geographic Not Rotated                  | Geographic Rotated                  |
 |-----------------------------------------|-------------------------------------|
 | ![](./media/geographic-not-rotated.png) | ![](./media/geographic-rotated.png) |
