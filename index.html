@@ -31,7 +31,7 @@
 
   <title>Aggregation Viewer - Server Side Dynamic Map Service Layer</title>
 
-  <link rel="stylesheet" href="https://js.arcgis.com/3.21/esri/css/esri.css">
+  <link rel="stylesheet" href="https://js.arcgis.com/3.28/esri/css/esri.css">
   <link rel="stylesheet" href="./mapServiceViewerStyles.css">
 
   <script type="text/javascript">
@@ -44,7 +44,7 @@
       }]
     };
   </script>
-  <script src="https://js.arcgis.com/3.21/"></script>
+  <script src="https://js.arcgis.com/3.28/"></script>
   <script src="https://use.fontawesome.com/9482a0b1d1.js"></script>
   <script>
     require([
@@ -89,6 +89,8 @@
       "esri/arcgis/utils",
       "esri/lang",
 
+      "esri/IdentityManager",
+
       "esri/layers/FeatureLayer",
       "app/aggregationRenderer",
 
@@ -119,6 +121,7 @@
       SimpleLineSymbol, SimpleFillSymbol, SimpleRenderer, Polygon, Graphic, Point, SimpleMarkerSymbol,
       Query, QueryTask, webMercatorUtils,
       HeatmapRenderer, smartMapping, TooltipDialog, esriRequest, dojoJson, arcgisUtils, esriLang,
+      IdentityManager,
       FeatureLayer, AggregationRenderer,
       TimeExtent, TimeSlider, InfoTemplate,
       TitlePane, Select, BorderContainer, ContentPane, RadioButton, ComboBox, Button, CheckBox, TooltipDialog, DropDownButton,
@@ -156,7 +159,7 @@
       var _stateInProgress = "#00b100";  // dark green
       var _stateReady      = "#00ff00";  // green
 
-      var _fontsFilteringSelect = null
+      var _fontsFilteringSelect = null;
       var _fontsStore           = null;
       var _fontItems            = [];
       var _defaultFontsArray    = [
