@@ -586,10 +586,12 @@
       }
 
       function hexToRgb(hex, a) {
-        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        var r = parseInt(result[1], 16);
-        var g = parseInt(result[2], 16);
-        var b = parseInt(result[3], 16);
+        const hexWithoutHash = hex.replace("#", "");
+
+        const r = parseInt(hexWithoutHash.substring(0, 2), 16);
+        const g = parseInt(hexWithoutHash.substring(2, 4), 16);
+        const b = parseInt(hexWithoutHash.substring(4, 6), 16);
+
         return [r, g, b, a];
       }
 
