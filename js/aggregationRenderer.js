@@ -69,6 +69,7 @@ function (declare, lang, Renderer, rendererJsonUtils) {
         },
         geoHashStyle: {
           style: "geohash",
+          subStyle: "shape",
           sr: "4326"
         },
         featureRenderer: {

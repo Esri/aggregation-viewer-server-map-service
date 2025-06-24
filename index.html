@@ -153,7 +153,7 @@
       var _minValue;
       var _maxValue;
       var _ignoreChangeEvent = false;
-      
+
       var _stateError      = "#ff0000";  // red
       var _stateRequested  = "#00ffff";  // light blue
       var _stateInProgress = "#00b100";  // dark green
@@ -398,9 +398,11 @@
 
           if (evt.layer.version == "10.4") {
             dojo.byId("geoHashStyle").disabled = true;
+            dojo.byId("geoHashSubStyle").disabled = true;
             dojo.byId("labelFormat").value = "#.##"
           } else {
             dojo.byId("geoHashStyle").disabled = false;
+            dojo.byId("geoHashSubStyle").disabled = false;
             dojo.byId("labelFormat").value = "###.#KMB"
           }
 
@@ -427,11 +429,11 @@
         _msLayer.on("map-image-export", function (evt) {
           setState(_stateReady);
         });
-        
+
         _msLayer.on("update", function (evt) {
           setState(_stateReady);
         });
-        
+
         _msLayer.on("error", function (err) {
           //console.log("Error occured loading the " + err.target.id + " error: " + err.error.message);
           //console.log("Invalid layer URL: " + err.target.url);
@@ -489,6 +491,7 @@
 
         var geoHashStyle = {
           style: dojo.byId("geoHashStyle").value,
+          subStyle: dojo.byId("geoHashSubStyle").value,
           sr: dojo.byId("geoHashStyleSR").value
         };
 
@@ -628,7 +631,7 @@
       }
 
       function statFieldChanged(val) {
-       var control = dijit.byId('statField');
+        var control = dijit.byId('statField');
         var selectedOption = control.getOptions(val);
         populateStatTypeSelectOptions(selectedOption);
         requestToUpdateLayerFromUI();
@@ -655,18 +658,18 @@
         if (isFieldNumeric(field)) {
           // add all types
           var options = [ {'label':'Average', 'value':'avg'},
-                          {'label':'Maximum', 'value':'max'},
-                          {'label':'Minimum', 'value':'min'},
-                          {'label':'Standard Deviation', 'value':'stddev'},
-                          {'label':'Sum', 'value':'sum'},
-                          {'label':'Variance', 'value':'var'},
-                          {'label':'Count Distinct', 'value':'countdistinct'},
-                          {'label':'Count', 'value':'count'} ];
+            {'label':'Maximum', 'value':'max'},
+            {'label':'Minimum', 'value':'min'},
+            {'label':'Standard Deviation', 'value':'stddev'},
+            {'label':'Sum', 'value':'sum'},
+            {'label':'Variance', 'value':'var'},
+            {'label':'Count Distinct', 'value':'countdistinct'},
+            {'label':'Count', 'value':'count'} ];
           statTypeSelect.addOption(options);
         } else {
           // add only the count and count distince types
           var options = [ {'label':'Count Distinct', 'value':'countdistinct'},
-                          {'label':'Count', 'value':'count'} ];
+            {'label':'Count', 'value':'count'} ];
           statTypeSelect.addOption(options);
         }
 
@@ -697,13 +700,13 @@
           callbackParamName: "callback"
         });
         mapServiceLayerInfoDeferred.then(function (response) {
-              _msLayerInfo = response;
-              populateDijitSelectWithLayerFields(dijit.byId("statField"), false);
-              populateSelectWithLayerFields(dojo.byId(rotationExpression), true);
-              _skipApplyRenderer = true;
-              statFieldChanged(dijit.byId('statField').value); // to init-populate the stat types control
-              _skipApplyRenderer = false;
-            }
+            _msLayerInfo = response;
+            populateDijitSelectWithLayerFields(dijit.byId("statField"), false);
+            populateSelectWithLayerFields(dojo.byId(rotationExpression), true);
+            _skipApplyRenderer = true;
+            statFieldChanged(dijit.byId('statField').value); // to init-populate the stat types control
+            _skipApplyRenderer = false;
+          }
         );
       }
 
@@ -758,17 +761,17 @@
 
       // field type can be one of the following: "esriFieldTypeSmallInteger", "esriFieldTypeInteger", "esriFieldTypeSingle", "esriFieldTypeDouble", "esriFieldTypeString", "esriFieldTypeDate", "esriFieldTypeOID", "esriFieldTypeGeometry", "esriFieldTypeBlob", "esriFieldTypeRaster", "esriFieldTypeGUID", "esriFieldTypeGlobalID", "esriFieldTypeXML"
       function isFieldNumeric(field) {
-          if (!field || !field.type)
-            return false;
+        if (!field || !field.type)
+          return false;
 
-          return (field.type == "esriFieldTypeSmallInteger" || field.type == "esriFieldTypeInteger" || field.type == "esriFieldTypeSingle" || field.type == "esriFieldTypeDouble" || field.type == "esriFieldTypeOID");
+        return (field.type == "esriFieldTypeSmallInteger" || field.type == "esriFieldTypeInteger" || field.type == "esriFieldTypeSingle" || field.type == "esriFieldTypeDouble" || field.type == "esriFieldTypeOID");
       }
 
       function isSupportedStatField(field) {
-          if (!field || !field.type)
-            return false;
+        if (!field || !field.type)
+          return false;
 
-          return (field.type != "esriFieldTypeGeometry" && field.type != "esriFieldTypeBlob" && field.type != "esriFieldTypeRaster")
+        return (field.type != "esriFieldTypeGeometry" && field.type != "esriFieldTypeBlob" && field.type != "esriFieldTypeRaster")
       }
 
       function initRefreshRateSpinner() {
@@ -896,7 +899,7 @@
           _msLayer.setRefreshInterval(refreshRateInMinutes);
         } else {
           _msLayer.setRefreshInterval(24 * 60); // one day in minutes
-        }        
+        }
       }
 
       function queryLayerTimeExtent() {
@@ -907,12 +910,12 @@
           "callbackParamName": "callback"
         });
         request.then(
-                function (response) {
-                  _layerTimeExtent = new TimeExtent(new Date(response.timeInfo.timeExtent[0]), new Date(response.timeInfo.timeExtent[1]));
-                },
-                function (error) {
-                  console.log("Error getting the layers time extent: ", error.message);
-                });
+          function (response) {
+            _layerTimeExtent = new TimeExtent(new Date(response.timeInfo.timeExtent[0]), new Date(response.timeInfo.timeExtent[1]));
+          },
+          function (error) {
+            console.log("Error getting the layers time extent: ", error.message);
+          });
       };
 
       function initTimeSlider() {
@@ -981,7 +984,7 @@
         return labels;
       }
 
-      });
+    });
   </script>
 </head>
 
@@ -1037,6 +1040,7 @@
           <option value="102003">102003 (Albers)</option>
           <option value="102100">102100 (Web Mercator)</option>
           <option value="4326">4326 (WGS84)</option>
+          <option value="54030">54030 (Robinson)</option>
           <option value="26911">26911 (NAD83 / UTM zone 11N)</option>
           <option value="27700">27700 (British Natioal Grid)</option>
           <option value="2243">2243 (Idaho West, State Plane)</option>
@@ -1097,6 +1101,8 @@
       <div class="input-group input-group-full">
         <select name="geoHashStyle" id="geoHashStyle" style="width: 120px;">
           <option value="geohash" selected="true">GeoHash</option>
+          <option value="geotile">GeoTile</option>
+          <option value="h3">H3</option>
           <option value="square">Square</option>
           <option value="flatHexagon">Flat Hexagon</option>
           <option value="pointyHexagon">Pointy Hexagon</option>
@@ -1105,6 +1111,15 @@
         </select>
         <label for="geoHashStyle">LOD Type</label>
       </div>
+
+      <div class="input-group input-group-full">
+        <select name="geoHashSubStyle" id="geoHashSubStyle" style="width: 120px;">
+          <option value="shape" selected="true">Shape</option>
+          <option value="centroid">Centroid</option>
+        </select>
+        <label for="geoHashSubStyle">LOD SubType</label>
+      </div>
+
       <div class="input-group input-group-full">
         <select name="style" id="style" style="width: 90px;">
           <option value="Grid">Grid</option>
@@ -1128,8 +1143,8 @@
     </div>
     <div class="config-content">
       <div class="input-row input-row-header-labeled">
-          <label>Min</label>
-          <label>Max</label>
+        <label>Min</label>
+        <label>Max</label>
       </div>
       <div class="input-row input-row-header" >
         <label>Fill Color</label>
