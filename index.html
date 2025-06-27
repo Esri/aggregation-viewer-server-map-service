@@ -984,6 +984,13 @@
         return labels;
       }
 
+      on(dom.byId("inputUrl"), "mouseenter", function() {
+        this.title = this.value || "No value entered";
+      });
+      on(dom.byId("inputUrl"), "mouseleave", function() {
+        this.title = "";
+      });
+
     });
   </script>
 </head>
