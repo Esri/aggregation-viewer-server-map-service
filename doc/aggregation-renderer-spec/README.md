@@ -56,14 +56,14 @@ feature rendering style as illustrated below.
 The aggregation style the aggregation renderer will use to display the
 aggregated features.
 
-| Aggregation Style  | Image                                      |
-|--------------------|--------------------------------------------|
-| Geohash            | ![](./media/agg-style-geohash.png)         |
-| Square             | ![](./media/agg-style-square.png)          |
-| Flat Hexagon       | ![](./media/agg-style-flat-hexagon.png)    |
-| Poiny Hexagon      | ![](./media/agg-style-pointy-hexagon.png)  |
-| Flat Triangle      | ![](./media/agg-style-flat-triangle.png)   | 
-| Pointy Triangle    | ![](./media/agg-style-pointy-triangle.png) |
+| Aggregation Style | Image                                      |
+|-------------------|--------------------------------------------|
+| Geohash           | ![](./media/agg-style-geohash.png)         |
+| Square            | ![](./media/agg-style-square.png)          |
+| Flat Hexagon      | ![](./media/agg-style-flat-hexagon.png)    |
+| Pointy Hexagon    | ![](./media/agg-style-pointy-hexagon.png)  |
+| Flat Triangle     | ![](./media/agg-style-flat-triangle.png)   | 
+| Pointy Triangle   | ![](./media/agg-style-pointy-triangle.png) |
 
 #### Aggregation Spatial Reference
 The spatial reference well-known ID (WKID) or well-known text (WKT) to use for
