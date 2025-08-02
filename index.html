@@ -31,7 +31,7 @@
 
   <title>Aggregation Viewer - Server Side Dynamic Map Service Layer</title>
 
-  <link rel="stylesheet" href="https://js.arcgis.com/3.44/esri/css/esri.css">
+  <link rel="stylesheet" href="https://js.arcgis.com/3.46/esri/css/esri.css">
   <link rel="stylesheet" href="./mapServiceViewerStyles.css">
 
   <script type="text/javascript">
@@ -44,7 +44,7 @@
       }]
     };
   </script>
-  <script src="https://js.arcgis.com/3.44/"></script>
+  <script src="https://js.arcgis.com/3.46/"></script>
   <script src="https://use.fontawesome.com/9482a0b1d1.js"></script>
   <script>
     require([
@@ -1200,12 +1200,16 @@
       </div>
       <div class="input-row input-row-header">
         <label></label>
-        <select name="statField" data-dojo-type="dijit/form/Select" data-dojo-attach-point="statField" id="statField" style="display:none; width: calc(64%);">
+        <select name="statField" data-dojo-type="dijit/form/Select" data-dojo-attach-point="statField"
+           id="statField"
+           style="width: 250px; margin-top:3px; display:none; float:left;">
         </select>
       </div>
       <div class="input-row input-row-header">
         <label></label>
-        <select name="statType" data-dojo-type="dijit/form/Select" data-dojo-attach-point="statType" id="statType" style="display:none; width: calc(64%);">
+        <select name="statType" data-dojo-type="dijit/form/Select" data-dojo-attach-point="statType"
+          id="statType"
+          style="width: 250px; margin-top:3px; display:none; float:left;">
         </select>
       </div>
     </div>
