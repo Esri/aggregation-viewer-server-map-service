@@ -192,14 +192,25 @@
       initRefreshRateSpinner();
       populateFilteringSelectFonts("labelFont");
 
+      /**
+       * Set the state of the input URL field
+       */
       function setState(state) {
         dojo.byId("inputUrl").style.backgroundColor = state;
       }
 
+      /**
+       * Called when the selected basemap has changed
+       */
       function onSelectedBasemapChanged() {
         buildMap(_map.extent);
       }
 
+      /**
+       * Builds the map with the given extent.
+       * If the map already exists, it is destroyed and a new one is created.
+       * @param {Extent} mapExtent - The extent to set for the map.
+       */
       function buildMap(mapExtent) {
 
         esri.config.defaults.io.corsEnabledServers.push('http://storm.esri.com:6080');
@@ -245,6 +256,9 @@
         dojo.byId("currentMapSR").value = _wkid;
       }
 
+      /**
+       * Called when the WKID input field has changed
+       */
       function onWkidButtonChange(evt) {
         _wkid = parseInt(evt.target.value, 10);
         if (_wkid === _map.spatialReference.wkid) {
@@ -256,12 +270,22 @@
         projectMapToSR(_wkid);
       }
 
+      /**
+       * Projects the map's current extent to the specified spatial reference.
+       * @param {number} wkid - The WKID of the spatial reference to project to.
+       */
       function projectMapToSR(wkid) {
         var sr = new SpatialReference(wkid);
         var project = _gs.project([_map.extent], sr);
         project.then(projectMapToSRSuccess, projectMapToSRFailure);
       }
 
+      /**
+       * Callback for successful projection of the map's extent.
+       * Builds the map with the new projected extent.
+       * This function is called by the GeometryService project method.
+       * @param {Array} result - The projected extent.
+       */
       function projectMapToSRSuccess(result) {
         //console.log("project successful: ", result);
         if (result.length) {
@@ -273,16 +297,32 @@
         }
       }
 
+      /**
+       * Callback for failed projection of the map's extent.
+       * Logs the error to the console.
+       * This function is called by the GeometryService project method.
+       * @param {Error} err - The error that occurred during projection.
+       */
       function projectMapToSRFailure(err) {
         console.log("Project Map to SR failed: ", err);
       }
 
+      /**
+       * Projects the map's current extent to the specified spatial reference.
+       * @param {number} wkid - The WKID of the spatial reference to project to.
+       */
       function projectAndSetMapExtent(extent, wkid) {
         var sr = new SpatialReference(wkid);
         var project = _gs.project([extent], sr);
         project.then(projectAndSetMapExtentSuccess, projectAndSetMapExtentFailure);
       }
 
+      /**
+       * Callback for successful projection of the map's extent.
+       * Builds the map with the new projected extent.
+       * This function is called by the GeometryService project method.
+       * @param {Array} result - The projected extent.
+       */
       function projectAndSetMapExtentSuccess(result) {
         //console.log("project successful: ", result);
         if (result.length) {
@@ -294,17 +334,26 @@
         }
       }
 
+      /**
+       * Callback for failed projection of the map's extent.
+       * Logs the error to the console.
+       * This function is called by the GeometryService project method.
+       * @param {Error} err - The error that occurred during projection.
+       */
       function projectAndSetMapExtentFailure(err) {
         console.log("Project extent failed: ", err);
       }
 
-      //The Measurement Widget require a proxy page to handle communications with the ArcGIS Server services. You will need to
-      //replace the url below with the location of a proxy on your machine. See the 'Using the proxy page' help topic
-      //for details on setting up a proxy page.
+      // The Measurement Widget require a proxy page to handle communications with the ArcGIS Server services. You will need to
+      // replace the url below with the location of a proxy on your machine. See the 'Using the proxy page' help topic
+      // for details on setting up a proxy page.
       esriConfig.defaults.io.proxyUrl = "/proxy/";
       esriConfig.defaults.io.alwaysUseProxy = false;
 
-      // UI event listeners
+      // ##############################################################################
+      // UI Event Listeners
+      // ##############################################################################
+
       on(dom.byId("applyRendererButton"), "click", onApplyRendererButton);
       on(dom.byId("setLayerButton"), "click", onSetLayerButton);
 
@@ -333,7 +382,7 @@
       on(dijit.byId("statField"), "change", statFieldChanged);
       on(dijit.byId("statType"), "change", requestToUpdateLayerFromUI);
 
-      on(dojo.byId("refreshMode"), "change", setResfreshMode);
+      on(dojo.byId("refreshMode"), "change", setRefreshMode);
 
       on(document.getElementsByClassName("collapser")[0], "click", togglePanel);
 
@@ -350,23 +399,38 @@
         refreshModeVisibility = !refreshModeVisibility;
       });
 
-      // functions
+      // ##############################################################################
+      // Functions
+      // ##############################################################################
 
+      /**
+       * Toggles the visibility of the panel.
+       */
       function togglePanel() {
         domClass.toggle(document.getElementsByTagName("body")[0], "panel-collapsed");
       }
 
+      /**
+       * Sets the refresh mode based on the selected value.
+       */
       function onApplyRendererButton() {
         _allowApplyRenderer = true;
         requestToUpdateLayerFromUI();
       }
 
+      /**
+       * Callback for successful application of the renderer.
+       * This function is called by the onApplyRendererButton function.
+       */
       function onSetLayerButton() {
         _allowApplyRenderer = false;
         _zoomMapToLayerExtent = true;
         setLayer();
       }
 
+      /**
+       * Sets the refresh mode based on the selected value.
+       */
       function setLayer() {
         setState(_stateRequested);
 
@@ -453,6 +517,10 @@
         getLayerInfo();
       }
 
+      /**
+       * Requests an update to the layer from the UI.
+       * This function is called when the user interacts with the UI controls
+       */
       function requestToUpdateLayerFromUI() {
         // postpone invoking updateLayerFromUI() for at least one second
         // to accumulate multiple requests to update the layer
@@ -466,6 +534,9 @@
         _changeTimer = window.setTimeout(updateLayerFromUI, 1000);
       }
 
+      /**
+       * Updates the layer from the UI.
+       */
       function updateLayerFromUI() {
         if (_skipApplyRenderer || !_allowApplyRenderer)
           return;
@@ -487,6 +558,11 @@
         setState(_stateInProgress);
       }
 
+      /**
+       * Updates the layer from the UI.
+       * This function collects values from the UI controls and applies them to the renderer.
+       * @param {AggregationRenderer} renderer - The renderer to update.
+       */
       function updateRendererFromUI(renderer) {
 
         var geoHashStyle = {
@@ -588,6 +664,12 @@
 
       }
 
+      /**
+       * Converts a hex color value to an RGB array.
+       * @param {string} hex - The hex color value (e.g., "#FF0000").
+       * @param {number} a - The alpha value (0-1).
+       * @returns {number[]} The RGB array [r, g, b, a].
+       */
       function hexToRgb(hex, a) {
         const hexWithoutHash = hex.replace("#", "");
 
@@ -598,6 +680,12 @@
         return [r, g, b, a];
       }
 
+      /**
+       * Handles UI trigger events.
+       * This function is called when the user interacts with certain UI controls.
+       * It shows or hides sections based on the control's value.
+       * @param {Event} evt - The event object.
+       */
       function uiTrigger(evt) {
         if (evt.target.id == "style") {
           if (evt.target.value == "Oval") {
@@ -630,6 +718,12 @@
         }
       }
 
+      /**
+       * Called when the statistical field is changed.
+       * This function updates the statistical type select options based on the selected field.
+       * It also requests an update to the layer from the UI.
+       * @param {string} val - The new value of the statistical field.
+       */
       function statFieldChanged(val) {
         var control = dijit.byId('statField');
         var selectedOption = control.getOptions(val);
@@ -637,6 +731,11 @@
         requestToUpdateLayerFromUI();
       }
 
+      /**
+       * Populates the statistical type select options based on the selected field.
+       * This function is called when the statistical field is changed.
+       * @param {Object} selectedOption - The selected option from the statistical field select.
+       */
       function populateStatTypeSelectOptions(selectedOption) {
         var statTypeSelect = dijit.byId("statType");
         var prevStatType = statTypeSelect.value;
@@ -676,6 +775,11 @@
         requestToUpdateLayerFromUI();
       }
 
+      /**
+       * Retrieves information about the map service.
+       * This function makes a request to the map service URL and retrieves its metadata.
+       * It populates the fonts select with the supported fonts from the service info.
+       */
       function getServiceInfo() {
         var mapServiceInfoDeferred = esri.request({
           url: _msLayer.url,
@@ -691,6 +795,11 @@
         );
       }
 
+      /**
+       * Retrieves information about the map service layer.
+       * This function makes a request to the map service layer URL and retrieves its metadata.
+       * It populates the dijit select with the layer fields and initializes the statistical field control
+       */
       function getLayerInfo() {
         var mapServiceLayerInfoDeferred = esri.request({
           url: _msLayer.url + "/0",
@@ -710,6 +819,13 @@
         );
       }
 
+      /**
+       * Populates the dijit select with layer fields.
+       * This function clears existing options and adds new options based on the fields of the map service layer.
+       * It can filter the fields to include only numeric fields if specified.
+       * @param {Object} select - The select element to populate.
+       * @param {boolean} numericOnly - Whether to include only numeric fields.
+       */
       function populateDijitSelectWithLayerFields(select, numericOnly) {
         // clear exiting options
         select.removeOption(select.getOptions());
@@ -730,6 +846,13 @@
         }
       }
 
+      /**
+       * Populates the select element with layer fields.
+       * This function clears existing options and adds new options based on the fields of the map service layer.
+       * It can filter the fields to include only numeric fields if specified.
+       * @param {Object} select - The select element to populate.
+       * @param {boolean} numericOnly - Whether to include only numeric fields.
+       */
       function populateSelectWithLayerFields(select, numericOnly) {
         // clear exiting options
         var i;
@@ -751,6 +874,11 @@
         }
       }
 
+      /**
+       * Populates the font select element with available fonts.
+       * This function retrieves the supported fonts from the map service info and populates the filtering select with them.
+       * If no fonts are available, it uses a default set of fonts.
+       */
       function populateFonts() {
         if (_msServiceInfo && _msServiceInfo.hasOwnProperty("supportedFonts")) {
           var fontsArray = _msServiceInfo.supportedFonts;
@@ -759,7 +887,11 @@
         }
       }
 
-      // field type can be one of the following: "esriFieldTypeSmallInteger", "esriFieldTypeInteger", "esriFieldTypeSingle", "esriFieldTypeDouble", "esriFieldTypeString", "esriFieldTypeDate", "esriFieldTypeOID", "esriFieldTypeGeometry", "esriFieldTypeBlob", "esriFieldTypeRaster", "esriFieldTypeGUID", "esriFieldTypeGlobalID", "esriFieldTypeXML"
+      /**
+       * Checks if the field is numeric.
+       * @param {Object} field - The field object to check.
+       * @returns {boolean} True if the field is numeric, false otherwise.
+       */
       function isFieldNumeric(field) {
         if (!field || !field.type)
           return false;
@@ -767,6 +899,11 @@
         return (field.type == "esriFieldTypeSmallInteger" || field.type == "esriFieldTypeInteger" || field.type == "esriFieldTypeSingle" || field.type == "esriFieldTypeDouble" || field.type == "esriFieldTypeOID");
       }
 
+      /**
+       * Checks if the field is a supported statistical field.
+       * @param {Object} field - The field object to check.
+       * @returns {boolean} True if the field is a supported statistical field, false otherwise.
+       */
       function isSupportedStatField(field) {
         if (!field || !field.type)
           return false;
@@ -774,12 +911,22 @@
         return (field.type != "esriFieldTypeGeometry" && field.type != "esriFieldTypeBlob" && field.type != "esriFieldTypeRaster")
       }
 
+      /**
+       * Initializes the refresh rate spinner.
+       * This function sets up an event listener for changes to the refresh rate spinner.
+       * It updates the refresh rate of the map service layer based on the spinner value.
+       */
       function initRefreshRateSpinner() {
         on(dojo.byId("refreshRateSpinner"), "change", function(e) {
           setRefreshRate();
         })
       }
 
+      /**
+       * Populates the font select element with available fonts.
+       * This function retrieves the supported fonts from the map service info and populates the filtering select with them.
+       * If no fonts are available, it uses a default set of fonts.
+       */
       function populateFilteringSelectFonts(selectId, fontsArray) {
         var selectContainer = dojo.byId(selectId + "Container");
         if (!selectContainer)
@@ -823,6 +970,12 @@
         }
       }
 
+      /**
+       * Called when the fonts query is complete.
+       * This function removes all items from the fonts store and adds the new set of fonts.
+       * @param {Array} items - The array of font items returned from the query.
+       * @param {Object} request - The request object.
+       */
       function onFontsQueryDone(items, request){
         // remove all items from the fonts store
         var i;
@@ -833,6 +986,12 @@
         _fontsStore.save({onComplete: onFontsRemoveDone});
       }
 
+      /**
+       * Called when the fonts are removed from the fonts store.
+       * This function adds the new set of fonts to the fonts store.
+       * @param {Array} items - The array of font items to add.
+       * @param {Object} request - The request object.
+       */
       function onFontsRemoveDone(){
         // add the new set of fonts to the fonts store
         for (i = 0; i < _fontItems.length; i++) {
@@ -842,6 +1001,10 @@
         _fontsStore.save({onComplete: onFontsAddedDone});
       }
 
+      /**
+       * Called when the fonts are added to the fonts store.
+       * This function selects the first font in the list.
+       */
       function onFontsAddedDone() {
         // select the first font
         if (_fontsStore && _fontsFilteringSelect) {
@@ -855,7 +1018,15 @@
         }
       }
 
-      function setResfreshMode(evt) {
+      /**
+       * Sets the refresh mode based on the selected value.
+       * This function updates the visibility of the time slider and refresh rate spinner based on the selected mode.
+       * It also initializes or updates the time slider if necessary.
+       * This function is called when the user changes the refresh mode select.
+       * Possible values are "manual", "live", and "replay".
+       * @param {Event} evt - The event object.
+       */
+      function setRefreshMode(evt) {
         if (evt.target.value == "manual") {
           _live = false;
           _replay = false;
@@ -892,6 +1063,13 @@
         }
       }
 
+      /**
+       * Sets the refresh rate for the map layer.
+       * This function retrieves the selected refresh rate from the UI and updates the layer's refresh interval.
+       * If the layer is in live mode, it sets the refresh interval to the selected value in minutes.
+       * If the layer is not in live mode, it sets the refresh interval to one day (24 hours).
+       * This function is called when the user changes the refresh rate spinner value.
+       */
       function setRefreshRate() {
         var refreshRateInSeconds = parseInt(dojo.byId("refreshRateSpinner").value);
         var refreshRateInMinutes = refreshRateInSeconds / 60;
@@ -902,6 +1080,12 @@
         }
       }
 
+      /**
+       * Queries the layer's time extent.
+       * This function sends a request to the layer's URL to retrieve its time extent information.
+       * It updates the _layerTimeExtent variable with the retrieved time extent.
+       * If an error occurs during the request, it logs the error message to the console.
+       */
       function queryLayerTimeExtent() {
         var url = dojo.byId("inputUrl").value + "?f=json";
         var request = esriRequest({
@@ -918,6 +1102,16 @@
           });
       };
 
+      /**
+       * Initializes the time slider for the map.
+       * This function creates a new TimeSlider instance and sets it on the map.
+       * It also configures the time stops and event listeners for the time slider.
+       * This function is called when the map is ready and the layer's time extent is available.
+       * It sets the thumb count to 2, creates time stops by count, and sets the thumb indexes.
+       * The time slider is set to move at a rate of 2000 milliseconds per thumb movement.
+       * It also adds an event listener for the "time-extent-change" event to update the layer's time extent
+       * and request an update to the layer from the UI.
+       */
       function initTimeSlider() {
         timeSlider = new TimeSlider({
           style: "width: 100%;"
@@ -939,6 +1133,14 @@
         timeSlider.setLabels(labels);
       }
 
+      /**
+       * Updates the time slider to reflect the current layer time extent.
+       * This function queries the layer's time extent and updates the time slider's stops and thumb indexes.
+       * It is called when the layer's time extent is available or when the user interacts with the time slider.
+       * It sets the thumb count to 21, creates time stops by count, and sets the thumb indexes.
+       * The time slider is then set on the map, and the labels for the time stops are created and set.
+       * It also sets the display style of the time slider to 'block'.
+       */
       function updateTimeSlider() {
         queryLayerTimeExtent();
         setTimeout(function () {
@@ -955,6 +1157,12 @@
         }, 1000);
       };
 
+      /**
+       * Creates labels for the time slider's time stops.
+       * This function generates an array of labels for the time stops based on their time values.
+       * It is called when the time slider is initialized or updated.
+       * @returns {Array} An array of labels for the time stops.
+       */
       function createTimeSliderLabels() {
         var labels = arr.map(timeSlider.timeStops, function (timeStop, i) {
           if (i % 2 === 0) {
@@ -984,9 +1192,15 @@
         return labels;
       }
 
+      /**
+       * Sets the title attribute of the input URL field on mouse enter and leave events.
+       */
       on(dom.byId("inputUrl"), "mouseenter", function() {
         this.title = this.value || "No value entered";
       });
+      /**
+       * Sets the title attribute of the input URL field on mouse leave event.
+       */
       on(dom.byId("inputUrl"), "mouseleave", function() {
         this.title = "";
       });
