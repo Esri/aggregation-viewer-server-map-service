@@ -1232,7 +1232,9 @@
         <input type="button" class="button" id="applyRendererButton" value="Apply Renderer" title="Apply Renderer. Switch to start using the 'DynamicLayers' Drawing Info and Renderer properties from the UI below."/>
         <input type="button" class="button" id="setLayerButton" value="Set Layer" title="Set Layer. Switch to use the published service layer's default Drawing Info and Renderer. Zoom the Map to the layer's Extent."/>
       </div>
-      <div class="input-group input-group-full">
+
+      <!-- Select Basemap -->
+      <div title="Select Base Map" class="input-group input-group-full">
         <select id="basemapUrl" name="basemapUrl" style="width: 120px;">
           <option value="https://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer">Topographic</option>
           <option value="https://services.arcgisonline.com/arcgis/rest/services/World_Street_Map/MapServer">Streets</option>
@@ -1254,9 +1256,11 @@
           <option value="https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryTopo/MapServer">USGS Imagery with Labels</option>
           <option value="https://basemap.nationalmap.gov/arcgis/rest/services/USGSHydroCached/MapServer">USGS Hydro</option>
         </select>
-        <label for="basemapUrl">Basemap</label>
+        <label for="basemapUrl">BaseMap</label>
       </div>
-      <div class="input-group input-group-full">
+
+      <!-- Select Map SR -->
+      <div title="Select Map Spatial Reference" class="input-group input-group-full">
         <select id="wkid" name="wkid" style="width: 120px;">
           <option value="102003">102003 (Albers)</option>
           <option value="102100">102100 (Web Mercator)</option>
@@ -1273,7 +1277,7 @@
           <option value="3363">3363 (NAD_1983_HARN_StatePlane_Pennsylvania_North_FIPS_3701_Feet)</option>
           <option value="3365">3365 (NAD_1983_HARN_StatePlane_Pennsylvania_South_FIPS_3702_Feet)</option>
         </select>
-        <label for="wkid">Spatial Reference</label>
+        <label for="wkid">Map SR</label>
       </div>
       <div class="input-group input-group-full" style="display: none;">
         <input type="text" id="currentMapSR" value="102100" style="width: 120px;" disabled="true"/>
@@ -1319,7 +1323,7 @@
       </div>
     </div>
     <div class="config-content">
-      <div class="input-group input-group-full">
+      <div title="LOD Aggregation Type" class="input-group input-group-full">
         <select name="geoHashStyle" id="geoHashStyle" style="width: 120px;">
           <option value="geohash" selected="true">GeoHash</option>
           <option value="geotile">GeoTile</option>
@@ -1333,22 +1337,22 @@
         <label for="geoHashStyle">LOD Type</label>
       </div>
 
-      <div class="input-group input-group-full">
+      <div title="LOD Geometry Aggregation Type" class="input-group input-group-full">
         <select name="geoHashSubStyle" id="geoHashSubStyle" style="width: 120px;">
-          <option value="shape" selected="true">Shape</option>
-          <option value="centroid">Centroid</option>
+          <option value="centroid" selected="true">Centroid</option>
+          <option value="shape">Shape</option>
         </select>
-        <label for="geoHashSubStyle">LOD SubType</label>
+        <label for="geoHashSubStyle">Geometry</label>
       </div>
 
-      <div class="input-group input-group-full">
+      <div title="Bin Style" class="input-group input-group-full">
         <select name="style" id="style" style="width: 90px;">
           <option value="Grid">Grid</option>
           <option value="Oval">Oval</option>
         </select>
         <label for="style">Style</label>
       </div>
-      <div class="input-group input-group-full">
+      <div title="LOD Spatial Reference" class="input-group input-group-full">
         <input type="text" id="geoHashStyleSR" value="102100" style="width: 90px;"/>
         <label for="geoHashStyleSR">LOD SR</label>
       </div>
