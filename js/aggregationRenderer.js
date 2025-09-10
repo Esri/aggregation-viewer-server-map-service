@@ -43,56 +43,56 @@ function (declare, lang, Renderer, rendererJsonUtils) {
         minBinSizeInPixels: 25,
         fullLodGrid: false,
         labels: {
-          color: [0,0,0,255],
+          color: [0, 0, 0, 255],
           font: "Arial",
           size: 12,
           style: "PLAIN",
-          format: "###.#KMB"
+          format: "###.#KMB",
         },
         fieldStatistic: {
           fieldName: "",
-          statisticType: ""
+          statisticType: "",
         },
         binRenderer: {
           type: "Continuous",
-          minColor: [255,0,0,50],
-          maxColor: [255,0,0,255],
-          minOutlineColor: [0,0,0,100],
-          maxOutlineColor: [0,0,0,100],
+          minColor: [255, 0, 0, 50],
+          maxColor: [255, 0, 0, 255],
+          minOutlineColor: [0, 0, 0, 100],
+          maxOutlineColor: [0, 0, 0, 100],
           minOutlineWidth: 0.5,
           maxOutlineWidth: 0.5,
           minValue: null,
           maxValue: null,
           minSize: 100,
           maxSize: 100,
-          normalizeByBinArea: false
+          normalizeByBinArea: false,
         },
         geoHashStyle: {
           style: "geohash",
-          subStyle: "centroid",
-          sr: "4326"
+          lodGeometryAggregationType: "centroid",
+          sr: "4326",
         },
         featureRenderer: {
           type: "simple",
-          symbol:  {
+          symbol: {
             type: "esriSMS",
             style: "esriSMSCircle",
-            color: [255,0,0,255],
+            color: [255, 0, 0, 255],
             size: 12,
             angle: 0,
             xoffset: 0,
             yoffset: 0,
             outline: {
-              color: [0,0,0,255],
-              width: 1
-            }
+              color: [0, 0, 0, 255],
+              width: 1,
+            },
           },
           rotationType: "",
           rotationExpression: "",
           label: "",
-          description: ""
+          description: "",
         },
-        backgroundColor: [0,0,0,0]
+        backgroundColor: [0, 0, 0, 0],
       };
 
       this.defaultPointFeatureRenderer = {
